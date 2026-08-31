@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="MangaTranslate AI - ترجمة صفحات المانغا والمانهوا بالذكاء الاصطناعي">
+
+    <title>MangaTranslate AI</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="logo">
+        <span class="logo-icon">漫</span>
+        <span>MangaTranslate <b>AI</b></span>
+    </div>
+
+    <button id="themeButton" class="theme-button">
+        ☀️
+    </button>
+
+</header>
+
+
+<main class="container">
+
+    <section class="hero">
+
+        <div class="badge">
+            ✨ AI Manga Translator
+        </div>
+
+        <h1>
+            ترجم المانغا
+            <span>داخل الصورة</span>
+        </h1>
+
+        <p>
+            ارفع صفحة مانغا، اختر اللغة، ودع الذكاء الاصطناعي
+            يساعدك في الحصول على نسخة مترجمة.
+        </p>
+
+    </section>
+
+
+    <section class="translator-card">
+
+        <!-- Upload -->
+
+        <div id="uploadArea" class="upload-area">
+
+            <div class="upload-icon">
+                📤
+            </div>
+
+            <h2>
+                ارفع صفحة المانغا
+            </h2>
+
+            <p>
+                PNG أو JPG أو WEBP
+            </p>
+
+            <button id="uploadButton" class="primary-button">
+                اختيار صورة
+            </button>
+
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/png,image/jpeg,image/webp"
+                hidden
+            >
+
+        </div>
+
+
+        <!-- Preview -->
+
+        <div id="previewSection" class="preview-section hidden">
+
+            <div class="section-title">
+                <span>🖼️</span>
+                الصورة الأصلية
+            </div>
+
+            <div class="image-container">
+                <img id="previewImage" alt="صورة المانغا">
+            </div>
+
+            <button id="removeImage" class="secondary-button">
+                حذف الصورة
+            </button>
+
+        </div>
+
+
+        <!-- Settings -->
+
+        <div id="settings" class="settings hidden">
+
+            <div class="setting">
+
+                <label for="sourceLanguage">
+                    اللغة الأصلية
+                </label>
+
+                <select id="sourceLanguage">
+
+                    <option value="ja">
+                        🇯🇵 اليابانية
+                    </option>
+
+                    <option value="en">
+                        🇺🇸 الإنجليزية
+                    </option>
+
+                    <option value="ko">
+                        🇰🇷 الكورية
+                    </option>
+
+                    <option value="zh">
+                        🇨🇳 الصينية
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="swap">
+                ↓
+            </div>
+
+
+            <div class="setting">
+
+                <label for="targetLanguage">
+                    ترجمة إلى
+                </label>
+
+                <select id="targetLanguage">
+
+                    <option value="ar">
+                        🇸🇦 العربية
+                    </option>
+
+                    <option value="en">
+                        🇺🇸 الإنجليزية
+                    </option>
+
+                    <option value="fr">
+                        🇫🇷 الفرنسية
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- Translate -->
+
+        <button
+            id="translateButton"
+            class="translate-button hidden">
+
+            ✨ ترجمة الصورة
+
+        </button>
+
+
+        <!-- Progress -->
+
+        <div id="progress" class="progress hidden">
+
+            <div class="progress-header">
+
+                <span id="progressText">
+                    جاري تحليل الصورة...
+                </span>
+
+                <span id="progressPercent">
+                    0%
+                </span>
+
+            </div>
+
+            <div class="progress-bar">
+
+                <div
+                    id="progressFill"
+                    class="progress-fill">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Result -->
+
+        <div id="resultSection" class="result-section hidden">
+
+            <div class="section-title">
+                <span>✨</span>
+                النتيجة
+            </div>
+
+            <div class="image-container">
+
+                <img
+                    id="resultImage"
+                    alt="الصورة المترجمة">
+
+            </div>
+
+            <button
+                id="downloadButton"
+                class="primary-button">
+
+                📥 تحميل الصورة
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <section class="features">
+
+        <div class="feature">
+
+            <div>🔍</div>
+
+            <h3>اكتشاف النص</h3>
+
+            <p>
+                التعرف على الكلام الموجود داخل الصفحة.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div>🌍</div>
+
+            <h3>ترجمة متعددة اللغات</h3>
+
+            <p>
+                اليابانية والكورية والصينية والإنجليزية وغيرها.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div>🎨</div>
+
+            <h3>ترجمة داخل الصورة</h3>
+
+            <p>
+                الهدف هو الحفاظ على شكل الصفحة ووضع الترجمة داخل الفقاعات.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <p>
+        MangaTranslate AI © 2026
+    </p>
+
+    <p>
+        مشروع تجريبي لترجمة الصور.
+    </p>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+  </html>
