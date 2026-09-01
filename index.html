@@ -1,300 +1,1429 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
 
-    <meta name="description"
-          content="MangaTranslate AI - ترجمة صفحات المانغا والمانهوا بالذكاء الاصطناعي">
+<meta charset="UTF-8">
 
-    <title>MangaTranslate AI</title>
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
 
-    <link rel="stylesheet" href="style.css">
+<title>
+MangaTranslate AI
+</title>
+
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+
+body {
+
+  margin: 0;
+
+  background:
+    #09090d;
+
+  color:
+    white;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+}
+
+
+.container {
+
+  width: 94%;
+
+  max-width: 900px;
+
+  margin: auto;
+
+  padding:
+    25px 0 50px;
+
+}
+
+
+header {
+
+  text-align: center;
+
+  margin-bottom: 25px;
+
+}
+
+
+.logo {
+
+  font-size: 30px;
+
+  font-weight: bold;
+
+}
+
+
+.logo span {
+
+  color:
+    #9b6cff;
+
+}
+
+
+.subtitle {
+
+  color:
+    #999;
+
+  line-height:
+    1.7;
+
+}
+
+
+.card {
+
+  background:
+    #15151d;
+
+  border:
+    1px solid #30303c;
+
+  border-radius:
+    20px;
+
+  padding:
+    18px;
+
+}
+
+
+.upload {
+
+  display: block;
+
+  text-align: center;
+
+  padding:
+    40px 15px;
+
+  border:
+    2px dashed #444;
+
+  border-radius:
+    18px;
+
+  cursor: pointer;
+
+}
+
+
+.upload:hover {
+
+  border-color:
+    #9b6cff;
+
+}
+
+
+.upload-icon {
+
+  font-size:
+    50px;
+
+}
+
+
+.upload h2 {
+
+  margin:
+    10px 0;
+
+}
+
+
+.upload p {
+
+  color:
+    #999;
+
+}
+
+
+input[type="file"] {
+
+  display:
+    none;
+
+}
+
+
+.button {
+
+  display:
+    inline-block;
+
+  margin-top:
+    12px;
+
+  padding:
+    13px 22px;
+
+  border-radius:
+    12px;
+
+  background:
+    #7955e8;
+
+  color:
+    white;
+
+  font-weight:
+    bold;
+
+}
+
+
+.preview {
+
+  margin-top:
+    25px;
+
+}
+
+
+.image-container {
+
+  width:
+    100%;
+
+  background:
+    #000;
+
+  border-radius:
+    14px;
+
+  overflow:
+    hidden;
+
+}
+
+
+#previewImage {
+
+  display:
+    block;
+
+  width:
+    100%;
+
+  height:
+    auto;
+
+}
+
+
+.settings {
+
+  margin-top:
+    20px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:
+    12px;
+
+}
+
+
+.setting {
+
+  background:
+    #101017;
+
+  padding:
+    14px;
+
+  border-radius:
+    12px;
+
+}
+
+
+.setting label {
+
+  display:
+    block;
+
+  color:
+    #aaa;
+
+  margin-bottom:
+    8px;
+
+}
+
+
+select {
+
+  width:
+    100%;
+
+  padding:
+    12px;
+
+  border-radius:
+    10px;
+
+  border:
+    1px solid #393944;
+
+  background:
+    #191921;
+
+  color:
+    white;
+
+  font-size:
+    16px;
+
+}
+
+
+.main-button {
+
+  width:
+    100%;
+
+  border:
+    0;
+
+  padding:
+    14px;
+
+  margin-top:
+    18px;
+
+  border-radius:
+    12px;
+
+  background:
+    #7955e8;
+
+  color:
+    white;
+
+  font-size:
+    16px;
+
+  font-weight:
+    bold;
+
+  cursor:
+    pointer;
+
+}
+
+
+.main-button:disabled {
+
+  opacity:
+    0.5;
+
+}
+
+
+.translate-button {
+
+  background:
+    #168f62;
+
+}
+
+
+.progress {
+
+  display:
+    none;
+
+  margin-top:
+    20px;
+
+}
+
+
+.progressText {
+
+  display:
+    flex;
+
+  justify-content:
+    space-between;
+
+  color:
+    #aaa;
+
+  font-size:
+    13px;
+
+  margin-bottom:
+    8px;
+
+}
+
+
+.progressBar {
+
+  height:
+    8px;
+
+  background:
+    #292934;
+
+  border-radius:
+    20px;
+
+  overflow:
+    hidden;
+
+}
+
+
+.progressFill {
+
+  height:
+    100%;
+
+  width:
+    0%;
+
+  background:
+    #8b5cf6;
+
+  transition:
+    0.2s;
+
+}
+
+
+.status {
+
+  margin-top:
+    15px;
+
+  padding:
+    12px;
+
+  background:
+    #191921;
+
+  border-radius:
+    10px;
+
+  color:
+    #aaa;
+
+  line-height:
+    1.7;
+
+  word-break:
+    break-word;
+
+}
+
+
+.result {
+
+  display:
+    none;
+
+  margin-top:
+    25px;
+
+}
+
+
+textarea {
+
+  width:
+    100%;
+
+  min-height:
+    180px;
+
+  background:
+    #0d0d13;
+
+  color:
+    white;
+
+  border:
+    1px solid #393944;
+
+  border-radius:
+    13px;
+
+  padding:
+    14px;
+
+  font-size:
+    17px;
+
+  line-height:
+    1.8;
+
+  resize:
+    vertical;
+
+}
+
+
+.translation {
+
+  margin-top:
+    20px;
+
+}
+
+
+.translation textarea {
+
+  border-color:
+    #168f62;
+
+}
+
+
+.hidden {
+
+  display:
+    none;
+
+}
+
+
+@media(max-width:600px) {
+
+  .settings {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+}
+
+</style>
+
 </head>
+
 
 <body>
 
-<header class="header">
 
-    <div class="logo">
-        <span class="logo-icon">漫</span>
-        <span>MangaTranslate <b>AI</b></span>
-    </div>
+<div class="container">
 
-    <button id="themeButton" class="theme-button">
-        ☀️
-    </button>
+
+<header>
+
+<div class="logo">
+
+MangaTranslate
+<span>AI</span>
+
+</div>
+
+
+<p class="subtitle">
+
+ترجمة المانغا والكوميكس
+
+</p>
 
 </header>
 
 
-<main class="container">
+<div class="card">
 
-    <section class="hero">
 
-        <div class="badge">
-            ✨ AI Manga Translator
-        </div>
+<!-- رفع الصورة -->
 
-        <h1>
-            ترجم المانغا
-            <span>داخل الصورة</span>
-        </h1>
+<label
+for="imageInput"
+class="upload"
+>
 
-        <p>
-            ارفع صفحة مانغا، اختر اللغة، ودع الذكاء الاصطناعي
-            يساعدك في الحصول على نسخة مترجمة.
-        </p>
+<div class="upload-icon">
+📖
+</div>
 
-    </section>
 
+<h2>
 
-    <section class="translator-card">
+اختر صورة مانغا أو كوميكس
 
-        <!-- Upload -->
+</h2>
 
-        <div id="uploadArea" class="upload-area">
 
-            <div class="upload-icon">
-                📤
-            </div>
+<p>
 
-            <h2>
-                ارفع صفحة المانغا
-            </h2>
+JPG / PNG / WEBP
 
-            <p>
-                PNG أو JPG أو WEBP
-            </p>
+</p>
 
-            <button id="uploadButton" class="primary-button">
-                اختيار صورة
-            </button>
 
-            <input
-                type="file"
-                id="imageInput"
-                accept="image/png,image/jpeg,image/webp"
-                hidden
-            >
+<div class="button">
 
-        </div>
+📤 اختيار الصورة
 
+</div>
 
-        <!-- Preview -->
+</label>
 
-        <div id="previewSection" class="preview-section hidden">
 
-            <div class="section-title">
-                <span>🖼️</span>
-                الصورة الأصلية
-            </div>
+<input
+id="imageInput"
+type="file"
+accept="image/*"
+>
 
-            <div class="image-container">
-                <img id="previewImage" alt="صورة المانغا">
-            </div>
 
-            <button id="removeImage" class="secondary-button">
-                حذف الصورة
-            </button>
+<!-- الصورة -->
 
-        </div>
+<div
+id="preview"
+class="preview hidden"
+>
 
+<h3>
+🖼️ الصورة
+</h3>
 
-        <!-- Settings -->
 
-        <div id="settings" class="settings hidden">
+<div class="image-container">
 
-            <div class="setting">
+<img
+id="previewImage"
+alt="Manga"
+>
 
-                <label for="sourceLanguage">
-                    اللغة الأصلية
-                </label>
+</div>
 
-                <select id="sourceLanguage">
+</div>
 
-                    <option value="ja">
-                        🇯🇵 اليابانية
-                    </option>
 
-                    <option value="en">
-                        🇺🇸 الإنجليزية
-                    </option>
+<!-- اللغات -->
 
-                    <option value="ko">
-                        🇰🇷 الكورية
-                    </option>
+<div
+id="settings"
+class="settings hidden"
+>
 
-                    <option value="zh">
-                        🇨🇳 الصينية
-                    </option>
 
-                </select>
+<div class="setting">
 
-            </div>
+<label>
 
+لغة النص
 
-            <div class="swap">
-                ↓
-            </div>
+</label>
 
 
-            <div class="setting">
+<select id="sourceLanguage">
 
-                <label for="targetLanguage">
-                    ترجمة إلى
-                </label>
+<option value="ja">
 
-                <select id="targetLanguage">
+🇯🇵 اليابانية
 
-                    <option value="ar">
-                        🇸🇦 العربية
-                    </option>
+</option>
 
-                    <option value="en">
-                        🇺🇸 الإنجليزية
-                    </option>
 
-                    <option value="fr">
-                        🇫🇷 الفرنسية
-                    </option>
+<option value="en">
 
-                </select>
+🇬🇧 الإنجليزية
 
-            </div>
+</option>
 
-        </div>
+</select>
 
+</div>
 
-        <!-- Translate -->
 
-        <button
-            id="translateButton"
-            class="translate-button hidden">
+<div class="setting">
 
-            ✨ ترجمة الصورة
+<label>
 
-        </button>
+ترجمة إلى
 
+</label>
 
-        <!-- Progress -->
 
-        <div id="progress" class="progress hidden">
+<select id="targetLanguage">
 
-            <div class="progress-header">
+<option value="ar">
 
-                <span id="progressText">
-                    جاري تحليل الصورة...
-                </span>
+🇸🇦 العربية
 
-                <span id="progressPercent">
-                    0%
-                </span>
+</option>
 
-            </div>
 
-            <div class="progress-bar">
+<option value="en">
 
-                <div
-                    id="progressFill"
-                    class="progress-fill">
-                </div>
+🇬🇧 الإنجليزية
 
-            </div>
+</option>
 
-        </div>
 
+<option value="fr">
 
-        <!-- Result -->
+🇫🇷 الفرنسية
 
-        <div id="resultSection" class="result-section hidden">
+</option>
 
-            <div class="section-title">
-                <span>✨</span>
-                النتيجة
-            </div>
+</select>
 
-            <div class="image-container">
+</div>
 
-                <img
-                    id="resultImage"
-                    alt="الصورة المترجمة">
+</div>
 
-            </div>
 
-            <button
-                id="downloadButton"
-                class="primary-button">
+<!-- OCR -->
 
-                📥 تحميل الصورة
+<button
+id="analyzeButton"
+class="main-button hidden"
+>
 
-            </button>
+🔍 استخراج النص
 
-        </div>
+</button>
 
-    </section>
 
+<!-- Progress -->
 
-    <section class="features">
+<div
+id="progress"
+class="progress"
+>
 
-        <div class="feature">
+<div class="progressText">
 
-            <div>🔍</div>
+<span id="progressStatus">
 
-            <h3>اكتشاف النص</h3>
+جاري التحضير...
 
-            <p>
-                التعرف على الكلام الموجود داخل الصفحة.
-            </p>
+</span>
 
-        </div>
 
+<span id="progressPercent">
 
-        <div class="feature">
+0%
 
-            <div>🌍</div>
+</span>
 
-            <h3>ترجمة متعددة اللغات</h3>
+</div>
 
-            <p>
-                اليابانية والكورية والصينية والإنجليزية وغيرها.
-            </p>
 
-        </div>
+<div class="progressBar">
 
+<div
+id="progressFill"
+class="progressFill"
+>
 
-        <div class="feature">
+</div>
 
-            <div>🎨</div>
+</div>
 
-            <h3>ترجمة داخل الصورة</h3>
+</div>
 
-            <p>
-                الهدف هو الحفاظ على شكل الصفحة ووضع الترجمة داخل الفقاعات.
-            </p>
 
-        </div>
+<!-- الحالة -->
 
-    </section>
+<div
+id="status"
+class="status hidden"
+>
 
-</main>
+</div>
 
 
-<footer>
+<!-- النتائج -->
 
-    <p>
-        MangaTranslate AI © 2026
-    </p>
+<div
+id="result"
+class="result"
+>
 
-    <p>
-        مشروع تجريبي لترجمة الصور.
-    </p>
 
-</footer>
+<h2>
 
+📝 النص المكتشف
 
-<script src="script.js"></script>
+</h2>
+
+
+<textarea
+id="originalText"
+placeholder="سيظهر النص هنا..."
+></textarea>
+
+
+<button
+id="translateButton"
+class="main-button translate-button"
+>
+
+🌐 ترجمة النص
+
+</button>
+
+
+<div
+id="translationBox"
+class="translation hidden"
+>
+
+
+<h2>
+
+✨ الترجمة
+
+</h2>
+
+
+<textarea
+id="translatedText"
+placeholder="ستظهر الترجمة هنا..."
+></textarea>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"
+></script>
+
+
+<script>
+
+
+/*
+=========================================
+العناصر
+=========================================
+*/
+
+const imageInput =
+  document.getElementById(
+    "imageInput"
+  );
+
+
+const preview =
+  document.getElementById(
+    "preview"
+  );
+
+
+const previewImage =
+  document.getElementById(
+    "previewImage"
+  );
+
+
+const settings =
+  document.getElementById(
+    "settings"
+  );
+
+
+const analyzeButton =
+  document.getElementById(
+    "analyzeButton"
+  );
+
+
+const translateButton =
+  document.getElementById(
+    "translateButton"
+  );
+
+
+const sourceLanguage =
+  document.getElementById(
+    "sourceLanguage"
+  );
+
+
+const targetLanguage =
+  document.getElementById(
+    "targetLanguage"
+  );
+
+
+const progress =
+  document.getElementById(
+    "progress"
+  );
+
+
+const progressStatus =
+  document.getElementById(
+    "progressStatus"
+  );
+
+
+const progressPercent =
+  document.getElementById(
+    "progressPercent"
+  );
+
+
+const progressFill =
+  document.getElementById(
+    "progressFill"
+  );
+
+
+const status =
+  document.getElementById(
+    "status"
+  );
+
+
+const result =
+  document.getElementById(
+    "result"
+  );
+
+
+const originalText =
+  document.getElementById(
+    "originalText"
+  );
+
+
+const translationBox =
+  document.getElementById(
+    "translationBox"
+  );
+
+
+const translatedText =
+  document.getElementById(
+    "translatedText"
+  );
+
+
+let selectedImage = null;
+
+
+/*
+=========================================
+اختيار الصورة
+=========================================
+*/
+
+imageInput.addEventListener(
+  "change",
+  function () {
+
+    const file =
+      this.files[0];
+
+
+    if (!file) {
+      return;
+    }
+
+
+    if (
+      !file.type.startsWith(
+        "image/"
+      )
+    ) {
+
+      alert(
+        "اختر صورة فقط."
+      );
+
+      return;
+
+    }
+
+
+    selectedImage = file;
+
+
+    previewImage.src =
+      URL.createObjectURL(
+        file
+      );
+
+
+    preview.classList.remove(
+      "hidden"
+    );
+
+
+    settings.classList.remove(
+      "hidden"
+    );
+
+
+    analyzeButton.classList.remove(
+      "hidden"
+    );
+
+
+    result.style.display =
+      "none";
+
+
+    translationBox.classList.add(
+      "hidden"
+    );
+
+
+    status.classList.add(
+      "hidden"
+    );
+
+  }
+);
+
+
+/*
+=========================================
+OCR
+=========================================
+*/
+
+analyzeButton.addEventListener(
+  "click",
+  async function () {
+
+    if (!selectedImage) {
+
+      alert(
+        "اختر صورة أولًا."
+      );
+
+      return;
+
+    }
+
+
+    analyzeButton.disabled =
+      true;
+
+
+    progress.style.display =
+      "block";
+
+
+    status.classList.remove(
+      "hidden"
+    );
+
+
+    progressStatus.textContent =
+      "جاري تشغيل OCR...";
+
+
+    progressPercent.textContent =
+      "0%";
+
+
+    progressFill.style.width =
+      "0%";
+
+
+    try {
+
+      const language =
+        sourceLanguage.value === "ja"
+          ? "jpn"
+          : "eng";
+
+
+      const worker =
+        await Tesseract.createWorker(
+          language,
+          1,
+          {
+
+            logger: function (
+              message
+            ) {
+
+              if (
+                message.status ===
+                "loading language traineddata"
+              ) {
+
+                progressStatus.textContent =
+                  "تحميل نموذج اللغة...";
+
+              }
+
+              else if (
+                message.status ===
+                "recognizing text"
+              ) {
+
+                progressStatus.textContent =
+                  "جاري قراءة النص...";
+
+              }
+
+              else {
+
+                progressStatus.textContent =
+                  message.status ||
+                  "جاري المعالجة...";
+
+              }
+
+
+              if (
+                typeof message.progress ===
+                "number"
+              ) {
+
+                const percent =
+                  Math.round(
+                    message.progress *
+                    100
+                  );
+
+
+                progressFill.style.width =
+                  percent + "%";
+
+
+                progressPercent.textContent =
+                  percent + "%";
+
+              }
+
+            }
+
+          }
+        );
+
+
+      const output =
+        await worker.recognize(
+          selectedImage
+        );
+
+
+      const text =
+        output.data.text ||
+        "";
+
+
+      originalText.value =
+        text.trim();
+
+
+      result.style.display =
+        "block";
+
+
+      if (text.trim()) {
+
+        status.textContent =
+          "✅ تم استخراج النص.";
+
+      }
+
+      else {
+
+        status.textContent =
+          "⚠️ لم يتم العثور على نص.";
+
+      }
+
+
+      progressFill.style.width =
+        "100%";
+
+
+      progressPercent.textContent =
+        "100%";
+
+
+      progressStatus.textContent =
+        "اكتمل الاستخراج.";
+
+
+      await worker.terminate();
+
+    }
+
+
+    catch (error) {
+
+      console.error(error);
+
+
+      status.textContent =
+        "❌ خطأ في OCR: " +
+        error.message;
+
+    }
+
+
+    finally {
+
+      analyzeButton.disabled =
+        false;
+
+    }
+
+  }
+);
+
+
+/*
+=========================================
+الترجمة
+=========================================
+*/
+
+translateButton.addEventListener(
+  "click",
+  async function () {
+
+    const text =
+      originalText.value.trim();
+
+
+    if (!text) {
+
+      alert(
+        "استخرج النص أولًا."
+      );
+
+      return;
+
+    }
+
+
+    translateButton.disabled =
+      true;
+
+
+    translationBox.classList.remove(
+      "hidden"
+    );
+
+
+    translatedText.value =
+      "جاري الترجمة...";
+
+
+    status.classList.remove(
+      "hidden"
+    );
+
+
+    status.textContent =
+      "🌐 جاري الاتصال بمحرك الترجمة...";
+
+
+    try {
+
+      /*
+      ================================
+      رابط Worker
+      ================================
+      */
+
+      const API_URL =
+        "https://manga-translator-api.ossamaelqabbab.workers.dev/translate";
+
+
+      const response =
+        await fetch(
+          API_URL,
+          {
+
+            method:
+              "POST",
+
+            headers:
+              {
+                "Content-Type":
+                  "application/json"
+              },
+
+            body:
+              JSON.stringify({
+
+                text:
+                  text,
+
+                source:
+                  sourceLanguage.value,
+
+                target:
+                  targetLanguage.value
+
+              })
+
+          }
+        );
+
+
+      /*
+      ================================
+      قراءة الرد حتى لو كان خطأ
+      ================================
+      */
+
+      const raw =
+        await response.text();
+
+
+      let data;
+
+
+      try {
+
+        data =
+          JSON.parse(raw);
+
+      }
+
+      catch {
+
+        throw new Error(
+          "الخادم لم يرجع JSON: " +
+          raw
+        );
+
+      }
+
+
+      /*
+      ================================
+      HTTP Error
+      ================================
+      */
+
+      if (!response.ok) {
+
+        throw new Error(
+
+          "HTTP " +
+          response.status +
+          " — " +
+          (
+            data.details ||
+            data.error ||
+            raw
+          )
+
+        );
+
+      }
+
+
+      /*
+      ================================
+      فشل الترجمة
+      ================================
+      */
+
+      if (!data.success) {
+
+        throw new Error(
+
+          data.details ||
+          data.error ||
+          "فشلت الترجمة."
+
+        );
+
+      }
+
+
+      /*
+      ================================
+      عرض الترجمة
+      ================================
+      */
+
+      translatedText.value =
+        data.translation ||
+        "";
+
+
+      status.textContent =
+        "✅ تمت الترجمة بنجاح.";
+
+
+    }
+
+
+    catch (error) {
+
+      console.error(
+        "Translation error:",
+        error
+      );
+
+
+      translatedText.value =
+        "";
+
+
+      status.textContent =
+        "❌ حدث خطأ في الترجمة: " +
+        error.message;
+
+    }
+
+
+    finally {
+
+      translateButton.disabled =
+        false;
+
+    }
+
+  }
+);
+
+</script>
+
 
 </body>
-  </html>
+
+    </html>
