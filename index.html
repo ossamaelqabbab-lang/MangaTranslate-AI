@@ -2,8 +2,11 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>MangaTranslate AI</title>
 
@@ -257,6 +260,7 @@ textarea {
 
 <div class="container">
 
+
 <header>
 
 <div class="logo">
@@ -273,7 +277,9 @@ MangaTranslate <span>AI</span>
 <div class="card">
 
 
-<!-- اختيار الصورة -->
+<!-- ================================
+     اختيار الصورة
+================================ -->
 
 <label
     for="imageInput"
@@ -306,7 +312,9 @@ JPG / PNG / WEBP
 >
 
 
-<!-- معاينة الصورة -->
+<!-- ================================
+     معاينة الصورة
+================================ -->
 
 <div
     id="preview"
@@ -329,7 +337,9 @@ JPG / PNG / WEBP
 </div>
 
 
-<!-- اللغات -->
+<!-- ================================
+     اختيار اللغات
+================================ -->
 
 <div
     id="settings"
@@ -386,11 +396,12 @@ JPG / PNG / WEBP
 
 </div>
 
-
 </div>
 
 
-<!-- زر استخراج النص -->
+<!-- ================================
+     استخراج النص
+================================ -->
 
 <button
     id="analyzeButton"
@@ -402,7 +413,9 @@ JPG / PNG / WEBP
 </button>
 
 
-<!-- التقدم -->
+<!-- ================================
+     التقدم
+================================ -->
 
 <div
     id="progress"
@@ -425,8 +438,7 @@ JPG / PNG / WEBP
 
 <div
     id="progressFill"
-    class="progressFill"
->
+    class="progressFill">
 </div>
 
 </div>
@@ -434,16 +446,19 @@ JPG / PNG / WEBP
 </div>
 
 
-<!-- رسالة الحالة -->
+<!-- ================================
+     الحالة
+================================ -->
 
 <div
     id="status"
-    class="status hidden"
->
+    class="status hidden">
 </div>
 
 
-<!-- النتيجة -->
+<!-- ================================
+     النتيجة
+================================ -->
 
 <div
     id="result"
@@ -486,13 +501,12 @@ JPG / PNG / WEBP
     placeholder="ستظهر الترجمة هنا..."
 ></textarea>
 
-
 </div>
 
 
 <div class="info">
 
-💡 الترجمة تتم بواسطة الذكاء الاصطناعي مباشرة من الموقع.
+💡 تم تحسين معالجة الصورة قبل OCR لمحاولة قراءة فقاعات الكلام والنصوص المتفرقة بشكل أفضل.
 
 </div>
 
@@ -505,12 +519,16 @@ JPG / PNG / WEBP
 </div>
 
 
-<!-- Puter AI -->
+<!-- ================================
+     Puter AI
+================================ -->
 
 <script src="https://js.puter.com/v2/"></script>
 
 
-<!-- Tesseract OCR -->
+<!-- ================================
+     Tesseract OCR
+================================ -->
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
@@ -585,16 +603,20 @@ imageInput.addEventListener(
     "change",
     function() {
 
-        const file = this.files[0];
+        const file =
+            this.files[0];
 
         if (!file) {
             return;
         }
 
+        if (
+            !file.type.startsWith("image/")
+        ) {
 
-        if (!file.type.startsWith("image/")) {
-
-            alert("الرجاء اختيار صورة فقط.");
+            alert(
+                "الرجاء اختيار صورة فقط."
+            );
 
             return;
         }
@@ -631,11 +653,9 @@ imageInput.addEventListener(
         );
 
 
-        originalText.value =
-            "";
+        originalText.value = "";
 
-        translatedText.value =
-            "";
+        translatedText.value = "";
 
 
         status.classList.add(
@@ -647,22 +667,379 @@ imageInput.addEventListener(
 
 
 /* ==========================================
-   OCR
+   تجهيز الصورة للـ OCR
+========================================== */
+
+function preprocessImage(file) {
+
+    return new Promise(
+        function(resolve, reject) {
+
+            const img =
+                new Image();
+
+            const url =
+                URL.createObjectURL(file);
+
+
+            img.onload =
+                function() {
+
+                    try {
+
+                        /*
+                        تكبير الصورة
+                        */
+
+                        const scale = 2;
+
+                        let width =
+                            img.naturalWidth *
+                            scale;
+
+                        let height =
+                            img.naturalHeight *
+                            scale;
+
+
+                        /*
+                        منع الصورة من أن تصبح
+                        ضخمة جدًا على الهاتف
+                        */
+
+                        const maxSize =
+                            5000;
+
+
+                        if (
+                            width > maxSize ||
+                            height > maxSize
+                        ) {
+
+                            const ratio =
+                                Math.min(
+                                    maxSize / width,
+                                    maxSize / height
+                                );
+
+                            width =
+                                Math.floor(
+                                    width * ratio
+                                );
+
+                            height =
+                                Math.floor(
+                                    height * ratio
+                                );
+
+                        }
+
+
+                        const canvas =
+                            document.createElement(
+                                "canvas"
+                            );
+
+
+                        canvas.width =
+                            width;
+
+                        canvas.height =
+                            height;
+
+
+                        const ctx =
+                            canvas.getContext(
+                                "2d",
+                                {
+                                    willReadFrequently:
+                                        true
+                                }
+                            );
+
+
+                        /*
+                        خلفية بيضاء
+                        */
+
+                        ctx.fillStyle =
+                            "#ffffff";
+
+                        ctx.fillRect(
+                            0,
+                            0,
+                            width,
+                            height
+                        );
+
+
+                        /*
+                        تحسين جودة الرسم
+                        */
+
+                        ctx.imageSmoothingEnabled =
+                            true;
+
+
+                        ctx.imageSmoothingQuality =
+                            "high";
+
+
+                        ctx.drawImage(
+                            img,
+                            0,
+                            0,
+                            width,
+                            height
+                        );
+
+
+                        /*
+                        قراءة البيكسلات
+                        */
+
+                        const imageData =
+                            ctx.getImageData(
+                                0,
+                                0,
+                                width,
+                                height
+                            );
+
+
+                        const data =
+                            imageData.data;
+
+
+                        /*
+                        تحويل إلى رمادي
+                        + زيادة التباين
+                        + Threshold
+                        */
+
+                        for (
+                            let i = 0;
+                            i < data.length;
+                            i += 4
+                        ) {
+
+                            const r =
+                                data[i];
+
+                            const g =
+                                data[i + 1];
+
+                            const b =
+                                data[i + 2];
+
+
+                            let gray =
+                                (
+                                    0.299 * r +
+                                    0.587 * g +
+                                    0.114 * b
+                                );
+
+
+                            /*
+                            زيادة التباين
+                            */
+
+                            gray =
+                                (
+                                    gray - 128
+                                ) * 1.35 +
+                                128;
+
+
+                            /*
+                            أبيض وأسود
+                            */
+
+                            const value =
+                                gray < 170
+                                    ? 0
+                                    : 255;
+
+
+                            data[i] =
+                                value;
+
+                            data[i + 1] =
+                                value;
+
+                            data[i + 2] =
+                                value;
+
+                        }
+
+
+                        ctx.putImageData(
+                            imageData,
+                            0,
+                            0
+                        );
+
+
+                        URL.revokeObjectURL(
+                            url
+                        );
+
+
+                        canvas.toBlob(
+                            function(blob) {
+
+                                if (!blob) {
+
+                                    reject(
+                                        new Error(
+                                            "تعذر تجهيز الصورة."
+                                        )
+                                    );
+
+                                    return;
+                                }
+
+
+                                resolve(blob);
+
+                            },
+                            "image/png",
+                            1
+                        );
+
+                    }
+
+
+                    catch(error) {
+
+                        URL.revokeObjectURL(
+                            url
+                        );
+
+                        reject(error);
+
+                    }
+
+                };
+
+
+            img.onerror =
+                function() {
+
+                    URL.revokeObjectURL(
+                        url
+                    );
+
+                    reject(
+                        new Error(
+                            "تعذر قراءة الصورة."
+                        )
+                    );
+
+                };
+
+
+            img.src =
+                url;
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   تنظيف النص الناتج
+========================================== */
+
+function cleanOCRText(text) {
+
+    if (!text) {
+        return "";
+    }
+
+
+    let cleaned =
+        text
+        .replace(/\r/g, "")
+        .replace(/[|]{2,}/g, " ")
+        .replace(/[_]{2,}/g, " ")
+        .replace(/[~`^]+/g, "")
+        .replace(/[ \t]+/g, " ")
+        .replace(/\n[ \t]+/g, "\n")
+        .replace(/[ \t]+\n/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+
+
+    /*
+    حذف الأسطر التي لا تحتوي
+    على أي حروف أو أرقام
+    */
+
+    const lines =
+        cleaned.split("\n");
+
+
+    const usefulLines =
+        lines.filter(
+            function(line) {
+
+                const value =
+                    line.trim();
+
+                if (!value) {
+                    return false;
+                }
+
+
+                /*
+                تجاهل الأسطر التي هي مجرد
+                رموز OCR
+                */
+
+                if (
+                    /^[^A-Za-zÀ-ÿ\u3040-\u30ff\u4e00-\u9fff\u0600-\u06ff0-9]+$/
+                    .test(value)
+                ) {
+
+                    return false;
+
+                }
+
+
+                return true;
+
+            }
+        );
+
+
+    return usefulLines.join("\n");
+}
+
+
+/* ==========================================
+   استخراج النص
 ========================================== */
 
 analyzeButton.addEventListener(
     "click",
     async function() {
 
+
         if (!selectedImage) {
 
-            alert("اختر صورة أولًا.");
+            alert(
+                "اختر صورة أولًا."
+            );
 
             return;
         }
 
 
-        analyzeButton.disabled = true;
+        analyzeButton.disabled =
+            true;
 
 
         progress.style.display =
@@ -683,11 +1060,37 @@ analyzeButton.addEventListener(
 
 
         progressStatus.textContent =
-            "جاري تجهيز OCR...";
+            "جاري تحسين الصورة...";
 
 
         try {
 
+
+            /*
+            تجهيز الصورة
+            */
+
+            const processedImage =
+                await preprocessImage(
+                    selectedImage
+                );
+
+
+            progressFill.style.width =
+                "15%";
+
+
+            progressPercent.textContent =
+                "15%";
+
+
+            progressStatus.textContent =
+                "جاري تحميل OCR...";
+
+
+            /*
+            لغة OCR
+            */
 
             let ocrLanguage;
 
@@ -696,7 +1099,8 @@ analyzeButton.addEventListener(
                 sourceLanguage.value === "ja"
             ) {
 
-                ocrLanguage = "jpn";
+                ocrLanguage =
+                    "jpn";
 
             }
 
@@ -704,16 +1108,22 @@ analyzeButton.addEventListener(
                 sourceLanguage.value === "id"
             ) {
 
-                ocrLanguage = "ind";
+                ocrLanguage =
+                    "ind";
 
             }
 
             else {
 
-                ocrLanguage = "eng";
+                ocrLanguage =
+                    "eng";
 
             }
 
+
+            /*
+            إنشاء Worker
+            */
 
             const worker =
                 await Tesseract.createWorker(
@@ -721,82 +1131,126 @@ analyzeButton.addEventListener(
                     1,
                     {
 
-                        logger: function(message) {
+                        logger:
+                            function(message) {
 
 
-                            if (
-                                message.status ===
-                                "loading language traineddata"
-                            ) {
+                                if (
+                                    message.status ===
+                                    "loading language traineddata"
+                                ) {
 
-                                progressStatus.textContent =
-                                    "تحميل نموذج اللغة...";
+                                    progressStatus.textContent =
+                                        "تحميل نموذج اللغة...";
+
+                                }
+
+
+                                else if (
+                                    message.status ===
+                                    "recognizing text"
+                                ) {
+
+                                    progressStatus.textContent =
+                                        "جاري قراءة النص...";
+
+                                }
+
+
+                                else {
+
+                                    progressStatus.textContent =
+                                        message.status ||
+                                        "جاري المعالجة...";
+
+                                }
+
+
+                                if (
+                                    typeof message.progress ===
+                                    "number"
+                                ) {
+
+                                    const p =
+                                        Math.round(
+                                            message.progress *
+                                            100
+                                        );
+
+
+                                    /*
+                                    OCR يبدأ من 15%
+                                    */
+
+                                    const percent =
+                                        15 +
+                                        Math.round(
+                                            p * 0.85
+                                        );
+
+
+                                    progressFill.style.width =
+                                        percent + "%";
+
+
+                                    progressPercent.textContent =
+                                        percent + "%";
+
+                                }
 
                             }
-
-
-                            else if (
-                                message.status ===
-                                "recognizing text"
-                            ) {
-
-                                progressStatus.textContent =
-                                    "جاري قراءة النص...";
-
-                            }
-
-
-                            else {
-
-                                progressStatus.textContent =
-                                    message.status ||
-                                    "جاري المعالجة...";
-
-                            }
-
-
-                            if (
-                                typeof message.progress ===
-                                "number"
-                            ) {
-
-                                const percent =
-                                    Math.round(
-                                        message.progress * 100
-                                    );
-
-
-                                progressFill.style.width =
-                                    percent + "%";
-
-
-                                progressPercent.textContent =
-                                    percent + "%";
-
-                            }
-
-                        }
 
                     }
                 );
 
 
+            /*
+            وضع OCR للنصوص المتفرقة
+            */
+
+            try {
+
+                await worker.setParameters({
+
+                    tessedit_pageseg_mode:
+                        "11",
+
+                    preserve_interword_spaces:
+                        "1"
+
+                });
+
+            }
+
+            catch(parameterError) {
+
+                console.log(
+                    "OCR parameter notice:",
+                    parameterError
+                );
+
+            }
+
+
+            /*
+            تشغيل OCR
+            */
+
             const output =
                 await worker.recognize(
-                    selectedImage
+                    processedImage
                 );
 
 
-            const text =
-                output?.data?.text || "";
+            const rawText =
+                output?.data?.text ||
+                "";
 
 
             const cleanText =
-                text
-                .replace(/\r/g, "")
-                .replace(/[ \t]+/g, " ")
-                .replace(/\n{3,}/g, "\n\n")
-                .trim();
+                cleanOCRText(
+                    rawText
+                );
 
 
             originalText.value =
@@ -822,14 +1276,14 @@ analyzeButton.addEventListener(
             if (cleanText) {
 
                 status.textContent =
-                    "✅ تم استخراج النص. يمكنك الآن ترجمته.";
+                    "✅ تم استخراج النص. يمكنك تعديله يدويًا قبل الترجمة.";
 
             }
 
             else {
 
                 status.textContent =
-                    "⚠️ لم يتم العثور على نص واضح.";
+                    "⚠️ لم يتم العثور على نص واضح في الصورة.";
 
             }
 
@@ -848,10 +1302,10 @@ analyzeButton.addEventListener(
 
 
             status.textContent =
-                "❌ حدث خطأ في استخراج النص: " +
+                "❌ حدث خطأ في OCR: " +
                 (
-                    error.message ||
-                    error
+                    error?.message ||
+                    String(error)
                 );
 
         }
@@ -945,7 +1399,8 @@ function splitText(text, maxLength) {
                 chunks.push(current);
             }
 
-            current = part;
+            current =
+                part;
 
         }
 
@@ -985,12 +1440,15 @@ translateButton.addEventListener(
         }
 
 
-        /* التأكد من Puter */
+        /*
+        التأكد من Puter
+        */
 
         if (
             typeof puter === "undefined" ||
             !puter.ai ||
-            typeof puter.ai.chat !== "function"
+            typeof puter.ai.chat !==
+            "function"
         ) {
 
             status.classList.remove(
@@ -999,7 +1457,7 @@ translateButton.addEventListener(
 
 
             status.textContent =
-                "❌ لم يتم تحميل خدمة الذكاء الاصطناعي. تحقق من الإنترنت وأعد تحميل الصفحة.";
+                "❌ لم يتم تحميل الذكاء الاصطناعي. تحقق من الإنترنت وأعد تحميل الصفحة.";
 
             return;
 
@@ -1066,24 +1524,28 @@ translateButton.addEventListener(
 
                 const prompt = `
 
-أنت مترجم محترف متخصص في ترجمة المانغا والكوميكس.
+أنت مترجم محترف متخصص في المانغا والكوميكس.
 
 ترجم النص التالي من ${source} إلى ${target}.
 
-قواعد مهمة:
+قواعد الترجمة:
 
-1. أخرج الترجمة فقط.
-2. لا تشرح الترجمة.
-3. لا تضف مقدمة أو خاتمة.
-4. حافظ على معنى الحوار.
-5. اجعل الترجمة طبيعية ومناسبة للمانغا.
-6. حافظ على ترتيب الجمل.
-7. لا تخترع معلومات غير موجودة.
-8. حافظ على أسماء الشخصيات.
-9. حافظ على علامات الاستفهام والتعجب.
-10. ترجم الأصوات والانفعالات بشكل طبيعي.
-11. لا تحذف الجمل.
-12. إذا كان OCR يحتوي على أخطاء بسيطة، حاول فهم الكلمة من السياق.
+- أخرج الترجمة فقط.
+- لا تشرح.
+- لا تضف مقدمة.
+- لا تضف خاتمة.
+- حافظ على معنى الحوار.
+- اجعل الترجمة طبيعية ومناسبة للمانغا.
+- حافظ على ترتيب الجمل.
+- لا تخترع معلومات.
+- حافظ على أسماء الشخصيات.
+- حافظ على علامات الاستفهام والتعجب.
+- ترجم الأصوات والانفعالات بشكل طبيعي.
+- لا تحذف الجمل.
+- إذا كان OCR يحتوي على أخطاء واضحة، حاول تصحيحها اعتمادًا على السياق.
+- لا تذكر أن النص يحتوي على أخطاء OCR.
+- لا تقل إنك لا تستطيع الترجمة.
+- حاول ترجمة النص بأفضل شكل ممكن.
 
 النص:
 
@@ -1093,21 +1555,17 @@ ${chunks[i]}
 
 
                 /*
-                ====================================
-                استدعاء الذكاء الاصطناعي
-
                 مهم:
-                لا توجد temperature
-                لا توجد max_tokens
-                لا توجد normalize
-                ====================================
+                لا temperature
+                ولا max_tokens
                 */
 
                 const response =
                     await puter.ai.chat(
                         prompt,
                         {
-                            model: "gpt-5-nano"
+                            model:
+                                "gpt-5-nano"
                         }
                     );
 
@@ -1151,7 +1609,8 @@ ${chunks[i]}
                         response.message.content
                         .map(
                             item =>
-                                item?.text || ""
+                                item?.text ||
+                                ""
                         )
                         .join("");
 
@@ -1177,7 +1636,7 @@ ${chunks[i]}
                 if (!translated) {
 
                     throw new Error(
-                        "لم يرجع الذكاء الاصطناعي الترجمة."
+                        "لم يرجع الذكاء الاصطناعي ترجمة."
                     );
 
                 }
@@ -1198,7 +1657,6 @@ ${chunks[i]}
 
             status.textContent =
                 "✅ تمت الترجمة بنجاح.";
-
 
         }
 
