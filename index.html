@@ -6,106 +6,1306 @@
 <meta charset="UTF-8">
 
 <meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
 >
 
-<title>
-MangaTranslate AI
-</title>
-
+<title>MangaTranslate AI</title>
 
 <style>
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
-
 
 body {
-
-  margin: 0;
-
-  background:
-    #09090d;
-
-  color:
-    white;
-
-  font-family:
-    Arial,
-    sans-serif;
-
+    margin: 0;
+    background: #09090d;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
 }
-
 
 .container {
-
-  width: 94%;
-
-  max-width: 900px;
-
-  margin: auto;
-
-  padding:
-    25px 0 50px;
-
+    width: 94%;
+    max-width: 900px;
+    margin: auto;
+    padding: 25px 0 50px;
 }
-
 
 header {
-
-  text-align: center;
-
-  margin-bottom: 25px;
-
+    text-align: center;
+    margin-bottom: 25px;
 }
-
 
 .logo {
-
-  font-size: 30px;
-
-  font-weight: bold;
-
+    font-size: 30px;
+    font-weight: bold;
 }
-
 
 .logo span {
-
-  color:
-    #9b6cff;
-
+    color: #9b6cff;
 }
-
 
 .subtitle {
-
-  color:
-    #999;
-
-  line-height:
-    1.7;
-
+    color: #999;
+    line-height: 1.8;
 }
-
 
 .card {
+    background: #15151d;
+    border: 1px solid #30303c;
+    border-radius: 20px;
+    padding: 18px;
+}
 
-  background:
-    #15151d;
+.upload {
+    display: block;
+    text-align: center;
+    padding: 40px 15px;
+    border: 2px dashed #444;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
-  border:
-    1px solid #30303c;
+.upload:hover {
+    border-color: #9b6cff;
+}
 
-  border-radius:
-    20px;
+.upload-icon {
+    font-size: 50px;
+}
 
-  padding:
-    18px;
+.upload h2 {
+    margin: 10px 0;
+}
+
+.upload p {
+    color: #999;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.button {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 13px 22px;
+    border-radius: 12px;
+    background: #7955e8;
+    color: white;
+    font-weight: bold;
+}
+
+.preview {
+    margin-top: 25px;
+}
+
+.image-container {
+    width: 100%;
+    background: #000;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+#previewImage {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.settings {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.setting {
+    background: #101017;
+    padding: 14px;
+    border-radius: 12px;
+}
+
+.setting label {
+    display: block;
+    color: #aaa;
+    margin-bottom: 8px;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #393944;
+    background: #191921;
+    color: white;
+    font-size: 16px;
+}
+
+.main-button {
+    width: 100%;
+    border: 0;
+    padding: 14px;
+    margin-top: 18px;
+    border-radius: 12px;
+    background: #7955e8;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.main-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.translate-button {
+    background: #168f62;
+}
+
+.progress {
+    display: none;
+    margin-top: 20px;
+}
+
+.progressText {
+    display: flex;
+    justify-content: space-between;
+    color: #aaa;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.progressBar {
+    height: 8px;
+    background: #292934;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    width: 0%;
+    background: #8b5cf6;
+    transition: 0.2s;
+}
+
+.status {
+    margin-top: 15px;
+    padding: 12px;
+    background: #191921;
+    border-radius: 10px;
+    color: #aaa;
+    line-height: 1.7;
+    word-break: break-word;
+}
+
+.result {
+    display: none;
+    margin-top: 25px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 180px;
+    background: #0d0d13;
+    color: white;
+    border: 1px solid #393944;
+    border-radius: 13px;
+    padding: 14px;
+    font-size: 17px;
+    line-height: 1.8;
+    resize: vertical;
+}
+
+.translation {
+    margin-top: 20px;
+}
+
+.translation textarea {
+    border-color: #168f62;
+}
+
+.hidden {
+    display: none;
+}
+
+.info {
+    margin-top: 15px;
+    padding: 12px;
+    background: #101017;
+    border-radius: 10px;
+    color: #888;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+
+    .settings {
+        grid-template-columns: 1fr;
+    }
+
+    .logo {
+        font-size: 26px;
+    }
 
 }
 
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<header>
+
+<div class="logo">
+MangaTranslate <span>AI</span>
+</div>
+
+<p class="subtitle">
+ترجمة المانغا والكوميكس بالذكاء الاصطناعي
+</p>
+
+</header>
+
+
+<div class="card">
+
+
+<!-- ==================================
+     رفع الصورة
+================================== -->
+
+<label
+    for="imageInput"
+    class="upload"
+>
+
+<div class="upload-icon">
+📖
+</div>
+
+<h2>
+اختر صورة مانغا أو كوميكس
+</h2>
+
+<p>
+JPG / PNG / WEBP
+</p>
+
+<div class="button">
+📤 اختيار الصورة
+</div>
+
+</label>
+
+
+<input
+    id="imageInput"
+    type="file"
+    accept="image/*"
+>
+
+
+<!-- ==================================
+     معاينة الصورة
+================================== -->
+
+<div
+    id="preview"
+    class="preview hidden"
+>
+
+<h3>
+🖼️ الصورة المختارة
+</h3>
+
+<div class="image-container">
+
+<img
+    id="previewImage"
+    alt="Manga preview"
+>
+
+</div>
+
+</div>
+
+
+<!-- ==================================
+     اختيار اللغات
+================================== -->
+
+<div
+    id="settings"
+    class="settings hidden"
+>
+
+
+<div class="setting">
+
+<label>
+لغة النص الأصلي
+</label>
+
+<select id="sourceLanguage">
+
+<option value="ja">
+🇯🇵 اليابانية
+</option>
+
+<option value="en">
+🇬🇧 الإنجليزية
+</option>
+
+</select>
+
+</div>
+
+
+<div class="setting">
+
+<label>
+الترجمة إلى
+</label>
+
+<select id="targetLanguage">
+
+<option value="ar">
+🇸🇦 العربية
+</option>
+
+<option value="en">
+🇬🇧 الإنجليزية
+</option>
+
+<option value="fr">
+🇫🇷 الفرنسية
+</option>
+
+</select>
+
+</div>
+
+
+</div>
+
+
+<!-- ==================================
+     زر OCR
+================================== -->
+
+<button
+    id="analyzeButton"
+    class="main-button hidden"
+>
+
+🔍 استخراج النص من الصورة
+
+</button>
+
+
+<!-- ==================================
+     التقدم
+================================== -->
+
+<div
+    id="progress"
+    class="progress"
+>
+
+<div class="progressText">
+
+<span id="progressStatus">
+جاري التحضير...
+</span>
+
+<span id="progressPercent">
+0%
+</span>
+
+</div>
+
+<div class="progressBar">
+
+<div
+    id="progressFill"
+    class="progressFill"
+>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ==================================
+     الحالة
+================================== -->
+
+<div
+    id="status"
+    class="status hidden"
+>
+</div>
+
+
+<!-- ==================================
+     النتائج
+================================== -->
+
+<div
+    id="result"
+    class="result"
+>
+
+
+<h2>
+📝 النص المكتشف
+</h2>
+
+
+<textarea
+    id="originalText"
+    placeholder="سيظهر النص المستخرج من الصورة هنا..."
+></textarea>
+
+
+<button
+    id="translateButton"
+    class="main-button translate-button"
+>
+
+🌐 ترجمة النص
+
+</button>
+
+
+<!-- ==================================
+     الترجمة
+================================== -->
+
+<div
+    id="translationBox"
+    class="translation hidden"
+>
+
+<h2>
+✨ الترجمة
+</h2>
+
+<textarea
+    id="translatedText"
+    placeholder="ستظهر الترجمة هنا..."
+></textarea>
+
+</div>
+
+
+<div class="info">
+
+💡 الترجمة تتم بواسطة الذكاء الاصطناعي
+مباشرة من الموقع.
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<!-- ==================================
+     Puter AI
+================================== -->
+
+<script src="https://js.puter.com/v2/"></script>
+
+
+<!-- ==================================
+     Tesseract OCR
+================================== -->
+
+<script
+src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"
+></script>
+
+
+<script>
+
+
+/* =====================================
+   العناصر
+===================================== */
+
+const imageInput =
+    document.getElementById(
+        "imageInput"
+    );
+
+const preview =
+    document.getElementById(
+        "preview"
+    );
+
+const previewImage =
+    document.getElementById(
+        "previewImage"
+    );
+
+const settings =
+    document.getElementById(
+        "settings"
+    );
+
+const analyzeButton =
+    document.getElementById(
+        "analyzeButton"
+    );
+
+const translateButton =
+    document.getElementById(
+        "translateButton"
+    );
+
+const sourceLanguage =
+    document.getElementById(
+        "sourceLanguage"
+    );
+
+const targetLanguage =
+    document.getElementById(
+        "targetLanguage"
+    );
+
+const progress =
+    document.getElementById(
+        "progress"
+    );
+
+const progressStatus =
+    document.getElementById(
+        "progressStatus"
+    );
+
+const progressPercent =
+    document.getElementById(
+        "progressPercent"
+    );
+
+const progressFill =
+    document.getElementById(
+        "progressFill"
+    );
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+const result =
+    document.getElementById(
+        "result"
+    );
+
+const originalText =
+    document.getElementById(
+        "originalText"
+    );
+
+const translationBox =
+    document.getElementById(
+        "translationBox"
+    );
+
+const translatedText =
+    document.getElementById(
+        "translatedText"
+    );
+
+
+let selectedImage = null;
+
+
+/* =====================================
+   اختيار الصورة
+===================================== */
+
+imageInput.addEventListener(
+    "change",
+    function () {
+
+        const file =
+            this.files[0];
+
+
+        if (!file) {
+            return;
+        }
+
+
+        if (
+            !file.type.startsWith(
+                "image/"
+            )
+        ) {
+
+            alert(
+                "الرجاء اختيار صورة فقط."
+            );
+
+            return;
+        }
+
+
+        selectedImage = file;
+
+
+        const imageURL =
+            URL.createObjectURL(
+                file
+            );
+
+
+        previewImage.src =
+            imageURL;
+
+
+        preview.classList.remove(
+            "hidden"
+        );
+
+
+        settings.classList.remove(
+            "hidden"
+        );
+
+
+        analyzeButton.classList.remove(
+            "hidden"
+        );
+
+
+        result.style.display =
+            "none";
+
+
+        translationBox.classList.add(
+            "hidden"
+        );
+
+
+        translatedText.value =
+            "";
+
+
+        originalText.value =
+            "";
+
+
+        status.classList.add(
+            "hidden"
+        );
+
+    }
+);
+
+
+/* =====================================
+   تغيير لغة OCR
+===================================== */
+
+sourceLanguage.addEventListener(
+    "change",
+    function () {
+
+        /*
+         إذا غير المستخدم اللغة
+         نمسح النص القديم حتى لا
+         يختلط مع اللغة الجديدة
+        */
+
+        originalText.value = "";
+
+        translatedText.value = "";
+
+        translationBox.classList.add(
+            "hidden"
+        );
+
+    }
+);
+
+
+/* =====================================
+   OCR
+===================================== */
+
+analyzeButton.addEventListener(
+    "click",
+    async function () {
+
+        if (!selectedImage) {
+
+            alert(
+                "اختر صورة أولًا."
+            );
+
+            return;
+        }
+
+
+        analyzeButton.disabled =
+            true;
+
+
+        progress.style.display =
+            "block";
+
+
+        status.classList.remove(
+            "hidden"
+        );
+
+
+        progressFill.style.width =
+            "0%";
+
+
+        progressPercent.textContent =
+            "0%";
+
+
+        progressStatus.textContent =
+            "جاري تجهيز OCR...";
+
+
+        try {
+
+
+            /*
+            =================================
+            تحديد لغة OCR
+            =================================
+            */
+
+            const ocrLanguage =
+                sourceLanguage.value === "ja"
+                    ? "jpn"
+                    : "eng";
+
+
+            /*
+            =================================
+            إنشاء Worker
+            =================================
+            */
+
+            const worker =
+                await Tesseract.createWorker(
+                    ocrLanguage,
+                    1,
+                    {
+
+                        logger:
+                            function(message) {
+
+
+                                if (
+                                    message.status ===
+                                    "loading language traineddata"
+                                ) {
+
+                                    progressStatus.textContent =
+                                        "تحميل نموذج اللغة...";
+
+                                }
+
+
+                                else if (
+                                    message.status ===
+                                    "recognizing text"
+                                ) {
+
+                                    progressStatus.textContent =
+                                        "جاري قراءة النص...";
+
+                                }
+
+
+                                else {
+
+                                    progressStatus.textContent =
+                                        message.status ||
+                                        "جاري المعالجة...";
+
+                                }
+
+
+                                if (
+                                    typeof message.progress ===
+                                    "number"
+                                ) {
+
+                                    const percent =
+                                        Math.round(
+                                            message.progress *
+                                            100
+                                        );
+
+
+                                    progressFill.style.width =
+                                        percent + "%";
+
+
+                                    progressPercent.textContent =
+                                        percent + "%";
+
+                                }
+
+                            }
+
+                    }
+                );
+
+
+            /*
+            =================================
+            قراءة الصورة
+            =================================
+            */
+
+            const output =
+                await worker.recognize(
+                    selectedImage
+                );
+
+
+            /*
+            =================================
+            النص
+            =================================
+            */
+
+            const text =
+                output?.data?.text ||
+                "";
+
+
+            originalText.value =
+                text.trim();
+
+
+            /*
+            =================================
+            إظهار النتيجة
+            =================================
+            */
+
+            result.style.display =
+                "block";
+
+
+            progressFill.style.width =
+                "100%";
+
+
+            progressPercent.textContent =
+                "100%";
+
+
+            progressStatus.textContent =
+                "اكتمل استخراج النص.";
+
+
+            if (text.trim()) {
+
+                status.textContent =
+                    "✅ تم استخراج النص بنجاح.";
+
+            }
+
+            else {
+
+                status.textContent =
+                    "⚠️ لم يتم العثور على نص واضح.";
+
+            }
+
+
+            await worker.terminate();
+
+        }
+
+
+        catch (error) {
+
+            console.error(
+                "OCR error:",
+                error
+            );
+
+
+            status.textContent =
+                "❌ حدث خطأ في OCR: " +
+                (
+                    error.message ||
+                    error
+                );
+
+        }
+
+
+        finally {
+
+            analyzeButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================
+   استخراج رد Puter
+===================================== */
+
+function extractPuterText(
+    response
+) {
+
+    if (!response) {
+        return "";
+    }
+
+
+    /*
+    إذا كان الرد نصًا
+    */
+
+    if (
+        typeof response ===
+        "string"
+    ) {
+
+        return response;
+    }
+
+
+    /*
+    OpenAI-style response
+    */
+
+    if (
+        response.message &&
+        typeof response.message.content ===
+        "string"
+    ) {
+
+        return response.message.content;
+    }
+
+
+    /*
+    Content array
+    */
+
+    if (
+        response.message &&
+        Array.isArray(
+            response.message.content
+        )
+    ) {
+
+        return response.message.content
+            .map(
+                item =>
+                    item?.text || ""
+            )
+            .join("");
+
+    }
+
+
+    /*
+    محاولة أخيرة
+    */
+
+    if (
+        response.content &&
+        typeof response.content ===
+        "string"
+    ) {
+
+        return response.content;
+    }
+
+
+    return "";
+
+}
+
+
+/* =====================================
+   الترجمة
+===================================== */
+
+translateButton.addEventListener(
+    "click",
+    async function () {
+
+
+        const text =
+            originalText.value.trim();
+
+
+        if (!text) {
+
+            alert(
+                "استخرج النص من الصورة أولًا."
+            );
+
+            return;
+        }
+
+
+        /*
+        =================================
+        التأكد من Puter
+        =================================
+        */
+
+        if (
+            typeof puter ===
+            "undefined" ||
+            !puter.ai
+        ) {
+
+            status.classList.remove(
+                "hidden"
+            );
+
+
+            status.textContent =
+                "❌ لم يتم تحميل Puter AI. تأكد من اتصال الإنترنت ثم أعد تحميل الصفحة.";
+
+            return;
+        }
+
+
+        translateButton.disabled =
+            true;
+
+
+        translationBox.classList.remove(
+            "hidden"
+        );
+
+
+        translatedText.value =
+            "جاري الترجمة بالذكاء الاصطناعي...";
+
+
+        status.classList.remove(
+            "hidden"
+        );
+
+
+        status.textContent =
+            "🌐 جاري الترجمة...";
+
+
+        try {
+
+
+            /*
+            =================================
+            أسماء اللغات
+            =================================
+            */
+
+            const sourceName =
+                sourceLanguage.value === "ja"
+                    ? "اليابانية"
+                    : "الإنجليزية";
+
+
+            const targetName =
+                targetLanguage.value === "ar"
+                    ? "العربية"
+                    : targetLanguage.value === "en"
+                        ? "الإنجليزية"
+                        : "الفرنسية";
+
+
+            /*
+            =================================
+            Prompt
+            =================================
+            */
+
+            const prompt = `
+
+أنت مترجم محترف ومتخصص في ترجمة المانغا والمانهوا والكوميكس.
+
+المطلوب:
+ترجمة النص التالي من ${sourceName} إلى ${targetName}.
+
+قواعد الترجمة:
+
+- أخرج الترجمة فقط.
+- لا تضف شرحًا.
+- لا تضف مقدمة.
+- لا تضف خاتمة.
+- حافظ على معنى الحوار.
+- اجعل الترجمة طبيعية وسهلة القراءة.
+- استخدم أسلوبًا مناسبًا للمانغا.
+- حافظ على ترتيب الأسطر قدر الإمكان.
+- حافظ على علامات الاستفهام والتعجب.
+- حافظ على أسماء الشخصيات كما هي عندما تكون أسماء علم.
+- لا تخترع أي معلومات غير موجودة.
+- إذا وجدت أصواتًا أو تعبيرات مثل آه، همم، هاه، أو غيرها، ترجمها بأسلوب طبيعي.
+- لا تحذف الجمل.
+
+النص المراد ترجمته:
+
+${text}
+
+`;
+
+
+            /*
+            =================================
+            استدعاء Puter AI
+            =================================
+            */
+
+            const response =
+                await puter.ai.chat(
+
+                    prompt,
+
+                    {
+
+                        /*
+                        نموذج سريع وخفيف
+                        */
+
+                        model:
+                            "gpt-5-nano",
+
+                        temperature:
+                            0.2,
+
+                        max_tokens:
+                            4000,
+
+                        normalize:
+                            true
+
+                    }
+
+                );
+
+
+            /*
+            =================================
+            استخراج الترجمة
+            =================================
+            */
+
+            const translation =
+                extractPuterText(
+                    response
+                ).trim();
+
+
+            /*
+            =================================
+            التحقق
+            =================================
+            */
+
+            if (!translation) {
+
+                throw new Error(
+                    "لم يرجع الذكاء الاصطناعي نص الترجمة."
+                );
+
+            }
+
+
+            /*
+            =================================
+            عرض الترجمة
+            =================================
+            */
+
+            translatedText.value =
+                translation;
+
+
+            status.textContent =
+                "✅ تمت الترجمة بنجاح.";
+
+        }
+
+
+        catch (error) {
+
+            console.error(
+                "Puter AI translation error:",
+                error
+            );
+
+
+            translatedText.value =
+                "";
+
+
+            let message =
+                error?.message ||
+                String(error);
+
+
+            status.textContent =
+                "❌ حدث خطأ في الترجمة: " +
+                message;
+
+        }
+
+
+        finally {
+
+            translateButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+  </html>
 
 .upload {
 
