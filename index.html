@@ -5,10 +5,8 @@
 
 <meta charset="UTF-8">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>MangaTranslate AI</title>
 
@@ -20,8 +18,8 @@
 
 body {
     margin: 0;
-    background: #09090d;
-    color: #ffffff;
+    background: #0b0b12;
+    color: #fff;
     font-family: Arial, sans-serif;
 }
 
@@ -43,7 +41,7 @@ header {
 }
 
 .logo span {
-    color: #9b6cff;
+    color: #8b5cf6;
 }
 
 .subtitle {
@@ -53,7 +51,7 @@ header {
 
 .card {
     background: #15151d;
-    border: 1px solid #30303c;
+    border: 1px solid #30303d;
     border-radius: 20px;
     padding: 18px;
 }
@@ -65,11 +63,10 @@ header {
     border: 2px dashed #444;
     border-radius: 18px;
     cursor: pointer;
-    transition: 0.2s;
 }
 
 .upload:hover {
-    border-color: #9b6cff;
+    border-color: #8b5cf6;
 }
 
 .upload-icon {
@@ -94,7 +91,6 @@ input[type="file"] {
     padding: 13px 22px;
     border-radius: 12px;
     background: #7955e8;
-    color: white;
     font-weight: bold;
 }
 
@@ -106,6 +102,1176 @@ input[type="file"] {
     width: 100%;
     background: #000;
     border-radius: 14px;
+    overflow: hidden;
+}
+
+#previewImage {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.settings {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.setting {
+    background: #101017;
+    padding: 14px;
+    border-radius: 12px;
+}
+
+.setting label {
+    display: block;
+    color: #aaa;
+    margin-bottom: 8px;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #393944;
+    background: #191921;
+    color: white;
+    font-size: 16px;
+}
+
+.main-button {
+    width: 100%;
+    border: 0;
+    padding: 14px;
+    margin-top: 18px;
+    border-radius: 12px;
+    background: #7955e8;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.main-button:disabled {
+    opacity: 0.5;
+}
+
+.translate-button {
+    background: #168f62;
+}
+
+.progress {
+    display: none;
+    margin-top: 20px;
+}
+
+.progressText {
+    display: flex;
+    justify-content: space-between;
+    color: #aaa;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.progressBar {
+    height: 8px;
+    background: #292934;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    width: 0%;
+    background: #8b5cf6;
+    transition: 0.2s;
+}
+
+.status {
+    margin-top: 15px;
+    padding: 12px;
+    background: #191921;
+    border-radius: 10px;
+    color: #aaa;
+    line-height: 1.7;
+    word-break: break-word;
+}
+
+.result {
+    display: none;
+    margin-top: 25px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 180px;
+    background: #0d0d13;
+    color: white;
+    border: 1px solid #393944;
+    border-radius: 13px;
+    padding: 14px;
+    font-size: 17px;
+    line-height: 1.8;
+    resize: vertical;
+}
+
+.translation {
+    margin-top: 20px;
+}
+
+.translation textarea {
+    border-color: #168f62;
+}
+
+.hidden {
+    display: none;
+}
+
+.info {
+    margin-top: 15px;
+    padding: 12px;
+    background: #101017;
+    border-radius: 10px;
+    color: #888;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+@media(max-width:600px) {
+
+    .settings {
+        grid-template-columns: 1fr;
+    }
+
+    .logo {
+        font-size: 26px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<header>
+
+<div class="logo">
+MangaTranslate <span>AI</span>
+</div>
+
+<p class="subtitle">
+ترجمة المانغا والكوميكس بالذكاء الاصطناعي
+</p>
+
+</header>
+
+
+<div class="card">
+
+
+<!-- رفع الصورة -->
+
+<label
+    for="imageInput"
+    class="upload"
+>
+
+<div class="upload-icon">
+📖
+</div>
+
+<h2>
+اختر صورة مانغا أو كوميكس
+</h2>
+
+<p>
+JPG / PNG / WEBP
+</p>
+
+<div class="button">
+📤 اختيار الصورة
+</div>
+
+</label>
+
+
+<input
+    id="imageInput"
+    type="file"
+    accept="image/*"
+>
+
+
+<!-- معاينة الصورة -->
+
+<div
+    id="preview"
+    class="preview hidden"
+>
+
+<h3>
+🖼️ الصورة
+</h3>
+
+<div class="image-container">
+
+<img
+    id="previewImage"
+    alt="Manga"
+>
+
+</div>
+
+</div>
+
+
+<!-- اللغات -->
+
+<div
+    id="settings"
+    class="settings hidden"
+>
+
+
+<div class="setting">
+
+<label>
+لغة النص الأصلي
+</label>
+
+<select id="sourceLanguage">
+
+<option value="ja">
+🇯🇵 اليابانية
+</option>
+
+<option value="en">
+🇬🇧 الإنجليزية
+</option>
+
+<option value="id">
+🇮🇩 الإندونيسية
+</option>
+
+</select>
+
+</div>
+
+
+<div class="setting">
+
+<label>
+الترجمة إلى
+</label>
+
+<select id="targetLanguage">
+
+<option value="ar">
+🇸🇦 العربية
+</option>
+
+<option value="en">
+🇬🇧 الإنجليزية
+</option>
+
+<option value="fr">
+🇫🇷 الفرنسية
+</option>
+
+</select>
+
+</div>
+
+
+</div>
+
+
+<!-- استخراج النص -->
+
+<button
+    id="analyzeButton"
+    class="main-button hidden"
+>
+
+🔍 استخراج النص
+
+</button>
+
+
+<!-- التقدم -->
+
+<div
+    id="progress"
+    class="progress"
+>
+
+<div class="progressText">
+
+<span id="progressStatus">
+جاري التحضير...
+</span>
+
+<span id="progressPercent">
+0%
+</span>
+
+</div>
+
+<div class="progressBar">
+
+<div
+    id="progressFill"
+    class="progressFill"
+>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- الحالة -->
+
+<div
+    id="status"
+    class="status hidden"
+>
+</div>
+
+
+<!-- النتيجة -->
+
+<div
+    id="result"
+    class="result"
+>
+
+<h2>
+📝 النص المكتشف
+</h2>
+
+
+<textarea
+    id="originalText"
+    placeholder="سيظهر النص المستخرج هنا..."
+></textarea>
+
+
+<button
+    id="translateButton"
+    class="main-button translate-button"
+>
+
+🌐 ترجمة النص
+
+</button>
+
+
+<div
+    id="translationBox"
+    class="translation hidden"
+>
+
+<h2>
+✨ الترجمة
+</h2>
+
+
+<textarea
+    id="translatedText"
+    placeholder="ستظهر الترجمة هنا..."
+></textarea>
+
+
+</div>
+
+
+<div class="info">
+
+💡 بعد نجاح الترجمة النصية سننتقل إلى المرحلة التالية:
+وضع الترجمة داخل صورة المانغا نفسها.
+
+</div>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- ==================================
+     Puter AI
+================================== -->
+
+<script src="https://js.puter.com/v2/"></script>
+
+
+<!-- ==================================
+     Tesseract OCR
+================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+
+<script>
+
+
+/* =====================================
+   العناصر
+===================================== */
+
+const imageInput =
+    document.getElementById("imageInput");
+
+const preview =
+    document.getElementById("preview");
+
+const previewImage =
+    document.getElementById("previewImage");
+
+const settings =
+    document.getElementById("settings");
+
+const analyzeButton =
+    document.getElementById("analyzeButton");
+
+const translateButton =
+    document.getElementById("translateButton");
+
+const sourceLanguage =
+    document.getElementById("sourceLanguage");
+
+const targetLanguage =
+    document.getElementById("targetLanguage");
+
+const progress =
+    document.getElementById("progress");
+
+const progressStatus =
+    document.getElementById("progressStatus");
+
+const progressPercent =
+    document.getElementById("progressPercent");
+
+const progressFill =
+    document.getElementById("progressFill");
+
+const status =
+    document.getElementById("status");
+
+const result =
+    document.getElementById("result");
+
+const originalText =
+    document.getElementById("originalText");
+
+const translationBox =
+    document.getElementById("translationBox");
+
+const translatedText =
+    document.getElementById("translatedText");
+
+
+let selectedImage = null;
+
+
+/* =====================================
+   اختيار الصورة
+===================================== */
+
+imageInput.addEventListener(
+    "change",
+    function() {
+
+        const file =
+            this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (
+            !file.type.startsWith("image/")
+        ) {
+
+            alert(
+                "الرجاء اختيار صورة فقط."
+            );
+
+            return;
+        }
+
+        selectedImage = file;
+
+        previewImage.src =
+            URL.createObjectURL(file);
+
+        preview.classList.remove(
+            "hidden"
+        );
+
+        settings.classList.remove(
+            "hidden"
+        );
+
+        analyzeButton.classList.remove(
+            "hidden"
+        );
+
+        result.style.display =
+            "none";
+
+        translationBox.classList.add(
+            "hidden"
+        );
+
+        originalText.value = "";
+
+        translatedText.value = "";
+
+        status.classList.add(
+            "hidden"
+        );
+
+    }
+);
+
+
+/* =====================================
+   OCR
+===================================== */
+
+analyzeButton.addEventListener(
+    "click",
+    async function() {
+
+        if (!selectedImage) {
+
+            alert(
+                "اختر صورة أولًا."
+            );
+
+            return;
+        }
+
+        analyzeButton.disabled = true;
+
+        progress.style.display =
+            "block";
+
+        status.classList.remove(
+            "hidden"
+        );
+
+        progressFill.style.width =
+            "0%";
+
+        progressPercent.textContent =
+            "0%";
+
+        progressStatus.textContent =
+            "جاري تجهيز OCR...";
+
+
+        try {
+
+            let ocrLanguage;
+
+            if (
+                sourceLanguage.value === "ja"
+            ) {
+
+                ocrLanguage = "jpn";
+
+            }
+
+            else if (
+                sourceLanguage.value === "id"
+            ) {
+
+                ocrLanguage = "ind";
+
+            }
+
+            else {
+
+                ocrLanguage = "eng";
+
+            }
+
+
+            const worker =
+                await Tesseract.createWorker(
+                    ocrLanguage,
+                    1,
+                    {
+
+                        logger: function(message) {
+
+                            if (
+                                message.status ===
+                                "loading language traineddata"
+                            ) {
+
+                                progressStatus.textContent =
+                                    "تحميل نموذج اللغة...";
+
+                            }
+
+                            else if (
+                                message.status ===
+                                "recognizing text"
+                            ) {
+
+                                progressStatus.textContent =
+                                    "جاري قراءة النص...";
+
+                            }
+
+                            else {
+
+                                progressStatus.textContent =
+                                    message.status ||
+                                    "جاري المعالجة...";
+
+                            }
+
+
+                            if (
+                                typeof message.progress ===
+                                "number"
+                            ) {
+
+                                const percent =
+                                    Math.round(
+                                        message.progress * 100
+                                    );
+
+                                progressFill.style.width =
+                                    percent + "%";
+
+                                progressPercent.textContent =
+                                    percent + "%";
+
+                            }
+
+                        }
+
+                    }
+                );
+
+
+            const output =
+                await worker.recognize(
+                    selectedImage
+                );
+
+
+            const text =
+                output?.data?.text || "";
+
+
+            /*
+            تنظيف بسيط للنص
+            */
+
+            const cleanText =
+                text
+                .replace(/\r/g, "")
+                .replace(/[ \t]+/g, " ")
+                .replace(/\n{3,}/g, "\n\n")
+                .trim();
+
+
+            originalText.value =
+                cleanText;
+
+
+            result.style.display =
+                "block";
+
+
+            progressFill.style.width =
+                "100%";
+
+            progressPercent.textContent =
+                "100%";
+
+            progressStatus.textContent =
+                "اكتمل الاستخراج.";
+
+
+            if (cleanText) {
+
+                status.textContent =
+                    "✅ تم استخراج النص. راجعه قبل الترجمة إذا كان OCR غير واضح.";
+
+            }
+
+            else {
+
+                status.textContent =
+                    "⚠️ لم يتم العثور على نص.";
+
+            }
+
+
+            await worker.terminate();
+
+        }
+
+
+        catch(error) {
+
+            console.error(
+                "OCR Error:",
+                error
+            );
+
+            status.textContent =
+                "❌ حدث خطأ في استخراج النص: " +
+                (
+                    error.message ||
+                    error
+                );
+
+        }
+
+
+        finally {
+
+            analyzeButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =====================================
+   تقسيم النص الطويل
+===================================== */
+
+function splitText(text, maxLength = 2500) {
+
+    const paragraphs =
+        text.split(/\n+/);
+
+    const chunks = [];
+
+    let current = "";
+
+
+    for (
+        const paragraph of paragraphs
+    ) {
+
+        const part =
+            paragraph.trim();
+
+        if (!part) {
+            continue;
+        }
+
+
+        if (
+            (current.length + part.length + 1)
+            <= maxLength
+        ) {
+
+            current =
+                current
+                ? current + "\n" + part
+                : part;
+
+        }
+
+        else {
+
+            if (current) {
+
+                chunks.push(current);
+
+            }
+
+            current = part;
+
+        }
+
+    }
+
+
+    if (current) {
+        chunks.push(current);
+    }
+
+
+    /*
+    إذا كان هناك سطر ضخم جدًا
+    */
+
+    const finalChunks = [];
+
+
+    for (
+        const chunk of chunks
+    ) {
+
+        if (
+            chunk.length <= maxLength
+        ) {
+
+            finalChunks.push(chunk);
+
+        }
+
+        else {
+
+            for (
+                let i = 0;
+                i < chunk.length;
+                i += maxLength
+            ) {
+
+                finalChunks.push(
+                    chunk.substring(
+                        i,
+                        i + maxLength
+                    )
+                );
+
+            }
+
+        }
+
+    }
+
+
+    return finalChunks;
+
+}
+
+
+/* =====================================
+   أسماء اللغات
+===================================== */
+
+function languageName(code) {
+
+    if (code === "ja") {
+        return "اليابانية";
+    }
+
+    if (code === "en") {
+        return "الإنجليزية";
+    }
+
+    if (code === "id") {
+        return "الإندونيسية";
+    }
+
+    if (code === "ar") {
+        return "العربية";
+    }
+
+    if (code === "fr") {
+        return "الفرنسية";
+    }
+
+    return code;
+
+}
+
+
+/* =====================================
+   الترجمة
+===================================== */
+
+translateButton.addEventListener(
+    "click",
+    async function() {
+
+        const text =
+            originalText.value.trim();
+
+
+        if (!text) {
+
+            alert(
+                "استخرج النص أولًا."
+            );
+
+            return;
+        }
+
+
+        /*
+        التأكد من تحميل Puter
+        */
+
+        if (
+            typeof puter === "undefined" ||
+            !puter.ai ||
+            typeof puter.ai.chat !== "function"
+        ) {
+
+            status.classList.remove(
+                "hidden"
+            );
+
+            status.textContent =
+                "❌ لم يتم تحميل خدمة الترجمة. تأكد من الإنترنت ثم أعد تحميل الصفحة.";
+
+            return;
+
+        }
+
+
+        translateButton.disabled =
+            true;
+
+
+        translationBox.classList.remove(
+            "hidden"
+        );
+
+
+        translatedText.value =
+            "جاري الترجمة...";
+
+
+        status.classList.remove(
+            "hidden"
+        );
+
+
+        const source =
+            languageName(
+                sourceLanguage.value
+            );
+
+
+        const target =
+            languageName(
+                targetLanguage.value
+            );
+
+
+        try {
+
+
+            /*
+            تقسيم النص الطويل
+            */
+
+            const chunks =
+                splitText(
+                    text,
+                    2500
+                );
+
+
+            const results = [];
+
+
+            for (
+                let i = 0;
+                i < chunks.length;
+                i++
+            ) {
+
+
+                status.textContent =
+                    "🌐 جاري ترجمة الجزء " +
+                    (i + 1) +
+                    " من " +
+                    chunks.length +
+                    "...";
+
+
+                const prompt = `
+
+أنت مترجم محترف للمانغا والمانهوا والكوميكس.
+
+ترجم النص التالي من ${source} إلى ${target}.
+
+قواعد مهمة:
+
+- أخرج الترجمة فقط.
+- لا تشرح.
+- لا تضف مقدمة.
+- لا تضف خاتمة.
+- حافظ على معنى الحوار.
+- اجعل اللغة طبيعية ومناسبة للمانغا.
+- حافظ على ترتيب الجمل.
+- لا تخترع أحداثًا أو معلومات.
+- حافظ على أسماء الشخصيات كأسماء علم.
+- حافظ على علامات التعجب والاستفهام.
+- ترجم الأصوات والانفعالات بطريقة طبيعية.
+- لا تحذف أي جملة.
+- إذا كان النص غير واضح بسبب OCR، حاول إعادة بناء الكلمة من السياق دون اختراع معلومات جديدة.
+
+النص:
+
+${chunks[i]}
+
+`;
+
+
+                /*
+                استدعاء Puter AI
+                */
+
+                const response =
+                    await puter.ai.chat(
+                        prompt
+                    );
+
+
+                let translated = "";
+
+
+                /*
+                استخراج النص
+                */
+
+                if (
+                    typeof response === "string"
+                ) {
+
+                    translated =
+                        response;
+
+                }
+
+                else if (
+                    response &&
+                    response.message &&
+                    typeof response.message.content ===
+                    "string"
+                ) {
+
+                    translated =
+                        response.message.content;
+
+                }
+
+                else if (
+                    response &&
+                    response.message &&
+                    Array.isArray(
+                        response.message.content
+                    )
+                ) {
+
+                    translated =
+                        response.message.content
+                        .map(
+                            item =>
+                                item?.text || ""
+                        )
+                        .join("");
+
+                }
+
+                else if (
+                    response &&
+                    typeof response.content ===
+                    "string"
+                ) {
+
+                    translated =
+                        response.content;
+
+                }
+
+
+                translated =
+                    translated.trim();
+
+
+                if (!translated) {
+
+                    throw new Error(
+                        "لم يرجع الذكاء الاصطناعي ترجمة للجزء " +
+                        (i + 1)
+                    );
+
+                }
+
+
+                results.push(
+                    translated
+                );
+
+
+                /*
+                عرض النتيجة تدريجيًا
+                */
+
+                translatedText.value =
+                    results.join("\n\n");
+
+            }
+
+
+            status.textContent =
+                "✅ تمت الترجمة بنجاح.";
+
+
+        }
+
+
+        catch(error) {
+
+            console.error(
+                "Translation Error:",
+                error
+            );
+
+
+            translatedText.value =
+                "";
+
+
+            status.textContent =
+                "❌ حدث خطأ في الترجمة: " +
+                (
+                    error?.message ||
+                    String(error)
+                );
+
+        }
+
+
+        finally {
+
+            translateButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>    border-radius: 14px;
     overflow: hidden;
 }
 
