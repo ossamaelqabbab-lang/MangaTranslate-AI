@@ -2,7 +2,6 @@
 <html lang="ar" dir="rtl">
 
 <head>
-
 <meta charset="UTF-8">
 
 <meta name="viewport"
@@ -18,26 +17,23 @@
 
 body {
     margin: 0;
-    background: #0b0b12;
-    color: white;
+    background: #0d0d14;
+    color: #fff;
     font-family: Arial, sans-serif;
 }
 
 .container {
     width: 94%;
-    max-width: 900px;
+    max-width: 850px;
     margin: auto;
     padding: 25px 0 50px;
 }
 
-header {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
 .logo {
+    text-align: center;
     font-size: 30px;
     font-weight: bold;
+    margin-bottom: 8px;
 }
 
 .logo span {
@@ -45,8 +41,9 @@ header {
 }
 
 .subtitle {
-    color: #999;
-    line-height: 1.8;
+    text-align: center;
+    color: #888;
+    margin-bottom: 25px;
 }
 
 .card {
@@ -66,7 +63,7 @@ header {
 }
 
 .upload:hover {
-    border-color: #9b6cff;
+    border-color: #8b5cf6;
 }
 
 .upload-icon {
@@ -78,19 +75,19 @@ header {
 }
 
 .upload p {
-    color: #999;
+    color: #888;
 }
 
 input[type="file"] {
     display: none;
 }
 
-.button {
+.upload-button {
     display: inline-block;
-    margin-top: 12px;
-    padding: 13px 22px;
-    border-radius: 12px;
     background: #7955e8;
+    padding: 14px 24px;
+    border-radius: 12px;
+    margin-top: 10px;
     font-weight: bold;
 }
 
@@ -98,10 +95,10 @@ input[type="file"] {
     margin-top: 25px;
 }
 
-.image-container {
+.image-box {
     width: 100%;
     background: #000;
-    border-radius: 14px;
+    border-radius: 15px;
     overflow: hidden;
 }
 
@@ -121,7 +118,7 @@ input[type="file"] {
 .setting {
     background: #101017;
     padding: 14px;
-    border-radius: 12px;
+    border-radius: 13px;
 }
 
 .setting label {
@@ -132,25 +129,25 @@ input[type="file"] {
 
 select {
     width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #393944;
+    padding: 14px;
     background: #191921;
-    color: white;
+    border: 1px solid #393944;
+    border-radius: 11px;
+    color: #fff;
     font-size: 16px;
 }
 
 .main-button {
     width: 100%;
     border: 0;
-    padding: 14px;
     margin-top: 18px;
-    border-radius: 12px;
-    background: #7955e8;
-    color: white;
-    font-size: 16px;
+    padding: 15px;
+    border-radius: 13px;
+    color: #fff;
+    font-size: 17px;
     font-weight: bold;
     cursor: pointer;
+    background: #7955e8;
 }
 
 .main-button:disabled {
@@ -159,7 +156,7 @@ select {
 }
 
 .translate-button {
-    background: #168f62;
+    background: #169967;
 }
 
 .progress {
@@ -167,7 +164,7 @@ select {
     margin-top: 20px;
 }
 
-.progressText {
+.progress-top {
     display: flex;
     justify-content: space-between;
     color: #aaa;
@@ -175,27 +172,27 @@ select {
     margin-bottom: 8px;
 }
 
-.progressBar {
+.progress-bar {
     height: 8px;
     background: #292934;
     border-radius: 20px;
     overflow: hidden;
 }
 
-.progressFill {
-    height: 100%;
+.progress-fill {
     width: 0%;
+    height: 100%;
     background: #8b5cf6;
-    transition: 0.2s;
+    transition: width .3s;
 }
 
 .status {
     margin-top: 15px;
-    padding: 12px;
-    background: #191921;
-    border-radius: 10px;
+    padding: 14px;
+    border-radius: 11px;
+    background: #101017;
     color: #aaa;
-    line-height: 1.7;
+    line-height: 1.8;
     word-break: break-word;
 }
 
@@ -206,37 +203,38 @@ select {
 
 textarea {
     width: 100%;
-    min-height: 180px;
-    background: #0d0d13;
-    color: white;
+    min-height: 200px;
+    padding: 15px;
+    background: #0b0b11;
+    color: #fff;
     border: 1px solid #393944;
-    border-radius: 13px;
-    padding: 14px;
+    border-radius: 14px;
     font-size: 17px;
-    line-height: 1.8;
+    line-height: 1.9;
     resize: vertical;
+    direction: auto;
 }
 
-.translation {
-    margin-top: 20px;
+.translation-box {
+    margin-top: 22px;
 }
 
-.translation textarea {
-    border-color: #168f62;
-}
-
-.hidden {
-    display: none;
+.translation-box textarea {
+    border-color: #169967;
 }
 
 .info {
     margin-top: 15px;
-    padding: 12px;
+    padding: 13px;
     background: #101017;
-    border-radius: 10px;
-    color: #888;
+    border-radius: 11px;
+    color: #777;
     font-size: 13px;
-    line-height: 1.7;
+    line-height: 1.8;
+}
+
+.hidden {
+    display: none !important;
 }
 
 @media(max-width:600px) {
@@ -260,285 +258,250 @@ textarea {
 
 <div class="container">
 
+    <div class="logo">
+        MangaTranslate <span>AI</span>
+    </div>
 
-<header>
+    <div class="subtitle">
+        ترجمة المانغا والكوميكس بالذكاء الاصطناعي
+    </div>
 
-<div class="logo">
-MangaTranslate <span>AI</span>
-</div>
 
-<p class="subtitle">
-ترجمة المانغا والكوميكس بالذكاء الاصطناعي
-</p>
+    <div class="card">
 
-</header>
 
+        <!-- اختيار الصورة -->
 
-<div class="card">
+        <label
+            class="upload"
+            for="imageInput"
+        >
 
+            <div class="upload-icon">
+                📖
+            </div>
 
-<!-- ================================
-     اختيار الصورة
-================================ -->
+            <h2>
+                اختر صورة مانغا أو كوميكس
+            </h2>
 
-<label
-    for="imageInput"
-    class="upload"
->
+            <p>
+                JPG / PNG / WEBP
+            </p>
 
-<div class="upload-icon">
-📖
-</div>
+            <div class="upload-button">
+                📤 اختيار الصورة
+            </div>
 
-<h2>
-اختر صورة مانغا أو كوميكس
-</h2>
+        </label>
 
-<p>
-JPG / PNG / WEBP
-</p>
 
-<div class="button">
-📤 اختيار الصورة
-</div>
+        <input
+            id="imageInput"
+            type="file"
+            accept="image/*"
+        >
 
-</label>
 
+        <!-- معاينة الصورة -->
 
-<input
-    id="imageInput"
-    type="file"
-    accept="image/*"
->
+        <div
+            id="preview"
+            class="preview hidden"
+        >
 
+            <h3>
+                🖼️ الصورة
+            </h3>
 
-<!-- ================================
-     معاينة الصورة
-================================ -->
+            <div class="image-box">
 
-<div
-    id="preview"
-    class="preview hidden"
->
+                <img
+                    id="previewImage"
+                    alt="Manga"
+                >
 
-<h3>
-🖼️ الصورة
-</h3>
+            </div>
 
-<div class="image-container">
+        </div>
 
-<img
-    id="previewImage"
-    alt="Manga"
->
 
-</div>
+        <!-- اختيار اللغات -->
 
-</div>
+        <div
+            id="settings"
+            class="settings hidden"
+        >
 
+            <div class="setting">
 
-<!-- ================================
-     اختيار اللغات
-================================ -->
+                <label>
+                    لغة النص الأصلي
+                </label>
 
-<div
-    id="settings"
-    class="settings hidden"
->
+                <select id="sourceLanguage">
 
+                    <option value="ja">
+                        🇯🇵 اليابانية
+                    </option>
 
-<div class="setting">
+                    <option value="en">
+                        🇬🇧 الإنجليزية
+                    </option>
 
-<label>
-لغة النص الأصلي
-</label>
+                    <option value="id">
+                        🇮🇩 الإندونيسية
+                    </option>
 
-<select id="sourceLanguage">
+                </select>
 
-<option value="ja">
-🇯🇵 اليابانية
-</option>
+            </div>
 
-<option value="en">
-🇬🇧 الإنجليزية
-</option>
 
-<option value="id">
-🇮🇩 الإندونيسية
-</option>
+            <div class="setting">
 
-</select>
+                <label>
+                    الترجمة إلى
+                </label>
 
-</div>
+                <select id="targetLanguage">
 
+                    <option value="ar">
+                        🇸🇦 العربية
+                    </option>
 
-<div class="setting">
+                    <option value="en">
+                        🇬🇧 الإنجليزية
+                    </option>
 
-<label>
-الترجمة إلى
-</label>
+                    <option value="fr">
+                        🇫🇷 الفرنسية
+                    </option>
 
-<select id="targetLanguage">
+                </select>
 
-<option value="ar">
-🇸🇦 العربية
-</option>
+            </div>
 
-<option value="en">
-🇬🇧 الإنجليزية
-</option>
+        </div>
 
-<option value="fr">
-🇫🇷 الفرنسية
-</option>
 
-</select>
+        <!-- زر تحليل الصورة -->
 
-</div>
+        <button
+            id="analyzeButton"
+            class="main-button hidden"
+        >
+            🔍 قراءة النص من الصورة
+        </button>
 
-</div>
 
+        <!-- التقدم -->
 
-<!-- ================================
-     استخراج النص
-================================ -->
+        <div
+            id="progress"
+            class="progress"
+        >
 
-<button
-    id="analyzeButton"
-    class="main-button hidden"
->
+            <div class="progress-top">
 
-🔍 استخراج النص من الصورة
+                <span id="progressStatus">
+                    جاري التحضير...
+                </span>
 
-</button>
+                <span id="progressPercent">
+                    0%
+                </span>
 
+            </div>
 
-<!-- ================================
-     التقدم
-================================ -->
+            <div class="progress-bar">
 
-<div
-    id="progress"
-    class="progress"
->
+                <div
+                    id="progressFill"
+                    class="progress-fill"
+                ></div>
 
-<div class="progressText">
+            </div>
 
-<span id="progressStatus">
-جاري التحضير...
-</span>
+        </div>
 
-<span id="progressPercent">
-0%
-</span>
 
-</div>
+        <!-- الحالة -->
 
-<div class="progressBar">
+        <div
+            id="status"
+            class="status hidden"
+        ></div>
 
-<div
-    id="progressFill"
-    class="progressFill">
-</div>
 
-</div>
+        <!-- النص -->
 
-</div>
+        <div
+            id="result"
+            class="result"
+        >
 
+            <h2>
+                📝 النص المكتشف
+            </h2>
 
-<!-- ================================
-     الحالة
-================================ -->
+            <textarea
+                id="originalText"
+                placeholder="سيظهر النص الموجود في فقاعات الكلام هنا..."
+            ></textarea>
 
-<div
-    id="status"
-    class="status hidden">
-</div>
 
+            <button
+                id="translateButton"
+                class="main-button translate-button"
+            >
+                🌐 ترجمة النص
+            </button>
 
-<!-- ================================
-     النتيجة
-================================ -->
 
-<div
-    id="result"
-    class="result"
->
+            <div
+                id="translationBox"
+                class="translation-box hidden"
+            >
 
-<h2>
-📝 النص المكتشف
-</h2>
+                <h2>
+                    ✨ الترجمة
+                </h2>
 
+                <textarea
+                    id="translatedText"
+                    placeholder="ستظهر الترجمة هنا..."
+                ></textarea>
 
-<textarea
-    id="originalText"
-    placeholder="سيظهر النص المستخرج هنا..."
-></textarea>
+            </div>
 
 
-<button
-    id="translateButton"
-    class="main-button translate-button"
->
+            <div class="info">
 
-🌐 ترجمة النص
+                💡 هذه النسخة لا تستخدم Tesseract.
+                يتم إرسال الصورة مباشرة إلى نموذج ذكاء اصطناعي قادر على فهم الصور وقراءة النص داخل فقاعات المانغا.
 
-</button>
+            </div>
 
+        </div>
 
-<div
-    id="translationBox"
-    class="translation hidden"
->
 
-<h2>
-✨ الترجمة
-</h2>
-
-
-<textarea
-    id="translatedText"
-    placeholder="ستظهر الترجمة هنا..."
-></textarea>
+    </div>
 
 </div>
 
 
-<div class="info">
-
-💡 تم تحسين معالجة الصورة قبل OCR لمحاولة قراءة فقاعات الكلام والنصوص المتفرقة بشكل أفضل.
-
-</div>
-
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- ================================
-     Puter AI
-================================ -->
+<!-- Puter AI -->
 
 <script src="https://js.puter.com/v2/"></script>
-
-
-<!-- ================================
-     Tesseract OCR
-================================ -->
-
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 
 <script>
 
 
-/* ==========================================
+/* =========================================
    العناصر
-========================================== */
+========================================= */
 
 const imageInput =
     document.getElementById("imageInput");
@@ -595,9 +558,9 @@ const translatedText =
 let selectedImage = null;
 
 
-/* ==========================================
+/* =========================================
    اختيار الصورة
-========================================== */
+========================================= */
 
 imageInput.addEventListener(
     "change",
@@ -609,6 +572,7 @@ imageInput.addEventListener(
         if (!file) {
             return;
         }
+
 
         if (
             !file.type.startsWith("image/")
@@ -653,9 +617,11 @@ imageInput.addEventListener(
         );
 
 
-        originalText.value = "";
+        originalText.value =
+            "";
 
-        translatedText.value = "";
+        translatedText.value =
+            "";
 
 
         status.classList.add(
@@ -666,362 +632,60 @@ imageInput.addEventListener(
 );
 
 
-/* ==========================================
-   تجهيز الصورة للـ OCR
-========================================== */
-
-function preprocessImage(file) {
-
-    return new Promise(
-        function(resolve, reject) {
-
-            const img =
-                new Image();
-
-            const url =
-                URL.createObjectURL(file);
-
-
-            img.onload =
-                function() {
-
-                    try {
-
-                        /*
-                        تكبير الصورة
-                        */
-
-                        const scale = 2;
-
-                        let width =
-                            img.naturalWidth *
-                            scale;
-
-                        let height =
-                            img.naturalHeight *
-                            scale;
-
-
-                        /*
-                        منع الصورة من أن تصبح
-                        ضخمة جدًا على الهاتف
-                        */
-
-                        const maxSize =
-                            5000;
-
-
-                        if (
-                            width > maxSize ||
-                            height > maxSize
-                        ) {
-
-                            const ratio =
-                                Math.min(
-                                    maxSize / width,
-                                    maxSize / height
-                                );
-
-                            width =
-                                Math.floor(
-                                    width * ratio
-                                );
-
-                            height =
-                                Math.floor(
-                                    height * ratio
-                                );
-
-                        }
-
-
-                        const canvas =
-                            document.createElement(
-                                "canvas"
-                            );
-
-
-                        canvas.width =
-                            width;
-
-                        canvas.height =
-                            height;
-
-
-                        const ctx =
-                            canvas.getContext(
-                                "2d",
-                                {
-                                    willReadFrequently:
-                                        true
-                                }
-                            );
-
-
-                        /*
-                        خلفية بيضاء
-                        */
-
-                        ctx.fillStyle =
-                            "#ffffff";
-
-                        ctx.fillRect(
-                            0,
-                            0,
-                            width,
-                            height
-                        );
-
-
-                        /*
-                        تحسين جودة الرسم
-                        */
-
-                        ctx.imageSmoothingEnabled =
-                            true;
-
-
-                        ctx.imageSmoothingQuality =
-                            "high";
-
-
-                        ctx.drawImage(
-                            img,
-                            0,
-                            0,
-                            width,
-                            height
-                        );
-
-
-                        /*
-                        قراءة البيكسلات
-                        */
-
-                        const imageData =
-                            ctx.getImageData(
-                                0,
-                                0,
-                                width,
-                                height
-                            );
-
-
-                        const data =
-                            imageData.data;
-
-
-                        /*
-                        تحويل إلى رمادي
-                        + زيادة التباين
-                        + Threshold
-                        */
-
-                        for (
-                            let i = 0;
-                            i < data.length;
-                            i += 4
-                        ) {
-
-                            const r =
-                                data[i];
-
-                            const g =
-                                data[i + 1];
-
-                            const b =
-                                data[i + 2];
-
-
-                            let gray =
-                                (
-                                    0.299 * r +
-                                    0.587 * g +
-                                    0.114 * b
-                                );
-
-
-                            /*
-                            زيادة التباين
-                            */
-
-                            gray =
-                                (
-                                    gray - 128
-                                ) * 1.35 +
-                                128;
-
-
-                            /*
-                            أبيض وأسود
-                            */
-
-                            const value =
-                                gray < 170
-                                    ? 0
-                                    : 255;
-
-
-                            data[i] =
-                                value;
-
-                            data[i + 1] =
-                                value;
-
-                            data[i + 2] =
-                                value;
-
-                        }
-
-
-                        ctx.putImageData(
-                            imageData,
-                            0,
-                            0
-                        );
-
-
-                        URL.revokeObjectURL(
-                            url
-                        );
-
-
-                        canvas.toBlob(
-                            function(blob) {
-
-                                if (!blob) {
-
-                                    reject(
-                                        new Error(
-                                            "تعذر تجهيز الصورة."
-                                        )
-                                    );
-
-                                    return;
-                                }
-
-
-                                resolve(blob);
-
-                            },
-                            "image/png",
-                            1
-                        );
-
-                    }
-
-
-                    catch(error) {
-
-                        URL.revokeObjectURL(
-                            url
-                        );
-
-                        reject(error);
-
-                    }
-
-                };
-
-
-            img.onerror =
-                function() {
-
-                    URL.revokeObjectURL(
-                        url
-                    );
-
-                    reject(
-                        new Error(
-                            "تعذر قراءة الصورة."
-                        )
-                    );
-
-                };
-
-
-            img.src =
-                url;
-
-        }
-    );
+/* =========================================
+   تحديث التقدم
+========================================= */
+
+function setProgress(
+    percent,
+    text
+) {
+
+    progressFill.style.width =
+        percent + "%";
+
+    progressPercent.textContent =
+        percent + "%";
+
+    progressStatus.textContent =
+        text;
 
 }
 
 
-/* ==========================================
-   تنظيف النص الناتج
-========================================== */
+/* =========================================
+   اسم اللغة
+========================================= */
 
-function cleanOCRText(text) {
+function languageName(code) {
 
-    if (!text) {
-        return "";
+    if (code === "ja") {
+        return "اليابانية";
     }
 
+    if (code === "en") {
+        return "الإنجليزية";
+    }
 
-    let cleaned =
-        text
-        .replace(/\r/g, "")
-        .replace(/[|]{2,}/g, " ")
-        .replace(/[_]{2,}/g, " ")
-        .replace(/[~`^]+/g, "")
-        .replace(/[ \t]+/g, " ")
-        .replace(/\n[ \t]+/g, "\n")
-        .replace(/[ \t]+\n/g, "\n")
-        .replace(/\n{3,}/g, "\n\n")
-        .trim();
+    if (code === "id") {
+        return "الإندونيسية";
+    }
 
+    if (code === "ar") {
+        return "العربية";
+    }
 
-    /*
-    حذف الأسطر التي لا تحتوي
-    على أي حروف أو أرقام
-    */
+    if (code === "fr") {
+        return "الفرنسية";
+    }
 
-    const lines =
-        cleaned.split("\n");
-
-
-    const usefulLines =
-        lines.filter(
-            function(line) {
-
-                const value =
-                    line.trim();
-
-                if (!value) {
-                    return false;
-                }
-
-
-                /*
-                تجاهل الأسطر التي هي مجرد
-                رموز OCR
-                */
-
-                if (
-                    /^[^A-Za-zÀ-ÿ\u3040-\u30ff\u4e00-\u9fff\u0600-\u06ff0-9]+$/
-                    .test(value)
-                ) {
-
-                    return false;
-
-                }
-
-
-                return true;
-
-            }
-        );
-
-
-    return usefulLines.join("\n");
+    return code;
 }
 
 
-/* ==========================================
-   استخراج النص
-========================================== */
+/* =========================================
+   استخراج النص من الصورة باستخدام Vision AI
+========================================= */
 
 analyzeButton.addEventListener(
     "click",
@@ -1051,258 +715,237 @@ analyzeButton.addEventListener(
         );
 
 
-        progressFill.style.width =
-            "0%";
+        result.style.display =
+            "none";
 
 
-        progressPercent.textContent =
-            "0%";
-
-
-        progressStatus.textContent =
-            "جاري تحسين الصورة...";
+        setProgress(
+            5,
+            "جاري تجهيز الصورة..."
+        );
 
 
         try {
 
 
-            /*
-            تجهيز الصورة
-            */
-
-            const processedImage =
-                await preprocessImage(
-                    selectedImage
+            const source =
+                languageName(
+                    sourceLanguage.value
                 );
 
 
-            progressFill.style.width =
-                "15%";
-
-
-            progressPercent.textContent =
-                "15%";
-
-
-            progressStatus.textContent =
-                "جاري تحميل OCR...";
+            setProgress(
+                15,
+                "جاري إرسال الصورة إلى الذكاء الاصطناعي..."
+            );
 
 
             /*
-            لغة OCR
-            */
+             * نرسل File نفسه إلى Puter.
+             *
+             * لا نستخدم Tesseract.
+             * لا نستخدم Worker.
+             * لا نحتاج API Key.
+             */
 
-            let ocrLanguage;
+            const prompt = `
 
+أنت متخصص في قراءة وترجمة صفحات المانغا والكوميكس.
 
-            if (
-                sourceLanguage.value === "ja"
-            ) {
+انظر إلى الصورة المرفقة بعناية شديدة.
 
-                ocrLanguage =
-                    "jpn";
+المطلوب هو استخراج النص الموجود داخل:
+- فقاعات الكلام
+- فقاعات التفكير
+- مربعات الحوار
+- النصوص المكتوبة داخل المشاهد إذا كانت جزءًا من الحوار
 
-            }
+لغة النص الأصلية هي: ${source}
 
-            else if (
-                sourceLanguage.value === "id"
-            ) {
+مهم جدًا:
 
-                ocrLanguage =
-                    "ind";
+1. اقرأ الكلام داخل كل فقاعة بشكل مستقل.
+2. لا تجمع الحروف الموجودة في فقاعات مختلفة.
+3. لا تقرأ الصفحة ككتلة نص واحدة.
+4. حافظ على الكلمات كما تظهر في الصورة.
+5. صحح أخطاء القراءة الواضحة الناتجة عن جودة الصورة.
+6. لا تكتب وصفًا للصورة.
+7. لا تكتب أسماء الأشياء التي لا تحتوي على نص.
+8. لا تخمن نصًا غير موجود.
+9. إذا كانت هناك عدة فقاعات، افصل بينها بأسطر.
+10. حافظ على ترتيب القراءة الطبيعي.
+11. إذا كان النص قصيرًا جدًا فلا تضف أي كلام من عندك.
 
-            }
+أريد الناتج بهذا الشكل فقط:
 
-            else {
+[النص الموجود في الفقاعة الأولى]
 
-                ocrLanguage =
-                    "eng";
+[النص الموجود في الفقاعة الثانية]
 
-            }
+[النص الموجود في الفقاعة الثالثة]
+
+ولا تكتب:
+- شرحًا
+- تحليلًا
+- مقدمة
+- خاتمة
+- كلمة "OCR"
+- كلمة "لا أستطيع"
+
+اقرأ الصورة مباشرة.
+
+`;
 
 
             /*
-            إنشاء Worker
-            */
+             * النموذج الحالي.
+             *
+             * لا نضع temperature
+             * حتى لا نعود إلى خطأ 400
+             * الذي ظهر عندك سابقًا.
+             */
 
-            const worker =
-                await Tesseract.createWorker(
-                    ocrLanguage,
-                    1,
+            const response =
+                await puter.ai.chat(
+                    prompt,
+                    selectedImage,
+                    false,
                     {
-
-                        logger:
-                            function(message) {
-
-
-                                if (
-                                    message.status ===
-                                    "loading language traineddata"
-                                ) {
-
-                                    progressStatus.textContent =
-                                        "تحميل نموذج اللغة...";
-
-                                }
-
-
-                                else if (
-                                    message.status ===
-                                    "recognizing text"
-                                ) {
-
-                                    progressStatus.textContent =
-                                        "جاري قراءة النص...";
-
-                                }
-
-
-                                else {
-
-                                    progressStatus.textContent =
-                                        message.status ||
-                                        "جاري المعالجة...";
-
-                                }
-
-
-                                if (
-                                    typeof message.progress ===
-                                    "number"
-                                ) {
-
-                                    const p =
-                                        Math.round(
-                                            message.progress *
-                                            100
-                                        );
-
-
-                                    /*
-                                    OCR يبدأ من 15%
-                                    */
-
-                                    const percent =
-                                        15 +
-                                        Math.round(
-                                            p * 0.85
-                                        );
-
-
-                                    progressFill.style.width =
-                                        percent + "%";
-
-
-                                    progressPercent.textContent =
-                                        percent + "%";
-
-                                }
-
-                            }
-
+                        model:
+                            "gpt-5.6-luna"
                     }
                 );
 
 
-            /*
-            وضع OCR للنصوص المتفرقة
-            */
+            setProgress(
+                85,
+                "جاري ترتيب النص..."
+            );
 
-            try {
 
-                await worker.setParameters({
-
-                    tessedit_pageseg_mode:
-                        "11",
-
-                    preserve_interword_spaces:
-                        "1"
-
-                });
-
-            }
-
-            catch(parameterError) {
-
-                console.log(
-                    "OCR parameter notice:",
-                    parameterError
-                );
-
-            }
+            let text = "";
 
 
             /*
-            تشغيل OCR
-            */
+             * محاولة استخراج النص
+             * من مختلف أشكال استجابة Puter.
+             */
 
-            const output =
-                await worker.recognize(
-                    processedImage
+            if (
+                typeof response ===
+                "string"
+            ) {
+
+                text =
+                    response;
+
+            }
+
+            else if (
+                response &&
+                response.message &&
+                typeof response.message.content ===
+                "string"
+            ) {
+
+                text =
+                    response.message.content;
+
+            }
+
+            else if (
+                response &&
+                response.message &&
+                Array.isArray(
+                    response.message.content
+                )
+            ) {
+
+                text =
+                    response.message.content
+                    .map(
+                        item =>
+                            item?.text ||
+                            ""
+                    )
+                    .join("");
+
+            }
+
+            else if (
+                response &&
+                typeof response.content ===
+                "string"
+            ) {
+
+                text =
+                    response.content;
+
+            }
+
+
+            text =
+                text
+                .replace(/\r/g, "")
+                .trim();
+
+
+            /*
+             * إزالة Markdown إذا ظهر
+             */
+
+            text =
+                text
+                .replace(/^```[a-zA-Z]*\n?/g, "")
+                .replace(/\n?```$/g, "")
+                .trim();
+
+
+            if (!text) {
+
+                throw new Error(
+                    "لم يتم العثور على نص في الصورة."
                 );
 
-
-            const rawText =
-                output?.data?.text ||
-                "";
-
-
-            const cleanText =
-                cleanOCRText(
-                    rawText
-                );
+            }
 
 
             originalText.value =
-                cleanText;
+                text;
 
 
             result.style.display =
                 "block";
 
 
-            progressFill.style.width =
-                "100%";
-
-
-            progressPercent.textContent =
-                "100%";
-
-
-            progressStatus.textContent =
-                "اكتمل استخراج النص.";
-
-
-            if (cleanText) {
-
-                status.textContent =
-                    "✅ تم استخراج النص. يمكنك تعديله يدويًا قبل الترجمة.";
-
-            }
-
-            else {
-
-                status.textContent =
-                    "⚠️ لم يتم العثور على نص واضح في الصورة.";
-
-            }
-
-
-            await worker.terminate();
-
-        }
-
-
-        catch(error) {
-
-            console.error(
-                "OCR ERROR:",
-                error
+            setProgress(
+                100,
+                "اكتمل استخراج النص."
             );
 
 
             status.textContent =
-                "❌ حدث خطأ في OCR: " +
+                "✅ تم استخراج النص بنجاح بواسطة تحليل الصورة مباشرة.";
+
+
+        }
+
+        catch(error) {
+
+            console.error(
+                "IMAGE AI ERROR:",
+                error
+            );
+
+
+            setProgress(
+                100,
+                "حدث خطأ."
+            );
+
+
+            status.textContent =
+                "❌ حدث خطأ أثناء قراءة الصورة: " +
                 (
                     error?.message ||
                     String(error)
@@ -1322,104 +965,9 @@ analyzeButton.addEventListener(
 );
 
 
-/* ==========================================
-   أسماء اللغات
-========================================== */
-
-function getLanguageName(code) {
-
-    if (code === "ja") {
-        return "اليابانية";
-    }
-
-    if (code === "en") {
-        return "الإنجليزية";
-    }
-
-    if (code === "id") {
-        return "الإندونيسية";
-    }
-
-    if (code === "ar") {
-        return "العربية";
-    }
-
-    if (code === "fr") {
-        return "الفرنسية";
-    }
-
-    return code;
-}
-
-
-/* ==========================================
-   تقسيم النص الطويل
-========================================== */
-
-function splitText(text, maxLength) {
-
-    const paragraphs =
-        text.split(/\n+/);
-
-    const chunks = [];
-
-    let current = "";
-
-
-    for (
-        const paragraph of paragraphs
-    ) {
-
-        const part =
-            paragraph.trim();
-
-
-        if (!part) {
-            continue;
-        }
-
-
-        if (
-            current.length +
-            part.length +
-            1 <=
-            maxLength
-        ) {
-
-            current =
-                current
-                ? current + "\n" + part
-                : part;
-
-        }
-
-        else {
-
-            if (current) {
-                chunks.push(current);
-            }
-
-            current =
-                part;
-
-        }
-
-    }
-
-
-    if (current) {
-        chunks.push(current);
-    }
-
-
-    return chunks;
-
-}
-
-
-/* ==========================================
-   الترجمة
-========================================== */
+/* =========================================
+   ترجمة النص
+========================================= */
 
 translateButton.addEventListener(
     "click",
@@ -1433,34 +981,10 @@ translateButton.addEventListener(
         if (!text) {
 
             alert(
-                "استخرج النص من الصورة أولًا."
+                "استخرج النص أولًا."
             );
 
             return;
-        }
-
-
-        /*
-        التأكد من Puter
-        */
-
-        if (
-            typeof puter === "undefined" ||
-            !puter.ai ||
-            typeof puter.ai.chat !==
-            "function"
-        ) {
-
-            status.classList.remove(
-                "hidden"
-            );
-
-
-            status.textContent =
-                "❌ لم يتم تحميل الذكاء الاصطناعي. تحقق من الإنترنت وأعد تحميل الصفحة.";
-
-            return;
-
         }
 
 
@@ -1483,13 +1007,13 @@ translateButton.addEventListener(
 
 
         const source =
-            getLanguageName(
+            languageName(
                 sourceLanguage.value
             );
 
 
         const target =
-            getLanguageName(
+            languageName(
                 targetLanguage.value
             );
 
@@ -1497,169 +1021,133 @@ translateButton.addEventListener(
         try {
 
 
-            const chunks =
-                splitText(
-                    text,
-                    2500
-                );
-
-
-            const results = [];
-
-
-            for (
-                let i = 0;
-                i < chunks.length;
-                i++
-            ) {
-
-
-                status.textContent =
-                    "🌐 جاري ترجمة الجزء " +
-                    (i + 1) +
-                    " من " +
-                    chunks.length +
-                    "...";
-
-
-                const prompt = `
+            const prompt = `
 
 أنت مترجم محترف متخصص في المانغا والكوميكس.
 
 ترجم النص التالي من ${source} إلى ${target}.
 
-قواعد الترجمة:
+القواعد:
 
 - أخرج الترجمة فقط.
 - لا تشرح.
 - لا تضف مقدمة.
 - لا تضف خاتمة.
-- حافظ على معنى الحوار.
-- اجعل الترجمة طبيعية ومناسبة للمانغا.
-- حافظ على ترتيب الجمل.
-- لا تخترع معلومات.
+- لا تذكر أخطاء OCR.
+- حافظ على ترتيب الفقرات.
 - حافظ على أسماء الشخصيات.
-- حافظ على علامات الاستفهام والتعجب.
-- ترجم الأصوات والانفعالات بشكل طبيعي.
-- لا تحذف الجمل.
-- إذا كان OCR يحتوي على أخطاء واضحة، حاول تصحيحها اعتمادًا على السياق.
-- لا تذكر أن النص يحتوي على أخطاء OCR.
-- لا تقل إنك لا تستطيع الترجمة.
-- حاول ترجمة النص بأفضل شكل ممكن.
+- حافظ على معنى الحوار.
+- اجعل اللغة طبيعية ومناسبة للمانغا.
+- حافظ على المشاعر والانفعالات.
+- لا تحذف أي جملة.
+- لا تضف أحداثًا غير موجودة.
+- إذا كانت هناك علامات استفهام أو تعجب، حافظ عليها.
+- إذا كان النص غير واضح قليلًا، استخدم السياق لتصحيح الخطأ بأفضل شكل ممكن.
 
 النص:
 
-${chunks[i]}
+${text}
 
 `;
 
 
-                /*
-                مهم:
-                لا temperature
-                ولا max_tokens
-                */
-
-                const response =
-                    await puter.ai.chat(
-                        prompt,
-                        {
-                            model:
-                                "gpt-5-nano"
-                        }
-                    );
+            status.textContent =
+                "🌐 جاري ترجمة الحوار...";
 
 
-                let translated = "";
+            /*
+             * لا temperature هنا.
+             */
 
-
-                if (
-                    typeof response ===
-                    "string"
-                ) {
-
-                    translated =
-                        response;
-
-                }
-
-
-                else if (
-                    response &&
-                    response.message &&
-                    typeof response.message.content ===
-                    "string"
-                ) {
-
-                    translated =
-                        response.message.content;
-
-                }
-
-
-                else if (
-                    response &&
-                    response.message &&
-                    Array.isArray(
-                        response.message.content
-                    )
-                ) {
-
-                    translated =
-                        response.message.content
-                        .map(
-                            item =>
-                                item?.text ||
-                                ""
-                        )
-                        .join("");
-
-                }
-
-
-                else if (
-                    response &&
-                    typeof response.content ===
-                    "string"
-                ) {
-
-                    translated =
-                        response.content;
-
-                }
-
-
-                translated =
-                    translated.trim();
-
-
-                if (!translated) {
-
-                    throw new Error(
-                        "لم يرجع الذكاء الاصطناعي ترجمة."
-                    );
-
-                }
-
-
-                results.push(
-                    translated
+            const response =
+                await puter.ai.chat(
+                    prompt,
+                    {
+                        model:
+                            "gpt-5.6-luna"
+                    }
                 );
 
 
-                translatedText.value =
-                    results.join(
-                        "\n\n"
-                    );
+            let translated =
+                "";
+
+
+            if (
+                typeof response ===
+                "string"
+            ) {
+
+                translated =
+                    response;
 
             }
+
+            else if (
+                response &&
+                response.message &&
+                typeof response.message.content ===
+                "string"
+            ) {
+
+                translated =
+                    response.message.content;
+
+            }
+
+            else if (
+                response &&
+                response.message &&
+                Array.isArray(
+                    response.message.content
+                )
+            ) {
+
+                translated =
+                    response.message.content
+                    .map(
+                        item =>
+                            item?.text ||
+                            ""
+                    )
+                    .join("");
+
+            }
+
+            else if (
+                response &&
+                typeof response.content ===
+                "string"
+            ) {
+
+                translated =
+                    response.content;
+
+            }
+
+
+            translated =
+                translated.trim();
+
+
+            if (!translated) {
+
+                throw new Error(
+                    "لم يرجع الذكاء الاصطناعي ترجمة."
+                );
+
+            }
+
+
+            translatedText.value =
+                translated;
 
 
             status.textContent =
                 "✅ تمت الترجمة بنجاح.";
 
-        }
 
+        }
 
         catch(error) {
 
@@ -1695,6 +1183,7 @@ ${chunks[i]}
 
 </script>
 
+
 </body>
 
-    </html>
+</html> 
