@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
 <meta charset="UTF-8">
 
 <meta
@@ -19,7 +20,7 @@
 
 body {
     margin: 0;
-    background: #0e1117;
+    background: #0d1017;
     color: white;
     font-family: Arial, Tahoma, sans-serif;
 }
@@ -32,12 +33,12 @@ body {
 
 header {
     text-align: center;
-    padding: 15px 0;
+    padding: 18px 0;
 }
 
 header h1 {
     margin: 0;
-    font-size: 28px;
+    font-size: 27px;
 }
 
 header p {
@@ -46,10 +47,10 @@ header p {
 }
 
 .card {
-    background: #171c26;
-    border: 1px solid #293041;
+    background: #171c27;
+    border: 1px solid #2b3345;
+    border-radius: 16px;
     padding: 16px;
-    border-radius: 15px;
     margin-bottom: 16px;
 }
 
@@ -63,21 +64,39 @@ input,
 select,
 button {
     width: 100%;
-    border-radius: 10px;
     min-height: 48px;
+    border-radius: 10px;
     font-size: 16px;
 }
 
 input,
 select {
+    border: 1px solid #3a455e;
     background: #222938;
     color: white;
-    border: 1px solid #394258;
     padding: 10px;
 }
 
 #apiKey {
     direction: ltr;
+}
+
+.upload {
+    border: 2px dashed #4a5875;
+    background: #202735;
+    text-align: center;
+    padding: 25px 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    margin-top: 16px;
+}
+
+.upload small {
+    color: #aab1c0;
+}
+
+#imageInput {
+    display: none;
 }
 
 .languages {
@@ -86,26 +105,18 @@ select {
     gap: 10px;
 }
 
-.upload {
-    border: 2px dashed #4b5874;
-    text-align: center;
-    padding: 25px 10px;
-    border-radius: 13px;
-    cursor: pointer;
-    background: #202634;
-}
-
-#imageInput {
-    display: none;
-}
-
 button {
-    border: 0;
+    border: none;
+    color: white;
     padding: 12px;
     margin-top: 12px;
-    color: white;
-    font-weight: bold;
     cursor: pointer;
+    font-weight: bold;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 #translateButton {
@@ -113,23 +124,20 @@ button {
 }
 
 #downloadButton {
-    background: #099268;
+    background: #07885f;
     display: none;
 }
 
 #newButton {
-    background: #30384b;
-}
-
-button:disabled {
-    opacity: .5;
+    background: #30394e;
 }
 
 #status {
-    padding-top: 14px;
+    padding: 16px 5px 5px;
     text-align: center;
-    line-height: 1.6;
     white-space: pre-line;
+    line-height: 1.7;
+    word-break: break-word;
 }
 
 .success {
@@ -149,9 +157,9 @@ button:disabled {
 }
 
 canvas {
+    display: block;
     width: 100%;
     height: auto;
-    display: block;
     background: white;
     border-radius: 10px;
 }
@@ -161,15 +169,16 @@ canvas {
 }
 
 .result {
-    background: #232a38;
-    border-radius: 10px;
+    background: #232a39;
     margin-bottom: 10px;
-    padding: 11px;
+    padding: 12px;
+    border-radius: 10px;
 }
 
 .original {
-    color: #9ca3af;
-    margin-bottom: 6px;
+    color: #a7adbb;
+    font-size: 14px;
+    margin-bottom: 7px;
     direction: auto;
 }
 
@@ -180,9 +189,16 @@ canvas {
 }
 
 .note {
+    color: #9ca3af;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.model-info {
     font-size: 13px;
     color: #9ca3af;
-    line-height: 1.6;
+    text-align: center;
+    margin-top: 8px;
 }
 
 @media (max-width: 600px) {
@@ -191,9 +207,14 @@ canvas {
         grid-template-columns: 1fr;
     }
 
+    header h1 {
+        font-size: 24px;
+    }
+
 }
 
 </style>
+
 </head>
 
 
@@ -226,8 +247,8 @@ canvas {
 />
 
 <p class="note">
-المفتاح لا يتم حفظه داخل GitHub ولا داخل هذا الملف.
-تضعه فقط عند تشغيل الموقع.
+المفتاح لا يتم وضعه داخل كود GitHub.
+يُستخدم فقط عند تشغيل الصفحة.
 </p>
 
 
@@ -245,6 +266,7 @@ JPG / PNG / WEBP
 </small>
 
 </label>
+
 
 <input
     id="imageInput"
@@ -339,31 +361,29 @@ JPG / PNG / WEBP
     id="translateButton"
     disabled
 >
-
 ✨ ترجمة الصورة
-
 </button>
 
 
 <button id="downloadButton">
-
 ⬇ حفظ الصورة المترجمة
-
 </button>
 
 
 <button id="newButton">
-
 🗑 صورة جديدة
-
 </button>
 
 
 <div id="status">
-
 اختر صورة للبدء
-
 </div>
+
+
+<div
+    id="modelInfo"
+    class="model-info"
+></div>
 
 </div>
 
@@ -396,9 +416,9 @@ JPG / PNG / WEBP
 
 <script>
 
-/* =========================
-   ELEMENTS
-========================= */
+/* =========================================
+   العناصر
+========================================= */
 
 const apiKeyInput =
     document.getElementById("apiKey");
@@ -424,6 +444,9 @@ const newButton =
 const statusBox =
     document.getElementById("status");
 
+const modelInfo =
+    document.getElementById("modelInfo");
+
 const canvasCard =
     document.getElementById("canvasCard");
 
@@ -444,22 +467,24 @@ let preparedImage = null;
 let preparedBase64 = null;
 
 
-/* =========================
-   STATUS
-========================= */
+/* =========================================
+   الحالة
+========================================= */
 
 function setStatus(text, type = "") {
 
-    statusBox.textContent = text;
+    statusBox.textContent =
+        text;
 
-    statusBox.className = type;
+    statusBox.className =
+        type;
 
 }
 
 
-/* =========================
-   SELECT IMAGE
-========================= */
+/* =========================================
+   اختيار الصورة
+========================================= */
 
 imageInput.addEventListener(
     "change",
@@ -468,7 +493,10 @@ imageInput.addEventListener(
         const file =
             imageInput.files[0];
 
-        if (!file) return;
+
+        if (!file) {
+            return;
+        }
 
 
         if (
@@ -481,13 +509,14 @@ imageInput.addEventListener(
             );
 
             return;
+
         }
 
 
         try {
 
             setStatus(
-                "جاري تجهيز الصورة...",
+                "⏳ جاري تجهيز الصورة...",
                 "loading"
             );
 
@@ -499,6 +528,7 @@ imageInput.addEventListener(
             preparedImage =
                 prepared.image;
 
+
             preparedBase64 =
                 prepared.base64;
 
@@ -506,8 +536,17 @@ imageInput.addEventListener(
             canvas.width =
                 preparedImage.width;
 
+
             canvas.height =
                 preparedImage.height;
+
+
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
 
 
             ctx.drawImage(
@@ -520,18 +559,21 @@ imageInput.addEventListener(
             canvasCard.style.display =
                 "block";
 
-            translateButton.disabled =
-                false;
-
-            downloadButton.style.display =
-                "none";
 
             results.style.display =
                 "none";
 
 
+            downloadButton.style.display =
+                "none";
+
+
+            translateButton.disabled =
+                false;
+
+
             setStatus(
-                "✅ الصورة جاهزة.\nاضغط ترجمة الصورة.",
+                "✅ الصورة جاهزة.\nأدخل مفتاح Gemini ثم اضغط ترجمة الصورة.",
                 "success"
             );
 
@@ -540,6 +582,7 @@ imageInput.addEventListener(
         catch (error) {
 
             console.error(error);
+
 
             setStatus(
                 "❌ تعذر تجهيز الصورة.",
@@ -552,69 +595,91 @@ imageInput.addEventListener(
 );
 
 
-/* =========================
-   PREPARE IMAGE
-========================= */
+/* =========================================
+   تجهيز الصورة
+========================================= */
 
 async function prepareImage(file) {
 
-    const image =
+    const originalImage =
         await fileToImage(file);
 
 
     let width =
-        image.naturalWidth;
+        originalImage.naturalWidth;
+
 
     let height =
-        image.naturalHeight;
+        originalImage.naturalHeight;
 
 
-    const maxSize = 1800;
+    /*
+       لتقليل حجم الطلب
+       مع إبقاء النص واضحاً
+    */
+
+    const maxDimension =
+        1800;
 
 
     if (
-        width > maxSize ||
-        height > maxSize
+        width > maxDimension ||
+        height > maxDimension
     ) {
 
-        const ratio =
+        const scale =
             Math.min(
-                maxSize / width,
-                maxSize / height
+                maxDimension / width,
+                maxDimension / height
             );
+
 
         width =
             Math.round(
-                width * ratio
+                width * scale
             );
+
 
         height =
             Math.round(
-                height * ratio
+                height * scale
             );
 
     }
 
 
-    const temp =
+    const tempCanvas =
         document.createElement(
             "canvas"
         );
 
 
-    temp.width =
+    tempCanvas.width =
         width;
 
-    temp.height =
+
+    tempCanvas.height =
         height;
 
 
     const tempCtx =
-        temp.getContext("2d");
+        tempCanvas.getContext("2d");
+
+
+    tempCtx.fillStyle =
+        "#ffffff";
+
+
+    tempCtx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
 
 
     tempCtx.drawImage(
-        image,
+        originalImage,
         0,
         0,
         width,
@@ -623,26 +688,28 @@ async function prepareImage(file) {
 
 
     const dataURL =
-        temp.toDataURL(
+        tempCanvas.toDataURL(
             "image/jpeg",
-            0.90
+            0.92
         );
 
 
-    const resized =
+    const resizedImage =
         new Image();
 
 
     await new Promise(
         (resolve, reject) => {
 
-            resized.onload =
+            resizedImage.onload =
                 resolve;
 
-            resized.onerror =
+
+            resizedImage.onerror =
                 reject;
 
-            resized.src =
+
+            resizedImage.src =
                 dataURL;
 
         }
@@ -651,7 +718,8 @@ async function prepareImage(file) {
 
     return {
 
-        image: resized,
+        image:
+            resizedImage,
 
         base64:
             dataURL.split(",")[1]
@@ -661,9 +729,9 @@ async function prepareImage(file) {
 }
 
 
-/* =========================
-   FILE -> IMAGE
-========================= */
+/* =========================================
+   تحويل File إلى Image
+========================================= */
 
 function fileToImage(file) {
 
@@ -676,27 +744,41 @@ function fileToImage(file) {
                 );
 
 
-            const img =
+            const image =
                 new Image();
 
 
-            img.onload =
+            image.onload =
                 () => {
 
                     URL.revokeObjectURL(
                         url
                     );
 
-                    resolve(img);
+
+                    resolve(image);
 
                 };
 
 
-            img.onerror =
-                reject;
+            image.onerror =
+                () => {
+
+                    URL.revokeObjectURL(
+                        url
+                    );
 
 
-            img.src =
+                    reject(
+                        new Error(
+                            "فشل فتح الصورة."
+                        )
+                    );
+
+                };
+
+
+            image.src =
                 url;
 
         }
@@ -705,9 +787,9 @@ function fileToImage(file) {
 }
 
 
-/* =========================
-   TRANSLATE
-========================= */
+/* =========================================
+   زر الترجمة
+========================================= */
 
 translateButton.addEventListener(
     "click",
@@ -725,6 +807,7 @@ translateButton.addEventListener(
             );
 
             return;
+
         }
 
 
@@ -736,24 +819,57 @@ translateButton.addEventListener(
             );
 
             return;
+
         }
 
 
         translateButton.disabled =
             true;
 
+
         downloadButton.style.display =
             "none";
+
 
         results.style.display =
             "none";
 
 
+        modelInfo.textContent =
+            "";
+
+
         try {
 
             setStatus(
-                "🔍 Gemini يقرأ الصفحة ويبحث عن النصوص...\nقد يستغرق ذلك عدة ثوانٍ.",
+                "🔎 جاري البحث عن نماذج Gemini المتاحة...",
                 "loading"
+            );
+
+
+            /*
+             نجلب النماذج المتاحة
+             لمفتاح المستخدم فعلياً
+            */
+
+            const models =
+                await getAvailableModels(
+                    apiKey
+                );
+
+
+            if (!models.length) {
+
+                throw new Error(
+                    "لم يتم العثور على نموذج Gemini مناسب لهذا المفتاح."
+                );
+
+            }
+
+
+            console.log(
+                "Available models:",
+                models
             );
 
 
@@ -761,30 +877,30 @@ translateButton.addEventListener(
                 createPrompt();
 
 
-            const responseText =
-                await callGemini(
+            const result =
+                await callGeminiWithFallback(
                     apiKey,
+                    models,
                     prompt,
                     preparedBase64
                 );
 
 
-            console.log(
-                "Gemini:",
-                responseText
-            );
+            modelInfo.textContent =
+                "النموذج المستخدم: " +
+                result.model;
 
 
             const blocks =
                 parseResponse(
-                    responseText
+                    result.text
                 );
 
 
             if (!blocks.length) {
 
                 throw new Error(
-                    "لم يتم العثور على نص قابل للترجمة."
+                    "لم يتم العثور على نص قابل للترجمة في الصورة."
                 );
 
             }
@@ -805,8 +921,9 @@ translateButton.addEventListener(
 
 
             setStatus(
-                "✅ تمت الترجمة بنجاح.\nعدد مناطق النص: " +
-                blocks.length,
+                "✅ تمت الترجمة بنجاح.\nتم اكتشاف " +
+                blocks.length +
+                " منطقة نصية.",
                 "success"
             );
 
@@ -820,7 +937,7 @@ translateButton.addEventListener(
             setStatus(
                 "❌ حدث خطأ:\n" +
                 (
-                    error.message ||
+                    error?.message ||
                     String(error)
                 ),
                 "error"
@@ -839,141 +956,546 @@ translateButton.addEventListener(
 );
 
 
-/* =========================
-   GEMINI
-========================= */
+/* =========================================
+   الحصول على النماذج المتاحة
+========================================= */
 
-async function callGemini(
+async function getAvailableModels(apiKey) {
+
+    const url =
+        "https://generativelanguage.googleapis.com/v1beta/models?pageSize=100";
+
+
+    let response;
+
+
+    try {
+
+        response =
+            await fetch(
+                url,
+                {
+
+                    method:
+                        "GET",
+
+                    headers: {
+
+                        "x-goog-api-key":
+                            apiKey
+
+                    }
+
+                }
+            );
+
+    }
+
+    catch (error) {
+
+        /*
+         إذا فشل جلب القائمة
+         نستخدم نماذج احتياطية
+        */
+
+        console.warn(
+            "Model list request failed",
+            error
+        );
+
+
+        return fallbackModels();
+
+    }
+
+
+    let data = {};
+
+
+    try {
+
+        data =
+            await response.json();
+
+    }
+
+    catch {
+
+    }
+
+
+    if (
+        response.status === 401 ||
+        response.status === 403
+    ) {
+
+        throw new Error(
+            "مفتاح Gemini غير صالح أو لا يملك صلاحية استخدام Gemini API."
+        );
+
+    }
+
+
+    if (!response.ok) {
+
+        console.warn(
+            "Could not fetch model list",
+            data
+        );
+
+
+        return fallbackModels();
+
+    }
+
+
+    const available =
+        Array.isArray(data.models)
+            ? data.models
+            : [];
+
+
+    const candidates =
+        available
+            .filter(
+                model => {
+
+                    const name =
+                        String(
+                            model.name || ""
+                        ).toLowerCase();
+
+
+                    const methods =
+                        model.supportedGenerationMethods ||
+                        [];
+
+
+                    if (
+                        !name.includes("gemini")
+                    ) {
+                        return false;
+                    }
+
+
+                    if (
+                        !methods.includes(
+                            "generateContent"
+                        )
+                    ) {
+                        return false;
+                    }
+
+
+                    /*
+                     نستبعد نماذج ليست مناسبة
+                     لمهمتنا
+                    */
+
+                    const excludedWords = [
+
+                        "embedding",
+                        "aqa",
+                        "tts",
+                        "audio",
+                        "live",
+                        "imagen",
+                        "image-generation"
+
+                    ];
+
+
+                    for (
+                        const word of excludedWords
+                    ) {
+
+                        if (
+                            name.includes(
+                                word
+                            )
+                        ) {
+
+                            return false;
+
+                        }
+
+                    }
+
+
+                    return true;
+
+                }
+            )
+            .map(
+                model =>
+                    String(
+                        model.name || ""
+                    )
+                    .replace(
+                        /^models\//,
+                        ""
+                    )
+            );
+
+
+    /*
+     ترتيب النماذج:
+     Flash Lite أولاً
+     ثم Flash
+     ثم Pro
+    */
+
+    candidates.sort(
+        (a, b) =>
+            scoreModel(b) -
+            scoreModel(a)
+    );
+
+
+    const unique =
+        [
+            ...new Set(
+                candidates
+            )
+        ];
+
+
+    /*
+     لا نريد تجربة عشرات النماذج
+    */
+
+    return unique.slice(
+        0,
+        8
+    );
+
+}
+
+
+/* =========================================
+   تقييم النموذج
+========================================= */
+
+function scoreModel(modelName) {
+
+    const name =
+        modelName.toLowerCase();
+
+
+    let score =
+        0;
+
+
+    if (
+        name.includes(
+            "flash-lite"
+        )
+    ) {
+
+        score +=
+            100;
+
+    }
+
+    else if (
+        name.includes(
+            "flash"
+        )
+    ) {
+
+        score +=
+            90;
+
+    }
+
+    else if (
+        name.includes(
+            "pro"
+        )
+    ) {
+
+        score +=
+            60;
+
+    }
+
+
+    /*
+     النماذج المستقرة أفضل
+     من Preview للاختبار الحالي
+    */
+
+    if (
+        name.includes(
+            "preview"
+        )
+    ) {
+
+        score -=
+            15;
+
+    }
+
+
+    if (
+        name.includes(
+            "exp"
+        )
+    ) {
+
+        score -=
+            20;
+
+    }
+
+
+    if (
+        name.includes(
+            "latest"
+        )
+    ) {
+
+        score +=
+            3;
+
+    }
+
+
+    return score;
+
+}
+
+
+/* =========================================
+   قائمة احتياطية
+========================================= */
+
+function fallbackModels() {
+
+    return [
+
+        "gemini-2.5-flash-lite",
+
+        "gemini-2.5-flash",
+
+        "gemini-2.0-flash-lite",
+
+        "gemini-2.0-flash"
+
+    ];
+
+}
+
+
+/* =========================================
+   Gemini + إعادة المحاولة
+========================================= */
+
+async function callGeminiWithFallback(
     apiKey,
+    models,
     prompt,
     base64
 ) {
 
-    /*
-       نحاول أحدث نموذج أولاً
-       ثم ننتقل تلقائياً لبديل.
-    */
-
-    const models = [
-
-        "gemini-3.8-flash",
-
-        "gemini-3.6-flash",
-
-        "gemini-3.5-flash"
-
-    ];
+    const sleep =
+        milliseconds =>
+            new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        milliseconds
+                    )
+            );
 
 
     let lastError =
-        "فشل الاتصال بـ Gemini";
+        "فشل الاتصال بـ Gemini.";
 
+
+    /*
+     نجرب كل نموذج
+    */
 
     for (
-        const model of models
+        let modelIndex = 0;
+        modelIndex < models.length;
+        modelIndex++
     ) {
 
-        try {
+        const model =
+            models[
+                modelIndex
+            ];
+
+
+        /*
+         ثلاث محاولات للنموذج
+        */
+
+        for (
+            let attempt = 1;
+            attempt <= 3;
+            attempt++
+        ) {
 
             setStatus(
-                "🤖 جاري استخدام " +
+                "🤖 النموذج: " +
                 model +
-                "...",
+                "\nالمحاولة " +
+                attempt +
+                " من 3" +
+                "\nالنموذج " +
+                (modelIndex + 1) +
+                " من " +
+                models.length,
                 "loading"
             );
 
 
-            const url =
-                "https://generativelanguage.googleapis.com/v1beta/models/" +
-                model +
-                ":generateContent";
+            try {
+
+                const url =
+                    "https://generativelanguage.googleapis.com/v1beta/models/" +
+                    encodeURIComponent(
+                        model
+                    ) +
+                    ":generateContent";
 
 
-            const response =
-                await fetch(
-                    url,
-                    {
+                const response =
+                    await fetch(
+                        url,
+                        {
 
-                        method:
-                            "POST",
+                            method:
+                                "POST",
 
-                        headers: {
+                            headers: {
 
-                            "Content-Type":
-                                "application/json",
+                                "Content-Type":
+                                    "application/json",
 
-                            "x-goog-api-key":
-                                apiKey
+                                "x-goog-api-key":
+                                    apiKey
 
-                        },
+                            },
 
-                        body:
-                            JSON.stringify({
+                            body:
+                                JSON.stringify({
 
-                                contents: [
+                                    contents: [
 
-                                    {
+                                        {
 
-                                        role:
-                                            "user",
+                                            role:
+                                                "user",
 
-                                        parts: [
+                                            parts: [
 
-                                            {
+                                                {
 
-                                                text:
-                                                    prompt
+                                                    text:
+                                                        prompt
 
-                                            },
+                                                },
 
-                                            {
+                                                {
 
-                                                inline_data: {
+                                                    inline_data: {
 
-                                                    mime_type:
-                                                        "image/jpeg",
+                                                        mime_type:
+                                                            "image/jpeg",
 
-                                                    data:
-                                                        base64
+                                                        data:
+                                                            base64
+
+                                                    }
 
                                                 }
 
-                                            }
+                                            ]
 
-                                        ]
+                                        }
 
-                                    }
+                                    ]
 
-                                ],
+                                })
 
-                                generationConfig: {
-
-                                    responseMimeType:
-                                        "application/json"
-
-                                }
-
-                            })
-
-                    }
-                );
+                        }
+                    );
 
 
-            const data =
-                await response.json();
+                let data = {};
 
 
-            if (!response.ok) {
+                try {
 
-                const message =
-                    data?.error?.message ||
-                    "HTTP " +
-                    response.status;
+                    data =
+                        await response.json();
+
+                }
+
+                catch {
+
+                }
 
 
                 /*
-                 Key/auth problems:
-                 no reason to try another model.
+                 نجح الاتصال
+                */
+
+                if (response.ok) {
+
+                    const text =
+                        extractGeminiText(
+                            data
+                        );
+
+
+                    if (text) {
+
+                        return {
+
+                            model,
+                            text
+
+                        };
+
+                    }
+
+
+                    lastError =
+                        "النموذج أعاد استجابة فارغة.";
+
+
+                    break;
+
+                }
+
+
+                const message =
+                    data?.error?.message ||
+                    (
+                        "HTTP " +
+                        response.status
+                    );
+
+
+                lastError =
+                    message;
+
+
+                console.warn(
+                    "Gemini error:",
+                    model,
+                    response.status,
+                    message
+                );
+
+
+                /*
+                 خطأ في المفتاح
                 */
 
                 if (
@@ -982,65 +1504,129 @@ async function callGemini(
                 ) {
 
                     throw new Error(
-                        "مشكلة في مفتاح Gemini: " +
+                        "مشكلة في Gemini API Key:\n" +
                         message
                     );
 
                 }
 
 
-                lastError =
-                    message;
+                /*
+                 النموذج غير موجود
+                 أو الطلب غير مدعوم
+                 -> النموذج التالي
+                */
 
-                continue;
+                if (
+                    response.status === 400 ||
+                    response.status === 404
+                ) {
+
+                    break;
+
+                }
+
+
+                /*
+                 ازدحام / ضغط / Rate Limit
+                */
+
+                if (
+                    response.status === 429 ||
+                    response.status === 500 ||
+                    response.status === 502 ||
+                    response.status === 503 ||
+                    response.status === 504
+                ) {
+
+                    if (
+                        attempt < 3
+                    ) {
+
+                        const delay =
+                            attempt === 1
+                                ? 2500
+                                : 6000;
+
+
+                        setStatus(
+                            "⏳ النموذج مزدحم أو الخدمة مشغولة.\nإعادة المحاولة بعد " +
+                            Math.round(
+                                delay / 1000
+                            ) +
+                            " ثوانٍ...",
+                            "loading"
+                        );
+
+
+                        await sleep(
+                            delay
+                        );
+
+
+                        continue;
+
+                    }
+
+
+                    /*
+                     بعد المحاولة الثالثة
+                     ننتقل للنموذج التالي
+                    */
+
+                    break;
+
+                }
+
+
+                break;
 
             }
 
+            catch (error) {
 
-            const text =
-                data
-                    ?.candidates
-                    ?.[0]
-                    ?.content
-                    ?.parts
-                    ?.map(
-                        p =>
-                            p.text || ""
+                console.error(
+                    error
+                );
+
+
+                if (
+                    String(
+                        error?.message || ""
+                    ).includes(
+                        "Gemini API Key"
                     )
-                    .join("");
+                ) {
 
+                    throw error;
 
-            if (!text) {
+                }
+
 
                 lastError =
-                    "Gemini أعاد استجابة فارغة.";
+                    error?.message ||
+                    String(error);
 
-                continue;
+
+                if (
+                    attempt < 3
+                ) {
+
+                    const delay =
+                        2000 *
+                        attempt;
+
+
+                    await sleep(
+                        delay
+                    );
+
+
+                    continue;
+
+                }
 
             }
-
-
-            return text;
-
-        }
-
-        catch (error) {
-
-            if (
-                error.message
-                    ?.includes(
-                        "مشكلة في مفتاح Gemini"
-                    )
-            ) {
-
-                throw error;
-
-            }
-
-
-            lastError =
-                error.message ||
-                String(error);
 
         }
 
@@ -1048,20 +1634,73 @@ async function callGemini(
 
 
     throw new Error(
+        "تعذر استخدام نماذج Gemini المتاحة حالياً.\n\nآخر رسالة:\n" +
         lastError
     );
 
 }
 
 
-/* =========================
-   PROMPT
-========================= */
+/* =========================================
+   استخراج النص من رد Gemini
+========================================= */
+
+function extractGeminiText(data) {
+
+    const candidates =
+        data?.candidates;
+
+
+    if (
+        !Array.isArray(
+            candidates
+        ) ||
+        !candidates.length
+    ) {
+
+        return "";
+
+    }
+
+
+    const parts =
+        candidates[0]
+            ?.content
+            ?.parts;
+
+
+    if (
+        !Array.isArray(
+            parts
+        )
+    ) {
+
+        return "";
+
+    }
+
+
+    return parts
+        .map(
+            part =>
+                part?.text ||
+                ""
+        )
+        .join("")
+        .trim();
+
+}
+
+
+/* =========================================
+   Prompt
+========================================= */
 
 function createPrompt() {
 
     const source =
         sourceLanguage.value;
+
 
     const target =
         targetLanguage.value;
@@ -1069,9 +1708,9 @@ function createPrompt() {
 
     return `
 
-You are a professional manga/comic OCR and translation system.
+You are a professional manga and comic OCR, layout detection, and translation system.
 
-Analyze the entire manga/comic image.
+Analyze the ENTIRE manga/comic image carefully.
 
 SOURCE LANGUAGE:
 ${source}
@@ -1079,83 +1718,91 @@ ${source}
 TARGET LANGUAGE:
 ${target}
 
-Your job:
+TASK:
 
-1. Detect every meaningful text region:
-   - speech bubbles
-   - narration boxes
-   - captions
-   - dialogue
-   - important sound effects
+1. Detect every meaningful text region in the image:
+- speech bubbles
+- dialogue
+- narration boxes
+- captions
+- important sound effects
 
 2. Read the original text accurately.
 
-3. Translate each region naturally into ${target}.
+3. Translate every detected region naturally into ${target}.
 
 4. Detect the bounding box of the COMPLETE text region.
 
 VERY IMPORTANT:
 
-- Keep a complete speech bubble as one block.
-- Do NOT split Japanese characters into separate blocks.
-- Do NOT return one box per letter.
-- Keep vertical Japanese text together when it belongs to the same region.
-- Do not invent unreadable text.
+- Treat one complete speech bubble as one text block whenever possible.
+- Do NOT create one block for every Japanese character.
+- Do NOT split vertical Japanese text character-by-character.
+- Keep text from the same bubble together.
+- Do NOT invent unreadable text.
 - Ignore page numbers and meaningless marks.
+- Preserve character names correctly.
+- The translation must sound natural, not word-for-word.
 
-Use bounding boxes normalized from 0 to 1000.
+BOUNDING BOX:
 
-box_2d format MUST be:
+Coordinates must be normalized from 0 to 1000.
+
+Use exactly:
 
 [ymin, xmin, ymax, xmax]
-
-Return ONLY a JSON array.
 
 Example:
 
 [
   {
-    "box_2d": [100, 600, 300, 900],
-    "original": "ありがとう",
-    "translation": "شكراً",
+    "box_2d": [100, 620, 300, 900],
+    "original": "てめーの仕事だ！",
+    "translation": "إنها مهمتك!",
     "type": "dialogue"
   }
 ]
 
-Allowed types:
+Allowed type values:
 
 dialogue
 narration
 caption
 sfx
 
-No markdown.
-No explanation.
-Only JSON.
+Return ONLY valid JSON.
+
+Do not use Markdown.
+Do not use code fences.
+Do not explain anything.
+
+If no readable text exists, return:
+
+[]
 
 `;
 
 }
 
 
-/* =========================
-   PARSE RESPONSE
-========================= */
+/* =========================================
+   تحليل JSON
+========================================= */
 
 function parseResponse(text) {
 
     let cleaned =
-        String(text)
-        .trim()
-        .replace(
-            /```json/gi,
-            ""
-        )
-        .replace(
-            /```/g,
-            ""
-        )
-        .trim();
+        String(text || "")
+            .trim()
+            .replace(
+                /```json/gi,
+                ""
+            )
+            .replace(
+                /```/g,
+                ""
+            )
+            .trim();
 
 
     let parsed;
@@ -1164,49 +1811,75 @@ function parseResponse(text) {
     try {
 
         parsed =
-            JSON.parse(cleaned);
+            JSON.parse(
+                cleaned
+            );
 
     }
 
     catch {
 
         const start =
-            cleaned.indexOf("[");
+            cleaned.indexOf(
+                "["
+            );
+
 
         const end =
-            cleaned.lastIndexOf("]");
+            cleaned.lastIndexOf(
+                "]"
+            );
 
 
         if (
             start === -1 ||
-            end === -1
+            end === -1 ||
+            end <= start
         ) {
 
             throw new Error(
-                "Gemini لم يُرجع JSON صالحاً."
+                "Gemini قرأ الصورة لكن لم يرجع JSON صالحاً."
             );
 
         }
 
 
-        parsed =
-            JSON.parse(
-                cleaned.slice(
-                    start,
-                    end + 1
-                )
+        const jsonPart =
+            cleaned.slice(
+                start,
+                end + 1
             );
+
+
+        try {
+
+            parsed =
+                JSON.parse(
+                    jsonPart
+                );
+
+        }
+
+        catch {
+
+            throw new Error(
+                "تعذر قراءة نتيجة Gemini."
+            );
+
+        }
 
     }
 
 
     if (
-        !Array.isArray(parsed)
+        !Array.isArray(
+            parsed
+        )
     ) {
 
         if (
             Array.isArray(
-                parsed.blocks
+                parsed?.blocks
             )
         ) {
 
@@ -1227,23 +1900,40 @@ function parseResponse(text) {
 
 
     return parsed
-        .map(normalizeBlock)
-        .filter(Boolean);
+        .map(
+            normalizeBlock
+        )
+        .filter(
+            Boolean
+        );
 
 }
 
 
-/* =========================
-   NORMALIZE
-========================= */
+/* =========================================
+   تنظيف المربعات
+========================================= */
 
 function normalizeBlock(block) {
 
+    if (!block) {
+
+        return null;
+
+    }
+
+
+    let box =
+        block.box_2d ||
+        block.box ||
+        block.bbox;
+
+
     if (
         !Array.isArray(
-            block.box_2d
+            box
         ) ||
-        block.box_2d.length < 4
+        box.length < 4
     ) {
 
         return null;
@@ -1257,20 +1947,65 @@ function normalizeBlock(block) {
         ymax,
         xmax
     ] =
-        block.box_2d.map(Number);
+        box.map(
+            Number
+        );
+
+
+    /*
+     بعض النماذج قد ترجع 0-1
+    */
+
+    const largest =
+        Math.max(
+            Math.abs(ymin),
+            Math.abs(xmin),
+            Math.abs(ymax),
+            Math.abs(xmax)
+        );
+
+
+    if (
+        largest <= 1.5
+    ) {
+
+        ymin *=
+            1000;
+
+        xmin *=
+            1000;
+
+        ymax *=
+            1000;
+
+        xmax *=
+            1000;
+
+    }
 
 
     ymin =
-        clamp(ymin);
+        clamp1000(
+            ymin
+        );
+
 
     xmin =
-        clamp(xmin);
+        clamp1000(
+            xmin
+        );
+
 
     ymax =
-        clamp(ymax);
+        clamp1000(
+            ymax
+        );
+
 
     xmax =
-        clamp(xmax);
+        clamp1000(
+            xmax
+        );
 
 
     if (
@@ -1285,13 +2020,17 @@ function normalizeBlock(block) {
 
     const original =
         String(
-            block.original || ""
+            block.original ||
+            block.text ||
+            ""
         ).trim();
 
 
     const translation =
         String(
-            block.translation || ""
+            block.translation ||
+            block.translated ||
+            ""
         ).trim();
 
 
@@ -1308,10 +2047,12 @@ function normalizeBlock(block) {
     return {
 
         box_2d: [
+
             ymin,
             xmin,
             ymax,
             xmax
+
         ],
 
         original,
@@ -1329,22 +2070,22 @@ function normalizeBlock(block) {
 }
 
 
-function clamp(n) {
+function clamp1000(value) {
 
     return Math.max(
         0,
         Math.min(
             1000,
-            Number(n)
+            Number(value)
         )
     );
 
 }
 
 
-/* =========================
-   DRAW
-========================= */
+/* =========================================
+   رسم النتيجة
+========================================= */
 
 function drawTranslation(blocks) {
 
@@ -1363,62 +2104,69 @@ function drawTranslation(blocks) {
     );
 
 
-    blocks.forEach(
-        block => {
+    for (
+        const block of blocks
+    ) {
 
-            const [
-                ymin,
-                xmin,
-                ymax,
-                xmax
-            ] =
-                block.box_2d;
+        const [
 
+            ymin,
+            xmin,
+            ymax,
+            xmax
 
-            const x =
-                xmin / 1000 *
-                canvas.width;
-
-            const y =
-                ymin / 1000 *
-                canvas.height;
-
-            const width =
-                (
-                    xmax -
-                    xmin
-                ) /
-                1000 *
-                canvas.width;
-
-            const height =
-                (
-                    ymax -
-                    ymin
-                ) /
-                1000 *
-                canvas.height;
+        ] =
+            block.box_2d;
 
 
-            drawTextBox(
-                block.translation,
-                x,
-                y,
-                width,
-                height
-            );
+        const x =
+            xmin /
+            1000 *
+            canvas.width;
 
-        }
-    );
+
+        const y =
+            ymin /
+            1000 *
+            canvas.height;
+
+
+        const width =
+            (
+                xmax -
+                xmin
+            ) /
+            1000 *
+            canvas.width;
+
+
+        const height =
+            (
+                ymax -
+                ymin
+            ) /
+            1000 *
+            canvas.height;
+
+
+        drawTranslationBox(
+            block.translation,
+            x,
+            y,
+            width,
+            height
+        );
+
+    }
 
 }
 
 
-/* =========================
-   DRAW TEXT BOX
-========================= */
+/* =========================================
+   رسم صندوق الترجمة
+========================================= */
 
-function drawTextBox(
+function drawTranslationBox(
     text,
     x,
     y,
@@ -1426,36 +2174,47 @@ function drawTextBox(
     height
 ) {
 
+    if (
+        width <= 2 ||
+        height <= 2
+    ) {
+
+        return;
+
+    }
+
+
     const padding =
         Math.max(
-            5,
+            4,
             Math.min(
                 width,
                 height
-            ) * .07
+            ) *
+            0.06
         );
 
+
+    /*
+     إخفاء النص الياباني
+    */
 
     ctx.save();
 
 
-    /*
-       تغطية النص الأصلي
-    */
-
     ctx.fillStyle =
-        "rgba(255,255,255,0.95)";
+        "rgba(255,255,255,0.96)";
 
 
-    roundRect(
+    drawRoundedRectangle(
         x,
         y,
         width,
         height,
         Math.min(
-            15,
-            width * .1,
-            height * .1
+            18,
+            width * 0.12,
+            height * 0.12
         )
     );
 
@@ -1463,19 +2222,7 @@ function drawTextBox(
     ctx.fill();
 
 
-    let fontSize =
-        Math.min(
-            48,
-            height * .30,
-            width * .14
-        );
-
-
-    fontSize =
-        Math.max(
-            10,
-            fontSize
-        );
+    ctx.restore();
 
 
     const maxWidth =
@@ -1494,7 +2241,23 @@ function drawTextBox(
         );
 
 
-    let lines = [];
+    let fontSize =
+        Math.min(
+            52,
+            height * 0.33,
+            width * 0.17
+        );
+
+
+    fontSize =
+        Math.max(
+            10,
+            fontSize
+        );
+
+
+    let lines =
+        [];
 
 
     while (
@@ -1502,7 +2265,9 @@ function drawTextBox(
     ) {
 
         ctx.font =
-            `bold ${fontSize}px Arial, Tahoma, sans-serif`;
+            "bold " +
+            fontSize +
+            "px Arial, Tahoma, sans-serif";
 
 
         lines =
@@ -1513,7 +2278,8 @@ function drawTextBox(
 
 
         const lineHeight =
-            fontSize * 1.22;
+            fontSize *
+            1.22;
 
 
         if (
@@ -1527,21 +2293,37 @@ function drawTextBox(
         }
 
 
-        fontSize--;
+        fontSize -=
+            1;
+
+    }
+
+
+    if (
+        !lines.length
+    ) {
+
+        return;
 
     }
 
 
     const lineHeight =
-        fontSize * 1.22;
+        fontSize *
+        1.22;
+
+
+    ctx.save();
 
 
     ctx.font =
-        `bold ${fontSize}px Arial, Tahoma, sans-serif`;
+        "bold " +
+        fontSize +
+        "px Arial, Tahoma, sans-serif";
 
 
     ctx.fillStyle =
-        "#111";
+        "#111111";
 
 
     ctx.textAlign =
@@ -1552,11 +2334,22 @@ function drawTextBox(
         "middle";
 
 
-    ctx.direction =
+    if (
         targetLanguage.value ===
         "Arabic"
-            ? "rtl"
-            : "ltr";
+    ) {
+
+        ctx.direction =
+            "rtl";
+
+    }
+
+    else {
+
+        ctx.direction =
+            "ltr";
+
+    }
 
 
     const totalHeight =
@@ -1564,7 +2357,7 @@ function drawTextBox(
         lineHeight;
 
 
-    let lineY =
+    let currentY =
         y +
         height / 2 -
         totalHeight / 2 +
@@ -1578,12 +2371,12 @@ function drawTextBox(
         ctx.fillText(
             line,
             x + width / 2,
-            lineY,
+            currentY,
             maxWidth
         );
 
 
-        lineY +=
+        currentY +=
             lineHeight;
 
     }
@@ -1594,25 +2387,25 @@ function drawTextBox(
 }
 
 
-/* =========================
-   WRAP TEXT
-========================= */
+/* =========================================
+   تقسيم النص إلى أسطر
+========================================= */
 
 function wrapText(
     text,
     maxWidth
 ) {
 
-    text =
-        String(text)
-        .replace(
-            /\s+/g,
-            " "
-        )
-        .trim();
+    const cleanText =
+        String(text || "")
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
 
 
-    if (!text) {
+    if (!cleanText) {
 
         return [];
 
@@ -1620,12 +2413,16 @@ function wrapText(
 
 
     const words =
-        text.split(" ");
+        cleanText.split(
+            " "
+        );
 
 
-    const lines = [];
+    const lines =
+        [];
 
-    let line =
+
+    let currentLine =
         "";
 
 
@@ -1633,9 +2430,9 @@ function wrapText(
         const word of words
     ) {
 
-        const test =
-            line
-                ? line +
+        const testLine =
+            currentLine
+                ? currentLine +
                   " " +
                   word
                 : word;
@@ -1643,104 +2440,113 @@ function wrapText(
 
         if (
             ctx.measureText(
-                test
+                testLine
             ).width <=
             maxWidth
         ) {
 
-            line =
-                test;
+            currentLine =
+                testLine;
+
+
+            continue;
+
+        }
+
+
+        if (
+            currentLine
+        ) {
+
+            lines.push(
+                currentLine
+            );
+
+
+            currentLine =
+                "";
+
+        }
+
+
+        /*
+         إذا كانت الكلمة نفسها طويلة جداً
+        */
+
+        if (
+            ctx.measureText(
+                word
+            ).width >
+            maxWidth
+        ) {
+
+            let piece =
+                "";
+
+
+            for (
+                const character of word
+            ) {
+
+                const testPiece =
+                    piece +
+                    character;
+
+
+                if (
+                    ctx.measureText(
+                        testPiece
+                    ).width >
+                    maxWidth
+                ) {
+
+                    if (
+                        piece
+                    ) {
+
+                        lines.push(
+                            piece
+                        );
+
+                    }
+
+
+                    piece =
+                        character;
+
+                }
+
+                else {
+
+                    piece =
+                        testPiece;
+
+                }
+
+            }
+
+
+            currentLine =
+                piece;
 
         }
 
         else {
 
-            if (line) {
-
-                lines.push(
-                    line
-                );
-
-            }
-
-
-            /*
-             Word too long:
-             divide by characters.
-            */
-
-            if (
-                ctx.measureText(
-                    word
-                ).width >
-                maxWidth
-            ) {
-
-                let chars =
-                    "";
-
-
-                for (
-                    const char of word
-                ) {
-
-                    const testChars =
-                        chars +
-                        char;
-
-
-                    if (
-                        ctx.measureText(
-                            testChars
-                        ).width >
-                        maxWidth
-                    ) {
-
-                        if (chars) {
-
-                            lines.push(
-                                chars
-                            );
-
-                        }
-
-
-                        chars =
-                            char;
-
-                    }
-
-                    else {
-
-                        chars =
-                            testChars;
-
-                    }
-
-                }
-
-
-                line =
-                    chars;
-
-            }
-
-            else {
-
-                line =
-                    word;
-
-            }
+            currentLine =
+                word;
 
         }
 
     }
 
 
-    if (line) {
+    if (
+        currentLine
+    ) {
 
         lines.push(
-            line
+            currentLine
         );
 
     }
@@ -1751,11 +2557,11 @@ function wrapText(
 }
 
 
-/* =========================
-   ROUND RECT
-========================= */
+/* =========================================
+   مستطيل بحواف مستديرة
+========================================= */
 
-function roundRect(
+function drawRoundedRectangle(
     x,
     y,
     width,
@@ -1763,23 +2569,90 @@ function roundRect(
     radius
 ) {
 
+    radius =
+        Math.max(
+            0,
+            Math.min(
+                radius,
+                width / 2,
+                height / 2
+            )
+        );
+
+
     ctx.beginPath();
 
 
-    ctx.roundRect(
+    ctx.moveTo(
+        x + radius,
+        y
+    );
+
+
+    ctx.lineTo(
+        x + width - radius,
+        y
+    );
+
+
+    ctx.quadraticCurveTo(
+        x + width,
+        y,
+        x + width,
+        y + radius
+    );
+
+
+    ctx.lineTo(
+        x + width,
+        y + height - radius
+    );
+
+
+    ctx.quadraticCurveTo(
+        x + width,
+        y + height,
+        x + width - radius,
+        y + height
+    );
+
+
+    ctx.lineTo(
+        x + radius,
+        y + height
+    );
+
+
+    ctx.quadraticCurveTo(
+        x,
+        y + height,
+        x,
+        y + height - radius
+    );
+
+
+    ctx.lineTo(
+        x,
+        y + radius
+    );
+
+
+    ctx.quadraticCurveTo(
         x,
         y,
-        width,
-        height,
-        radius
+        x + radius,
+        y
     );
+
+
+    ctx.closePath();
 
 }
 
 
-/* =========================
-   RESULTS
-========================= */
+/* =========================================
+   عرض النصوص أسفل الصورة
+========================================= */
 
 function showResults(blocks) {
 
@@ -1811,22 +2684,25 @@ function showResults(blocks) {
 
 
             original.textContent =
-                (index + 1) +
+                (
+                    index +
+                    1
+                ) +
                 ". الأصل: " +
                 block.original;
 
 
-            const translation =
+            const translated =
                 document.createElement(
                     "div"
                 );
 
 
-            translation.className =
+            translated.className =
                 "translation";
 
 
-            translation.textContent =
+            translated.textContent =
                 block.translation;
 
 
@@ -1836,7 +2712,7 @@ function showResults(blocks) {
 
 
             wrapper.appendChild(
-                translation
+                translated
             );
 
 
@@ -1854,9 +2730,9 @@ function showResults(blocks) {
 }
 
 
-/* =========================
-   DOWNLOAD
-========================= */
+/* =========================================
+   تنزيل الصورة
+========================================= */
 
 downloadButton.addEventListener(
     "click",
@@ -1865,7 +2741,17 @@ downloadButton.addEventListener(
         canvas.toBlob(
             blob => {
 
-                if (!blob) return;
+                if (!blob) {
+
+                    setStatus(
+                        "❌ تعذر إنشاء الصورة.",
+                        "error"
+                    );
+
+
+                    return;
+
+                }
 
 
                 const url =
@@ -1874,29 +2760,29 @@ downloadButton.addEventListener(
                     );
 
 
-                const a =
+                const link =
                     document.createElement(
                         "a"
                     );
 
 
-                a.href =
+                link.href =
                     url;
 
 
-                a.download =
+                link.download =
                     "manga-translated.png";
 
 
                 document.body.appendChild(
-                    a
+                    link
                 );
 
 
-                a.click();
+                link.click();
 
 
-                a.remove();
+                link.remove();
 
 
                 setTimeout(
@@ -1908,18 +2794,16 @@ downloadButton.addEventListener(
                 );
 
             },
-
             "image/png"
-
         );
 
     }
 );
 
 
-/* =========================
-   NEW IMAGE
-========================= */
+/* =========================================
+   صورة جديدة
+========================================= */
 
 newButton.addEventListener(
     "click",
@@ -1965,6 +2849,10 @@ newButton.addEventListener(
             "";
 
 
+        modelInfo.textContent =
+            "";
+
+
         setStatus(
             "اختر صورة للبدء"
         );
@@ -1975,4 +2863,4 @@ newButton.addEventListener(
 </script>
 
 </body>
-</html>
+    </html>
