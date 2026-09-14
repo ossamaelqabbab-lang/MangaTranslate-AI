@@ -10,7 +10,7 @@
     content="width=device-width, initial-scale=1.0"
 >
 
-<title>MangaTranslate AI</title>
+<title>MangaTranslate AI V2</title>
 
 <style>
 
@@ -44,6 +44,16 @@ header h1 {
 header p {
     color: #9ca3af;
     margin-top: 8px;
+}
+
+.version {
+    display: inline-block;
+    background: #252c3c;
+    color: #adb5c5;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin-top: 7px;
 }
 
 .card {
@@ -125,6 +135,11 @@ button:disabled {
 
 #downloadButton {
     background: #07885f;
+    display: none;
+}
+
+#restoreButton {
+    background: #3b465e;
     display: none;
 }
 
@@ -217,7 +232,6 @@ canvas {
 
 </head>
 
-
 <body>
 
 <div class="app">
@@ -229,6 +243,10 @@ canvas {
 <p>
 ترجمة المانغا والقصص المصورة داخل الصورة
 </p>
+
+<div class="version">
+V2 — تحسين الفقاعات والنص العربي
+</div>
 
 </header>
 
@@ -247,8 +265,8 @@ canvas {
 />
 
 <p class="note">
-المفتاح لا يتم وضعه داخل كود GitHub.
-يُستخدم فقط عند تشغيل الصفحة.
+المفتاح لا يتم وضعه داخل ملف GitHub.
+تضعه فقط عند استخدام الموقع.
 </p>
 
 
@@ -370,6 +388,11 @@ JPG / PNG / WEBP
 </button>
 
 
+<button id="restoreButton">
+↩ عرض الصورة الأصلية
+</button>
+
+
 <button id="newButton">
 🗑 صورة جديدة
 </button>
@@ -438,6 +461,9 @@ const translateButton =
 const downloadButton =
     document.getElementById("downloadButton");
 
+const restoreButton =
+    document.getElementById("restoreButton");
+
 const newButton =
     document.getElementById("newButton");
 
@@ -465,6 +491,8 @@ const ctx =
 
 let preparedImage = null;
 let preparedBase64 = null;
+let lastBlocks = [];
+let translatedVisible = false;
 
 
 /* =========================================
@@ -473,11 +501,9 @@ let preparedBase64 = null;
 
 function setStatus(text, type = "") {
 
-    statusBox.textContent =
-        text;
+    statusBox.textContent = text;
 
-    statusBox.className =
-        type;
+    statusBox.className = type;
 
 }
 
@@ -541,19 +567,7 @@ imageInput.addEventListener(
                 preparedImage.height;
 
 
-            ctx.clearRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-
-            ctx.drawImage(
-                preparedImage,
-                0,
-                0
-            );
+            drawOriginalImage();
 
 
             canvasCard.style.display =
@@ -568,12 +582,21 @@ imageInput.addEventListener(
                 "none";
 
 
+            restoreButton.style.display =
+                "none";
+
+
             translateButton.disabled =
                 false;
 
 
+            lastBlocks = [];
+
+            translatedVisible = false;
+
+
             setStatus(
-                "✅ الصورة جاهزة.\nأدخل مفتاح Gemini ثم اضغط ترجمة الصورة.",
+                "✅ الصورة جاهزة.\nاضغط ترجمة الصورة.",
                 "success"
             );
 
@@ -613,13 +636,8 @@ async function prepareImage(file) {
         originalImage.naturalHeight;
 
 
-    /*
-       لتقليل حجم الطلب
-       مع إبقاء النص واضحاً
-    */
-
     const maxDimension =
-        1800;
+        2000;
 
 
     if (
@@ -690,7 +708,7 @@ async function prepareImage(file) {
     const dataURL =
         tempCanvas.toDataURL(
             "image/jpeg",
-            0.92
+            0.94
         );
 
 
@@ -730,7 +748,7 @@ async function prepareImage(file) {
 
 
 /* =========================================
-   تحويل File إلى Image
+   File -> Image
 ========================================= */
 
 function fileToImage(file) {
@@ -788,6 +806,34 @@ function fileToImage(file) {
 
 
 /* =========================================
+   رسم الصورة الأصلية
+========================================= */
+
+function drawOriginalImage() {
+
+    if (!preparedImage) {
+        return;
+    }
+
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.drawImage(
+        preparedImage,
+        0,
+        0
+    );
+
+}
+
+
+/* =========================================
    زر الترجمة
 ========================================= */
 
@@ -831,6 +877,10 @@ translateButton.addEventListener(
             "none";
 
 
+        restoreButton.style.display =
+            "none";
+
+
         results.style.display =
             "none";
 
@@ -842,15 +892,10 @@ translateButton.addEventListener(
         try {
 
             setStatus(
-                "🔎 جاري البحث عن نماذج Gemini المتاحة...",
+                "🔎 جاري البحث عن نموذج Gemini مناسب...",
                 "loading"
             );
 
-
-            /*
-             نجلب النماذج المتاحة
-             لمفتاح المستخدم فعلياً
-            */
 
             const models =
                 await getAvailableModels(
@@ -861,16 +906,10 @@ translateButton.addEventListener(
             if (!models.length) {
 
                 throw new Error(
-                    "لم يتم العثور على نموذج Gemini مناسب لهذا المفتاح."
+                    "لم يتم العثور على نموذج Gemini مناسب."
                 );
 
             }
-
-
-            console.log(
-                "Available models:",
-                models
-            );
 
 
             const prompt =
@@ -900,10 +939,14 @@ translateButton.addEventListener(
             if (!blocks.length) {
 
                 throw new Error(
-                    "لم يتم العثور على نص قابل للترجمة في الصورة."
+                    "لم يتم العثور على نص قابل للترجمة."
                 );
 
             }
+
+
+            lastBlocks =
+                blocks;
 
 
             drawTranslation(
@@ -916,7 +959,15 @@ translateButton.addEventListener(
             );
 
 
+            translatedVisible =
+                true;
+
+
             downloadButton.style.display =
+                "block";
+
+
+            restoreButton.style.display =
                 "block";
 
 
@@ -957,7 +1008,7 @@ translateButton.addEventListener(
 
 
 /* =========================================
-   الحصول على النماذج المتاحة
+   النماذج المتاحة
 ========================================= */
 
 async function getAvailableModels(apiKey) {
@@ -966,18 +1017,12 @@ async function getAvailableModels(apiKey) {
         "https://generativelanguage.googleapis.com/v1beta/models?pageSize=100";
 
 
-    let response;
-
-
     try {
 
-        response =
+        const response =
             await fetch(
                 url,
                 {
-
-                    method:
-                        "GET",
 
                     headers: {
 
@@ -989,197 +1034,149 @@ async function getAvailableModels(apiKey) {
                 }
             );
 
+
+        const data =
+            await response.json();
+
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            throw new Error(
+                "مفتاح Gemini غير صالح أو لا يملك الصلاحية."
+            );
+
+        }
+
+
+        if (!response.ok) {
+
+            return fallbackModels();
+
+        }
+
+
+        const models =
+            Array.isArray(data.models)
+                ? data.models
+                : [];
+
+
+        const usable =
+            models
+                .filter(
+                    model => {
+
+                        const name =
+                            String(
+                                model.name || ""
+                            ).toLowerCase();
+
+
+                        const methods =
+                            model.supportedGenerationMethods ||
+                            [];
+
+
+                        if (
+                            !name.includes("gemini")
+                        ) {
+                            return false;
+                        }
+
+
+                        if (
+                            !methods.includes(
+                                "generateContent"
+                            )
+                        ) {
+                            return false;
+                        }
+
+
+                        const forbidden = [
+
+                            "embedding",
+                            "imagen",
+                            "tts",
+                            "audio",
+                            "live",
+                            "aqa",
+                            "image-generation"
+
+                        ];
+
+
+                        return !forbidden.some(
+                            word =>
+                                name.includes(
+                                    word
+                                )
+                        );
+
+                    }
+                )
+                .map(
+                    model =>
+                        String(
+                            model.name
+                        ).replace(
+                            /^models\//,
+                            ""
+                        )
+                );
+
+
+        usable.sort(
+            (a, b) =>
+                scoreModel(b) -
+                scoreModel(a)
+        );
+
+
+        return [
+            ...new Set(
+                usable
+            )
+        ].slice(
+            0,
+            8
+        );
+
     }
 
     catch (error) {
 
-        /*
-         إذا فشل جلب القائمة
-         نستخدم نماذج احتياطية
-        */
+        if (
+            String(
+                error?.message || ""
+            ).includes(
+                "مفتاح Gemini"
+            )
+        ) {
 
-        console.warn(
-            "Model list request failed",
-            error
-        );
+            throw error;
+
+        }
 
 
         return fallbackModels();
 
     }
-
-
-    let data = {};
-
-
-    try {
-
-        data =
-            await response.json();
-
-    }
-
-    catch {
-
-    }
-
-
-    if (
-        response.status === 401 ||
-        response.status === 403
-    ) {
-
-        throw new Error(
-            "مفتاح Gemini غير صالح أو لا يملك صلاحية استخدام Gemini API."
-        );
-
-    }
-
-
-    if (!response.ok) {
-
-        console.warn(
-            "Could not fetch model list",
-            data
-        );
-
-
-        return fallbackModels();
-
-    }
-
-
-    const available =
-        Array.isArray(data.models)
-            ? data.models
-            : [];
-
-
-    const candidates =
-        available
-            .filter(
-                model => {
-
-                    const name =
-                        String(
-                            model.name || ""
-                        ).toLowerCase();
-
-
-                    const methods =
-                        model.supportedGenerationMethods ||
-                        [];
-
-
-                    if (
-                        !name.includes("gemini")
-                    ) {
-                        return false;
-                    }
-
-
-                    if (
-                        !methods.includes(
-                            "generateContent"
-                        )
-                    ) {
-                        return false;
-                    }
-
-
-                    /*
-                     نستبعد نماذج ليست مناسبة
-                     لمهمتنا
-                    */
-
-                    const excludedWords = [
-
-                        "embedding",
-                        "aqa",
-                        "tts",
-                        "audio",
-                        "live",
-                        "imagen",
-                        "image-generation"
-
-                    ];
-
-
-                    for (
-                        const word of excludedWords
-                    ) {
-
-                        if (
-                            name.includes(
-                                word
-                            )
-                        ) {
-
-                            return false;
-
-                        }
-
-                    }
-
-
-                    return true;
-
-                }
-            )
-            .map(
-                model =>
-                    String(
-                        model.name || ""
-                    )
-                    .replace(
-                        /^models\//,
-                        ""
-                    )
-            );
-
-
-    /*
-     ترتيب النماذج:
-     Flash Lite أولاً
-     ثم Flash
-     ثم Pro
-    */
-
-    candidates.sort(
-        (a, b) =>
-            scoreModel(b) -
-            scoreModel(a)
-    );
-
-
-    const unique =
-        [
-            ...new Set(
-                candidates
-            )
-        ];
-
-
-    /*
-     لا نريد تجربة عشرات النماذج
-    */
-
-    return unique.slice(
-        0,
-        8
-    );
 
 }
 
 
 /* =========================================
-   تقييم النموذج
+   ترتيب النماذج
 ========================================= */
 
-function scoreModel(modelName) {
+function scoreModel(name) {
 
-    const name =
-        modelName.toLowerCase();
+    const model =
+        name.toLowerCase();
 
 
     let score =
@@ -1187,76 +1184,65 @@ function scoreModel(modelName) {
 
 
     if (
-        name.includes(
+        model.includes(
             "flash-lite"
         )
     ) {
 
-        score +=
-            100;
+        score += 110;
 
     }
 
     else if (
-        name.includes(
+        model.includes(
             "flash"
         )
     ) {
 
-        score +=
-            90;
+        score += 100;
 
     }
 
     else if (
-        name.includes(
+        model.includes(
             "pro"
         )
     ) {
 
-        score +=
-            60;
-
-    }
-
-
-    /*
-     النماذج المستقرة أفضل
-     من Preview للاختبار الحالي
-    */
-
-    if (
-        name.includes(
-            "preview"
-        )
-    ) {
-
-        score -=
-            15;
+        score += 60;
 
     }
 
 
     if (
-        name.includes(
-            "exp"
-        )
-    ) {
-
-        score -=
-            20;
-
-    }
-
-
-    if (
-        name.includes(
+        model.includes(
             "latest"
         )
     ) {
 
-        score +=
-            3;
+        score += 20;
+
+    }
+
+
+    if (
+        model.includes(
+            "preview"
+        )
+    ) {
+
+        score -= 10;
+
+    }
+
+
+    if (
+        model.includes(
+            "exp"
+        )
+    ) {
+
+        score -= 20;
 
     }
 
@@ -1267,20 +1253,20 @@ function scoreModel(modelName) {
 
 
 /* =========================================
-   قائمة احتياطية
+   نماذج احتياطية
 ========================================= */
 
 function fallbackModels() {
 
     return [
 
+        "gemini-flash-lite-latest",
+
+        "gemini-flash-latest",
+
         "gemini-2.5-flash-lite",
 
-        "gemini-2.5-flash",
-
-        "gemini-2.0-flash-lite",
-
-        "gemini-2.0-flash"
+        "gemini-2.5-flash"
 
     ];
 
@@ -1288,7 +1274,7 @@ function fallbackModels() {
 
 
 /* =========================================
-   Gemini + إعادة المحاولة
+   Gemini + fallback
 ========================================= */
 
 async function callGeminiWithFallback(
@@ -1313,10 +1299,6 @@ async function callGeminiWithFallback(
         "فشل الاتصال بـ Gemini.";
 
 
-    /*
-     نجرب كل نموذج
-    */
-
     for (
         let modelIndex = 0;
         modelIndex < models.length;
@@ -1329,10 +1311,6 @@ async function callGeminiWithFallback(
             ];
 
 
-        /*
-         ثلاث محاولات للنموذج
-        */
-
         for (
             let attempt = 1;
             attempt <= 3;
@@ -1344,11 +1322,7 @@ async function callGeminiWithFallback(
                 model +
                 "\nالمحاولة " +
                 attempt +
-                " من 3" +
-                "\nالنموذج " +
-                (modelIndex + 1) +
-                " من " +
-                models.length,
+                " من 3",
                 "loading"
             );
 
@@ -1402,6 +1376,1889 @@ async function callGeminiWithFallback(
 
                                                 {
 
+                                                    inline_data: {
+
+                                                        mime_type:
+                                                            "image/jpeg",
+
+                                                        data:
+                                                            base64
+
+                                                    }
+
+                                                }
+
+                                            ]
+
+                                        }
+
+                                    ]
+
+                                })
+
+                        }
+                    );
+
+
+                let data = {};
+
+
+                try {
+
+                    data =
+                        await response.json();
+
+                }
+
+                catch {}
+
+
+                if (response.ok) {
+
+                    const text =
+                        extractGeminiText(
+                            data
+                        );
+
+
+                    if (text) {
+
+                        return {
+
+                            model,
+                            text
+
+                        };
+
+                    }
+
+
+                    lastError =
+                        "النموذج أعاد استجابة فارغة.";
+
+
+                    break;
+
+                }
+
+
+                const message =
+                    data?.error?.message ||
+                    (
+                        "HTTP " +
+                        response.status
+                    );
+
+
+                lastError =
+                    message;
+
+
+                if (
+                    response.status === 401 ||
+                    response.status === 403
+                ) {
+
+                    throw new Error(
+                        "مشكلة في Gemini API Key:\n" +
+                        message
+                    );
+
+                }
+
+
+                if (
+                    response.status === 400 ||
+                    response.status === 404
+                ) {
+
+                    break;
+
+                }
+
+
+                if (
+                    response.status === 429 ||
+                    response.status === 500 ||
+                    response.status === 502 ||
+                    response.status === 503 ||
+                    response.status === 504
+                ) {
+
+                    if (
+                        attempt < 3
+                    ) {
+
+                        const delay =
+                            attempt === 1
+                                ? 2500
+                                : 6000;
+
+
+                        setStatus(
+                            "⏳ النموذج مشغول.\nإعادة المحاولة بعد قليل...",
+                            "loading"
+                        );
+
+
+                        await sleep(
+                            delay
+                        );
+
+
+                        continue;
+
+                    }
+
+
+                    break;
+
+                }
+
+
+                break;
+
+            }
+
+            catch (error) {
+
+                if (
+                    String(
+                        error?.message || ""
+                    ).includes(
+                        "Gemini API Key"
+                    )
+                ) {
+
+                    throw error;
+
+                }
+
+
+                lastError =
+                    error?.message ||
+                    String(error);
+
+
+                if (
+                    attempt < 3
+                ) {
+
+                    await sleep(
+                        2000 *
+                        attempt
+                    );
+
+                    continue;
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    throw new Error(
+        "تعذر استخدام نماذج Gemini حالياً.\n\nآخر رسالة:\n" +
+        lastError
+    );
+
+}
+
+
+/* =========================================
+   استخراج النص
+========================================= */
+
+function extractGeminiText(data) {
+
+    const candidates =
+        data?.candidates;
+
+
+    if (
+        !Array.isArray(candidates) ||
+        !candidates.length
+    ) {
+
+        return "";
+
+    }
+
+
+    const parts =
+        candidates[0]
+            ?.content
+            ?.parts;
+
+
+    if (
+        !Array.isArray(parts)
+    ) {
+
+        return "";
+
+    }
+
+
+    return parts
+        .map(
+            part =>
+                part?.text ||
+                ""
+        )
+        .join("")
+        .trim();
+
+}
+
+
+/* =========================================
+   Prompt V2
+========================================= */
+
+function createPrompt() {
+
+    const source =
+        sourceLanguage.value;
+
+
+    const target =
+        targetLanguage.value;
+
+
+    return `
+
+You are an expert manga OCR, manga layout detection and professional translator.
+
+Analyze the ENTIRE manga image carefully.
+
+SOURCE LANGUAGE:
+${source}
+
+TARGET LANGUAGE:
+${target}
+
+For every meaningful text region detect:
+
+1. The original text.
+2. The natural translation.
+3. The bounding box of the original printed text.
+4. A SAFE rectangular area INSIDE the speech bubble or narration area where the translated text can be placed.
+
+IMPORTANT DIFFERENCE:
+
+"text_box_2d" =
+only the area occupied by the original printed letters.
+
+"safe_box_2d" =
+the largest useful rectangular white/empty area INSIDE the same speech bubble.
+
+The safe box should:
+
+- stay inside the speech bubble
+- avoid crossing the black bubble border
+- avoid faces, bodies or artwork
+- include enough empty space for translated text
+- preferably be larger than the original text box
+- cover the original printed text
+- work as a clean replacement area
+
+For a rectangular narration box, safe_box_2d may cover most of the inner narration area.
+
+VERY IMPORTANT:
+
+- One speech bubble should normally be ONE block.
+- Do NOT split Japanese characters individually.
+- Do NOT split vertical Japanese dialogue into one block per column unless they are clearly separate sentences/bubbles.
+- Group all text belonging to the same bubble.
+- Do not invent text.
+- Ignore page numbers and meaningless tiny marks.
+- Preserve names.
+- Translate naturally into ${target}.
+- For Arabic, use fluent natural Arabic.
+- Keep translations concise enough to fit the original bubble.
+
+COORDINATES:
+
+All coordinates are normalized 0 to 1000.
+
+Format:
+
+[ymin, xmin, ymax, xmax]
+
+RETURN ONLY JSON.
+
+Example:
+
+[
+  {
+    "text_box_2d": [150, 650, 300, 820],
+    "safe_box_2d": [100, 590, 355, 890],
+    "original": "てめーの仕事だ！",
+    "translation": "إنها مهمتك!",
+    "type": "dialogue"
+  }
+]
+
+Allowed types:
+
+dialogue
+narration
+caption
+sfx
+
+No markdown.
+No explanation.
+No code fences.
+
+If there is no readable text return:
+
+[]
+
+`;
+
+}
+
+
+/* =========================================
+   Parse
+========================================= */
+
+function parseResponse(text) {
+
+    let cleaned =
+        String(
+            text || ""
+        )
+            .trim()
+            .replace(
+                /```json/gi,
+                ""
+            )
+            .replace(
+                /```/g,
+                ""
+            )
+            .trim();
+
+
+    let parsed;
+
+
+    try {
+
+        parsed =
+            JSON.parse(
+                cleaned
+            );
+
+    }
+
+    catch {
+
+        const start =
+            cleaned.indexOf(
+                "["
+            );
+
+
+        const end =
+            cleaned.lastIndexOf(
+                "]"
+            );
+
+
+        if (
+            start === -1 ||
+            end === -1 ||
+            end <= start
+        ) {
+
+            throw new Error(
+                "Gemini لم يرجع JSON صالحاً."
+            );
+
+        }
+
+
+        parsed =
+            JSON.parse(
+                cleaned.slice(
+                    start,
+                    end + 1
+                )
+            );
+
+    }
+
+
+    if (
+        !Array.isArray(parsed)
+    ) {
+
+        if (
+            Array.isArray(
+                parsed?.blocks
+            )
+        ) {
+
+            parsed =
+                parsed.blocks;
+
+        }
+
+        else {
+
+            throw new Error(
+                "صيغة نتيجة Gemini غير صحيحة."
+            );
+
+        }
+
+    }
+
+
+    return parsed
+        .map(
+            normalizeBlock
+        )
+        .filter(
+            Boolean
+        );
+
+}
+
+
+/* =========================================
+   Normalize
+========================================= */
+
+function normalizeBlock(block) {
+
+    if (!block) {
+
+        return null;
+
+    }
+
+
+    let textBox =
+        block.text_box_2d ||
+        block.box_2d ||
+        block.bbox ||
+        block.box;
+
+
+    if (
+        !Array.isArray(textBox) ||
+        textBox.length < 4
+    ) {
+
+        return null;
+
+    }
+
+
+    textBox =
+        normalizeBox(
+            textBox
+        );
+
+
+    if (!textBox) {
+
+        return null;
+
+    }
+
+
+    let safeBox =
+        block.safe_box_2d;
+
+
+    if (
+        Array.isArray(safeBox) &&
+        safeBox.length >= 4
+    ) {
+
+        safeBox =
+            normalizeBox(
+                safeBox
+            );
+
+    }
+
+    else {
+
+        safeBox =
+            expandBox(
+                textBox,
+                45,
+                55
+            );
+
+    }
+
+
+    if (!safeBox) {
+
+        safeBox =
+            textBox;
+
+    }
+
+
+    /*
+     تأكد أن safeBox يغطي textBox
+    */
+
+    safeBox = [
+
+        Math.min(
+            safeBox[0],
+            textBox[0]
+        ),
+
+        Math.min(
+            safeBox[1],
+            textBox[1]
+        ),
+
+        Math.max(
+            safeBox[2],
+            textBox[2]
+        ),
+
+        Math.max(
+            safeBox[3],
+            textBox[3]
+        )
+
+    ].map(
+        clamp1000
+    );
+
+
+    const original =
+        String(
+            block.original ||
+            block.text ||
+            ""
+        ).trim();
+
+
+    const translation =
+        String(
+            block.translation ||
+            block.translated ||
+            ""
+        ).trim();
+
+
+    if (
+        !original &&
+        !translation
+    ) {
+
+        return null;
+
+    }
+
+
+    return {
+
+        text_box_2d:
+            textBox,
+
+        safe_box_2d:
+            safeBox,
+
+        original,
+
+        translation:
+            translation ||
+            original,
+
+        type:
+            block.type ||
+            "dialogue"
+
+    };
+
+}
+
+
+/* =========================================
+   Normalize box
+========================================= */
+
+function normalizeBox(box) {
+
+    let values =
+        box
+            .slice(
+                0,
+                4
+            )
+            .map(
+                Number
+            );
+
+
+    if (
+        values.some(
+            value =>
+                !Number.isFinite(
+                    value
+                )
+        )
+    ) {
+
+        return null;
+
+    }
+
+
+    let [
+        ymin,
+        xmin,
+        ymax,
+        xmax
+    ] =
+        values;
+
+
+    const maxValue =
+        Math.max(
+            Math.abs(ymin),
+            Math.abs(xmin),
+            Math.abs(ymax),
+            Math.abs(xmax)
+        );
+
+
+    if (
+        maxValue <= 1.5
+    ) {
+
+        ymin *= 1000;
+        xmin *= 1000;
+        ymax *= 1000;
+        xmax *= 1000;
+
+    }
+
+
+    ymin =
+        clamp1000(
+            ymin
+        );
+
+
+    xmin =
+        clamp1000(
+            xmin
+        );
+
+
+    ymax =
+        clamp1000(
+            ymax
+        );
+
+
+    xmax =
+        clamp1000(
+            xmax
+        );
+
+
+    if (
+        ymax <= ymin ||
+        xmax <= xmin
+    ) {
+
+        return null;
+
+    }
+
+
+    return [
+
+        ymin,
+        xmin,
+        ymax,
+        xmax
+
+    ];
+
+}
+
+
+/* =========================================
+   Expand fallback
+========================================= */
+
+function expandBox(
+    box,
+    vertical,
+    horizontal
+) {
+
+    const [
+        ymin,
+        xmin,
+        ymax,
+        xmax
+    ] =
+        box;
+
+
+    return [
+
+        clamp1000(
+            ymin -
+            vertical
+        ),
+
+        clamp1000(
+            xmin -
+            horizontal
+        ),
+
+        clamp1000(
+            ymax +
+            vertical
+        ),
+
+        clamp1000(
+            xmax +
+            horizontal
+        )
+
+    ];
+
+}
+
+
+function clamp1000(value) {
+
+    return Math.max(
+        0,
+        Math.min(
+            1000,
+            Number(value)
+        )
+    );
+
+}
+
+
+/* =========================================
+   رسم الترجمة
+========================================= */
+
+function drawTranslation(blocks) {
+
+    drawOriginalImage();
+
+
+    for (
+        const block of blocks
+    ) {
+
+        drawBlock(
+            block
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   رسم الفقاعة
+========================================= */
+
+function drawBlock(block) {
+
+    const box =
+        block.safe_box_2d;
+
+
+    const [
+        ymin,
+        xmin,
+        ymax,
+        xmax
+    ] =
+        box;
+
+
+    let x =
+        xmin /
+        1000 *
+        canvas.width;
+
+
+    let y =
+        ymin /
+        1000 *
+        canvas.height;
+
+
+    let width =
+        (
+            xmax -
+            xmin
+        ) /
+        1000 *
+        canvas.width;
+
+
+    let height =
+        (
+            ymax -
+            ymin
+        ) /
+        1000 *
+        canvas.height;
+
+
+    /*
+     نترك حافة صغيرة
+     كي لا نمسح خط الفقاعة
+    */
+
+    const inset =
+        Math.max(
+            2,
+            Math.min(
+                width,
+                height
+            ) *
+            0.025
+        );
+
+
+    x += inset;
+
+    y += inset;
+
+    width -=
+        inset * 2;
+
+    height -=
+        inset * 2;
+
+
+    if (
+        width <= 10 ||
+        height <= 10
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+     تنظيف المنطقة القديمة
+    */
+
+    ctx.save();
+
+
+    ctx.fillStyle =
+        "rgba(255,255,255,0.985)";
+
+
+    drawRoundedRectangle(
+        x,
+        y,
+        width,
+        height,
+        Math.min(
+            22,
+            width * 0.13,
+            height * 0.13
+        )
+    );
+
+
+    ctx.fill();
+
+
+    ctx.restore();
+
+
+    drawFittedText(
+        block.translation,
+        x,
+        y,
+        width,
+        height
+    );
+
+}
+
+
+/* =========================================
+   كتابة عربية ذكية
+========================================= */
+
+function drawFittedText(
+    text,
+    x,
+    y,
+    width,
+    height
+) {
+
+    text =
+        String(
+            text || ""
+        )
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+
+    if (!text) {
+
+        return;
+
+    }
+
+
+    const paddingX =
+        Math.max(
+            7,
+            width *
+            0.08
+        );
+
+
+    const paddingY =
+        Math.max(
+            7,
+            height *
+            0.08
+        );
+
+
+    const maxWidth =
+        Math.max(
+            10,
+            width -
+            paddingX * 2
+        );
+
+
+    const maxHeight =
+        Math.max(
+            10,
+            height -
+            paddingY * 2
+        );
+
+
+    /*
+     حجم ابتدائي أكبر
+    */
+
+    let fontSize =
+        Math.min(
+            64,
+            height *
+            0.42,
+            width *
+            0.20
+        );
+
+
+    fontSize =
+        Math.max(
+            12,
+            fontSize
+        );
+
+
+    let bestLines =
+        [];
+
+
+    while (
+        fontSize >= 10
+    ) {
+
+        ctx.font =
+            "700 " +
+            fontSize +
+            "px Arial, Tahoma, sans-serif";
+
+
+        const lines =
+            smartWrapText(
+                text,
+                maxWidth
+            );
+
+
+        const lineHeight =
+            fontSize *
+            1.28;
+
+
+        const totalHeight =
+            lines.length *
+            lineHeight;
+
+
+        if (
+            totalHeight <=
+            maxHeight
+        ) {
+
+            bestLines =
+                lines;
+
+            break;
+
+        }
+
+
+        fontSize -=
+            1;
+
+    }
+
+
+    if (
+        !bestLines.length
+    ) {
+
+        ctx.font =
+            "700 10px Arial, Tahoma, sans-serif";
+
+
+        bestLines =
+            smartWrapText(
+                text,
+                maxWidth
+            );
+
+
+        fontSize =
+            10;
+
+    }
+
+
+    const lineHeight =
+        fontSize *
+        1.28;
+
+
+    ctx.save();
+
+
+    ctx.font =
+        "700 " +
+        fontSize +
+        "px Arial, Tahoma, sans-serif";
+
+
+    ctx.fillStyle =
+        "#111111";
+
+
+    ctx.textAlign =
+        "center";
+
+
+    ctx.textBaseline =
+        "middle";
+
+
+    ctx.direction =
+        targetLanguage.value ===
+        "Arabic"
+            ? "rtl"
+            : "ltr";
+
+
+    const totalHeight =
+        bestLines.length *
+        lineHeight;
+
+
+    let currentY =
+        y +
+        height / 2 -
+        totalHeight / 2 +
+        lineHeight / 2;
+
+
+    for (
+        const line of bestLines
+    ) {
+
+        ctx.fillText(
+            line,
+            x +
+            width / 2,
+            currentY,
+            maxWidth
+        );
+
+
+        currentY +=
+            lineHeight;
+
+    }
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================
+   تقسيم ذكي للأسطر
+========================================= */
+
+function smartWrapText(
+    text,
+    maxWidth
+) {
+
+    const words =
+        String(text)
+            .trim()
+            .split(
+                /\s+/
+            );
+
+
+    if (!words.length) {
+
+        return [];
+
+    }
+
+
+    const lines =
+        [];
+
+
+    let current =
+        "";
+
+
+    for (
+        const word of words
+    ) {
+
+        const candidate =
+            current
+                ? current +
+                  " " +
+                  word
+                : word;
+
+
+        if (
+            ctx.measureText(
+                candidate
+            ).width <=
+            maxWidth
+        ) {
+
+            current =
+                candidate;
+
+        }
+
+        else {
+
+            if (current) {
+
+                lines.push(
+                    current
+                );
+
+            }
+
+
+            if (
+                ctx.measureText(
+                    word
+                ).width <=
+                maxWidth
+            ) {
+
+                current =
+                    word;
+
+            }
+
+            else {
+
+                const pieces =
+                    splitLongWord(
+                        word,
+                        maxWidth
+                    );
+
+
+                if (
+                    pieces.length >
+                    1
+                ) {
+
+                    lines.push(
+                        ...pieces.slice(
+                            0,
+                            -1
+                        )
+                    );
+
+
+                    current =
+                        pieces[
+                            pieces.length -
+                            1
+                        ];
+
+                }
+
+                else {
+
+                    current =
+                        pieces[0] ||
+                        "";
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    if (current) {
+
+        lines.push(
+            current
+        );
+
+    }
+
+
+    /*
+     محاولة موازنة السطر الأخير
+    */
+
+    if (
+        lines.length >= 2
+    ) {
+
+        balanceLastLines(
+            lines,
+            maxWidth
+        );
+
+    }
+
+
+    return lines;
+
+}
+
+
+/* =========================================
+   موازنة آخر سطرين
+========================================= */
+
+function balanceLastLines(
+    lines,
+    maxWidth
+) {
+
+    if (
+        lines.length < 2
+    ) {
+
+        return;
+
+    }
+
+
+    const lastIndex =
+        lines.length -
+        1;
+
+
+    const previousIndex =
+        lastIndex -
+        1;
+
+
+    let previousWords =
+        lines[
+            previousIndex
+        ].split(" ");
+
+
+    let lastWords =
+        lines[
+            lastIndex
+        ].split(" ");
+
+
+    if (
+        previousWords.length <= 1
+    ) {
+
+        return;
+
+    }
+
+
+    const wordToMove =
+        previousWords[
+            previousWords.length -
+            1
+        ];
+
+
+    const candidateLast =
+        wordToMove +
+        " " +
+        lastWords.join(" ");
+
+
+    if (
+        ctx.measureText(
+            candidateLast
+        ).width <=
+        maxWidth
+    ) {
+
+        previousWords.pop();
+
+
+        const newPrevious =
+            previousWords.join(" ");
+
+
+        if (
+            newPrevious &&
+            ctx.measureText(
+                candidateLast
+            ).width <
+            ctx.measureText(
+                lines[
+                    previousIndex
+                ]
+            ).width *
+            1.35
+        ) {
+
+            lines[
+                previousIndex
+            ] =
+                newPrevious;
+
+
+            lines[
+                lastIndex
+            ] =
+                candidateLast;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   الكلمات الطويلة
+========================================= */
+
+function splitLongWord(
+    word,
+    maxWidth
+) {
+
+    const pieces =
+        [];
+
+
+    let piece =
+        "";
+
+
+    for (
+        const char of word
+    ) {
+
+        const candidate =
+            piece +
+            char;
+
+
+        if (
+            ctx.measureText(
+                candidate
+            ).width >
+            maxWidth
+        ) {
+
+            if (piece) {
+
+                pieces.push(
+                    piece
+                );
+
+            }
+
+
+            piece =
+                char;
+
+        }
+
+        else {
+
+            piece =
+                candidate;
+
+        }
+
+    }
+
+
+    if (piece) {
+
+        pieces.push(
+            piece
+        );
+
+    }
+
+
+    return pieces;
+
+}
+
+
+/* =========================================
+   Rounded rectangle
+========================================= */
+
+function drawRoundedRectangle(
+    x,
+    y,
+    width,
+    height,
+    radius
+) {
+
+    radius =
+        Math.max(
+            0,
+            Math.min(
+                radius,
+                width / 2,
+                height / 2
+            )
+        );
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        x + radius,
+        y
+    );
+
+
+    ctx.lineTo(
+        x + width - radius,
+        y
+    );
+
+
+    ctx.quadraticCurveTo(
+        x + width,
+        y,
+        x + width,
+        y + radius
+    );
+
+
+    ctx.lineTo(
+        x + width,
+        y + height - radius
+    );
+
+
+    ctx.quadraticCurveTo(
+        x + width,
+        y + height,
+        x + width - radius,
+        y + height
+    );
+
+
+    ctx.lineTo(
+        x + radius,
+        y + height
+    );
+
+
+    ctx.quadraticCurveTo(
+        x,
+        y + height,
+        x,
+        y + height - radius
+    );
+
+
+    ctx.lineTo(
+        x,
+        y + radius
+    );
+
+
+    ctx.quadraticCurveTo(
+        x,
+        y,
+        x + radius,
+        y
+    );
+
+
+    ctx.closePath();
+
+}
+
+
+/* =========================================
+   النتائج
+========================================= */
+
+function showResults(blocks) {
+
+    textResults.innerHTML =
+        "";
+
+
+    blocks.forEach(
+        (block, index) => {
+
+            const wrapper =
+                document.createElement(
+                    "div"
+                );
+
+
+            wrapper.className =
+                "result";
+
+
+            const original =
+                document.createElement(
+                    "div"
+                );
+
+
+            original.className =
+                "original";
+
+
+            original.textContent =
+                (
+                    index +
+                    1
+                ) +
+                ". الأصل: " +
+                block.original;
+
+
+            const translated =
+                document.createElement(
+                    "div"
+                );
+
+
+            translated.className =
+                "translation";
+
+
+            translated.textContent =
+                block.translation;
+
+
+            wrapper.appendChild(
+                original
+            );
+
+
+            wrapper.appendChild(
+                translated
+            );
+
+
+            textResults.appendChild(
+                wrapper
+            );
+
+        }
+    );
+
+
+    results.style.display =
+        "block";
+
+}
+
+
+/* =========================================
+   عرض الأصل / الترجمة
+========================================= */
+
+restoreButton.addEventListener(
+    "click",
+    () => {
+
+        if (!preparedImage) {
+
+            return;
+
+        }
+
+
+        if (
+            translatedVisible
+        ) {
+
+            drawOriginalImage();
+
+
+            translatedVisible =
+                false;
+
+
+            restoreButton.textContent =
+                "✨ عرض الصورة المترجمة";
+
+        }
+
+        else {
+
+            drawTranslation(
+                lastBlocks
+            );
+
+
+            translatedVisible =
+                true;
+
+
+            restoreButton.textContent =
+                "↩ عرض الصورة الأصلية";
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   تنزيل
+========================================= */
+
+downloadButton.addEventListener(
+    "click",
+    () => {
+
+        /*
+         إذا كان يعرض الأصل
+         نعيد الترجمة قبل الحفظ
+        */
+
+        if (
+            !translatedVisible &&
+            lastBlocks.length
+        ) {
+
+            drawTranslation(
+                lastBlocks
+            );
+
+
+            translatedVisible =
+                true;
+
+
+            restoreButton.textContent =
+                "↩ عرض الصورة الأصلية";
+
+        }
+
+
+        canvas.toBlob(
+            blob => {
+
+                if (!blob) {
+
+                    setStatus(
+                        "❌ تعذر إنشاء الصورة.",
+                        "error"
+                    );
+
+
+                    return;
+
+                }
+
+
+                const url =
+                    URL.createObjectURL(
+                        blob
+                    );
+
+
+                const link =
+                    document.createElement(
+                        "a"
+                    );
+
+
+                link.href =
+                    url;
+
+
+                link.download =
+                    "manga-translated-v2.png";
+
+
+                document.body.appendChild(
+                    link
+                );
+
+
+                link.click();
+
+
+                link.remove();
+
+
+                setTimeout(
+                    () =>
+                        URL.revokeObjectURL(
+                            url
+                        ),
+                    1000
+                );
+
+            },
+
+            "image/png"
+
+        );
+
+    }
+);
+
+
+/* =========================================
+   صورة جديدة
+========================================= */
+
+newButton.addEventListener(
+    "click",
+    () => {
+
+        imageInput.value =
+            "";
+
+
+        preparedImage =
+            null;
+
+
+        preparedBase64 =
+            null;
+
+
+        lastBlocks =
+            [];
+
+
+        translatedVisible =
+            false;
+
+
+        canvas.width =
+            1;
+
+
+        canvas.height =
+            1;
+
+
+        canvasCard.style.display =
+            "none";
+
+
+        results.style.display =
+            "none";
+
+
+        downloadButton.style.display =
+            "none";
+
+
+        restoreButton.style.display =
+            "none";
+
+
+        translateButton.disabled =
+            true;
+
+
+        textResults.innerHTML =
+            "";
+
+
+        modelInfo.textContent =
+            "";
+
+
+        setStatus(
+            "اختر صورة للبدء"
+        );
+
+    }
+);
+
+</script>
+
+</body>
+
+    </html>
                                                     inline_data: {
 
                                                         mime_type:
