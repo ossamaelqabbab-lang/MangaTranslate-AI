@@ -1,300 +1,236 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+    <title>MangaTranslate AI</title>
 
-<title>MangaTranslate AI</title>
+    <!-- Puter.js -->
+    <script src="https://js.puter.com/v2/"></script>
 
-<style>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-* {
-    box-sizing: border-box;
-}
+        body {
+            margin: 0;
+            font-family: Arial, Tahoma, sans-serif;
+            background: #0f1117;
+            color: #ffffff;
+        }
 
-body {
-    margin: 0;
-    background: #0d0d14;
-    color: #fff;
-    font-family: Arial, sans-serif;
-}
+        .app {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+            padding: 18px;
+        }
 
-.container {
-    width: 94%;
-    max-width: 850px;
-    margin: auto;
-    padding: 25px 0 50px;
-}
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-.logo {
-    text-align: center;
-    font-size: 30px;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
+        .header h1 {
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
 
-.logo span {
-    color: #8b5cf6;
-}
+        .header p {
+            margin-top: 0;
+            color: #aaa;
+        }
 
-.subtitle {
-    text-align: center;
-    color: #888;
-    margin-bottom: 25px;
-}
+        .card {
+            background: #191d27;
+            border-radius: 15px;
+            padding: 16px;
+            margin-bottom: 15px;
+            border: 1px solid #2c3242;
+        }
 
-.card {
-    background: #15151d;
-    border: 1px solid #30303d;
-    border-radius: 20px;
-    padding: 18px;
-}
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
 
-.upload {
-    display: block;
-    text-align: center;
-    padding: 40px 15px;
-    border: 2px dashed #444;
-    border-radius: 18px;
-    cursor: pointer;
-}
+        select,
+        button {
+            width: 100%;
+            min-height: 48px;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+        }
 
-.upload:hover {
-    border-color: #8b5cf6;
-}
+        select {
+            background: #252b38;
+            color: white;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #3a4255;
+        }
 
-.upload-icon {
-    font-size: 50px;
-}
+        .upload {
+            display: block;
+            background: #252b38;
+            border: 2px dashed #4d5870;
+            border-radius: 14px;
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
 
-.upload h2 {
-    margin: 10px 0;
-}
+        .upload:hover {
+            background: #2b3241;
+        }
 
-.upload p {
-    color: #888;
-}
+        #imageInput {
+            display: none;
+        }
 
-input[type="file"] {
-    display: none;
-}
+        button {
+            cursor: pointer;
+            background: #6c5ce7;
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+        }
 
-.upload-button {
-    display: inline-block;
-    background: #7955e8;
-    padding: 14px 24px;
-    border-radius: 12px;
-    margin-top: 10px;
-    font-weight: bold;
-}
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-.preview {
-    margin-top: 25px;
-}
+        .download-btn {
+            background: #00a86b;
+            margin-top: 10px;
+            display: none;
+        }
 
-.image-box {
-    width: 100%;
-    background: #000;
-    border-radius: 15px;
-    overflow: hidden;
-}
+        .clear-btn {
+            background: #343b4d;
+            margin-top: 10px;
+        }
 
-#previewImage {
-    display: block;
-    width: 100%;
-    height: auto;
-}
+        #previewContainer {
+            display: none;
+            overflow: auto;
+            margin-top: 15px;
+        }
 
-.settings {
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            background: white;
+        }
 
-.setting {
-    background: #101017;
-    padding: 14px;
-    border-radius: 13px;
-}
+        #status {
+            margin-top: 14px;
+            line-height: 1.7;
+            text-align: center;
+            color: #ccc;
+            white-space: pre-line;
+        }
 
-.setting label {
-    display: block;
-    color: #aaa;
-    margin-bottom: 8px;
-}
+        .loading {
+            color: #ffd166 !important;
+        }
 
-select {
-    width: 100%;
-    padding: 14px;
-    background: #191921;
-    border: 1px solid #393944;
-    border-radius: 11px;
-    color: #fff;
-    font-size: 16px;
-}
+        .success {
+            color: #4ade80 !important;
+        }
 
-.main-button {
-    width: 100%;
-    border: 0;
-    margin-top: 18px;
-    padding: 15px;
-    border-radius: 13px;
-    color: #fff;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
-    background: #7955e8;
-}
+        .error {
+            color: #ff6b6b !important;
+        }
 
-.main-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
+        #results {
+            display: none;
+        }
 
-.translate-button {
-    background: #169967;
-}
+        .textBlock {
+            background: #242a37;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
 
-.progress {
-    display: none;
-    margin-top: 20px;
-}
+        .original {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 7px;
+            direction: auto;
+        }
 
-.progress-top {
-    display: flex;
-    justify-content: space-between;
-    color: #aaa;
-    font-size: 13px;
-    margin-bottom: 8px;
-}
+        .translated {
+            font-size: 17px;
+            font-weight: bold;
+            direction: auto;
+        }
 
-.progress-bar {
-    height: 8px;
-    background: #292934;
-    border-radius: 20px;
-    overflow: hidden;
-}
+        .small {
+            color: #999;
+            font-size: 13px;
+            line-height: 1.7;
+        }
 
-.progress-fill {
-    width: 0%;
-    height: 100%;
-    background: #8b5cf6;
-    transition: width .3s;
-}
+        .badge {
+            display: inline-block;
+            background: #272e3d;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            color: #b8c0d0;
+            font-size: 13px;
+        }
 
-.status {
-    margin-top: 15px;
-    padding: 14px;
-    border-radius: 11px;
-    background: #101017;
-    color: #aaa;
-    line-height: 1.8;
-    word-break: break-word;
-}
+        .two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
 
-.result {
-    display: none;
-    margin-top: 25px;
-}
+        @media (max-width: 600px) {
+            .two {
+                grid-template-columns: 1fr;
+            }
 
-textarea {
-    width: 100%;
-    min-height: 200px;
-    padding: 15px;
-    background: #0b0b11;
-    color: #fff;
-    border: 1px solid #393944;
-    border-radius: 14px;
-    font-size: 17px;
-    line-height: 1.9;
-    resize: vertical;
-    direction: auto;
-}
-
-.translation-box {
-    margin-top: 22px;
-}
-
-.translation-box textarea {
-    border-color: #169967;
-}
-
-.info {
-    margin-top: 15px;
-    padding: 13px;
-    background: #101017;
-    border-radius: 11px;
-    color: #777;
-    font-size: 13px;
-    line-height: 1.8;
-}
-
-.hidden {
-    display: none !important;
-}
-
-@media(max-width:600px) {
-
-    .settings {
-        grid-template-columns: 1fr;
-    }
-
-    .logo {
-        font-size: 26px;
-    }
-
-}
-
-</style>
-
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
-<div class="container">
+<div class="app">
 
-    <div class="logo">
-        MangaTranslate <span>AI</span>
+    <div class="header">
+        <h1>📖 MangaTranslate AI</h1>
+        <p>ترجمة نص المانغا والقصص المصورة داخل الصورة</p>
     </div>
-
-    <div class="subtitle">
-        ترجمة المانغا والكوميكس بالذكاء الاصطناعي
-    </div>
-
 
     <div class="card">
 
+        <span class="badge">
+            النسخة التجريبية V1
+        </span>
 
-        <!-- اختيار الصورة -->
-
-        <label
-            class="upload"
-            for="imageInput"
-        >
-
-            <div class="upload-icon">
-                📖
-            </div>
-
-            <h2>
-                اختر صورة مانغا أو كوميكس
-            </h2>
-
-            <p>
+        <label class="upload" for="imageInput">
+            📷 اضغط هنا واختر صورة المانغا
+            <br>
+            <span class="small">
                 JPG / PNG / WEBP
-            </p>
-
-            <div class="upload-button">
-                📤 اختيار الصورة
-            </div>
-
+            </span>
         </label>
-
 
         <input
             id="imageInput"
@@ -302,224 +238,126 @@ textarea {
             accept="image/*"
         >
 
+        <div class="two">
 
-        <!-- معاينة الصورة -->
-
-        <div
-            id="preview"
-            class="preview hidden"
-        >
-
-            <h3>
-                🖼️ الصورة
-            </h3>
-
-            <div class="image-box">
-
-                <img
-                    id="previewImage"
-                    alt="Manga"
-                >
-
-            </div>
-
-        </div>
-
-
-        <!-- اختيار اللغات -->
-
-        <div
-            id="settings"
-            class="settings hidden"
-        >
-
-            <div class="setting">
-
-                <label>
-                    لغة النص الأصلي
-                </label>
+            <div>
+                <label>لغة النص الأصلية</label>
 
                 <select id="sourceLanguage">
 
-                    <option value="ja">
-                        🇯🇵 اليابانية
+                    <option value="auto">
+                        اكتشاف تلقائي
                     </option>
 
-                    <option value="en">
-                        🇬🇧 الإنجليزية
+                    <option value="Japanese">
+                        اليابانية
                     </option>
 
-                    <option value="id">
-                        🇮🇩 الإندونيسية
+                    <option value="English">
+                        الإنجليزية
+                    </option>
+
+                    <option value="Korean">
+                        الكورية
+                    </option>
+
+                    <option value="Chinese">
+                        الصينية
+                    </option>
+
+                    <option value="French">
+                        الفرنسية
+                    </option>
+
+                    <option value="Spanish">
+                        الإسبانية
+                    </option>
+
+                    <option value="Indonesian">
+                        الإندونيسية
                     </option>
 
                 </select>
-
             </div>
 
-
-            <div class="setting">
-
-                <label>
-                    الترجمة إلى
-                </label>
+            <div>
+                <label>الترجمة إلى</label>
 
                 <select id="targetLanguage">
 
-                    <option value="ar">
-                        🇸🇦 العربية
+                    <option value="Arabic">
+                        العربية
                     </option>
 
-                    <option value="en">
-                        🇬🇧 الإنجليزية
+                    <option value="English">
+                        الإنجليزية
                     </option>
 
-                    <option value="fr">
-                        🇫🇷 الفرنسية
+                    <option value="French">
+                        الفرنسية
+                    </option>
+
+                    <option value="Japanese">
+                        اليابانية
                     </option>
 
                 </select>
-
             </div>
 
         </div>
 
-
-        <!-- زر تحليل الصورة -->
-
-        <button
-            id="analyzeButton"
-            class="main-button hidden"
-        >
-            🔍 قراءة النص من الصورة
+        <button id="translateButton" disabled>
+            ✨ ترجمة الصورة
         </button>
 
+        <button id="downloadButton" class="download-btn">
+            ⬇ حفظ الصورة المترجمة
+        </button>
 
-        <!-- التقدم -->
+        <button id="clearButton" class="clear-btn">
+            🗑 صورة جديدة
+        </button>
 
-        <div
-            id="progress"
-            class="progress"
-        >
-
-            <div class="progress-top">
-
-                <span id="progressStatus">
-                    جاري التحضير...
-                </span>
-
-                <span id="progressPercent">
-                    0%
-                </span>
-
-            </div>
-
-            <div class="progress-bar">
-
-                <div
-                    id="progressFill"
-                    class="progress-fill"
-                ></div>
-
-            </div>
-
+        <div id="status">
+            اختر صورة للبدء
         </div>
 
-
-        <!-- الحالة -->
-
-        <div
-            id="status"
-            class="status hidden"
-        ></div>
+    </div>
 
 
-        <!-- النص -->
+    <div id="previewContainer" class="card">
 
-        <div
-            id="result"
-            class="result"
-        >
+        <canvas id="canvas"></canvas>
 
-            <h2>
-                📝 النص المكتشف
-            </h2>
-
-            <textarea
-                id="originalText"
-                placeholder="سيظهر النص الموجود في فقاعات الكلام هنا..."
-            ></textarea>
+    </div>
 
 
-            <button
-                id="translateButton"
-                class="main-button translate-button"
-            >
-                🌐 ترجمة النص
-            </button>
+    <div id="results" class="card">
 
+        <h3>
+            📝 النصوص التي تم اكتشافها
+        </h3>
 
-            <div
-                id="translationBox"
-                class="translation-box hidden"
-            >
-
-                <h2>
-                    ✨ الترجمة
-                </h2>
-
-                <textarea
-                    id="translatedText"
-                    placeholder="ستظهر الترجمة هنا..."
-                ></textarea>
-
-            </div>
-
-
-            <div class="info">
-
-                💡 هذه النسخة لا تستخدم Tesseract.
-                يتم إرسال الصورة مباشرة إلى نموذج ذكاء اصطناعي قادر على فهم الصور وقراءة النص داخل فقاعات المانغا.
-
-            </div>
-
-        </div>
-
+        <div id="textResults"></div>
 
     </div>
 
 </div>
 
 
-<!-- Puter AI -->
-
-<script src="https://js.puter.com/v2/"></script>
-
-
 <script>
-
-
-/* =========================================
-   العناصر
-========================================= */
 
 const imageInput =
     document.getElementById("imageInput");
 
-const preview =
-    document.getElementById("preview");
-
-const previewImage =
-    document.getElementById("previewImage");
-
-const settings =
-    document.getElementById("settings");
-
-const analyzeButton =
-    document.getElementById("analyzeButton");
-
 const translateButton =
     document.getElementById("translateButton");
+
+const downloadButton =
+    document.getElementById("downloadButton");
+
+const clearButton =
+    document.getElementById("clearButton");
 
 const sourceLanguage =
     document.getElementById("sourceLanguage");
@@ -527,437 +365,105 @@ const sourceLanguage =
 const targetLanguage =
     document.getElementById("targetLanguage");
 
-const progress =
-    document.getElementById("progress");
-
-const progressStatus =
-    document.getElementById("progressStatus");
-
-const progressPercent =
-    document.getElementById("progressPercent");
-
-const progressFill =
-    document.getElementById("progressFill");
-
-const status =
+const statusBox =
     document.getElementById("status");
 
-const result =
-    document.getElementById("result");
+const previewContainer =
+    document.getElementById("previewContainer");
 
-const originalText =
-    document.getElementById("originalText");
+const canvas =
+    document.getElementById("canvas");
 
-const translationBox =
-    document.getElementById("translationBox");
+const ctx =
+    canvas.getContext("2d");
 
-const translatedText =
-    document.getElementById("translatedText");
+const results =
+    document.getElementById("results");
+
+const textResults =
+    document.getElementById("textResults");
 
 
-let selectedImage = null;
+let workingFile = null;
+let workingImage = null;
+let detectedBlocks = [];
 
 
-/* =========================================
-   اختيار الصورة
-========================================= */
+/* ===============================
+   STATUS
+================================ */
+
+function setStatus(text, type = "") {
+
+    statusBox.textContent = text;
+
+    statusBox.className = type;
+
+}
+
+
+/* ===============================
+   IMAGE SELECTION
+================================ */
 
 imageInput.addEventListener(
     "change",
-    function() {
+    async function () {
 
-        const file =
-            this.files[0];
+        const file = this.files[0];
 
         if (!file) {
             return;
         }
 
+        if (!file.type.startsWith("image/")) {
 
-        if (
-            !file.type.startsWith("image/")
-        ) {
-
-            alert(
-                "الرجاء اختيار صورة فقط."
+            setStatus(
+                "الملف المختار ليس صورة.",
+                "error"
             );
 
             return;
         }
-
-
-        selectedImage = file;
-
-
-        previewImage.src =
-            URL.createObjectURL(file);
-
-
-        preview.classList.remove(
-            "hidden"
-        );
-
-
-        settings.classList.remove(
-            "hidden"
-        );
-
-
-        analyzeButton.classList.remove(
-            "hidden"
-        );
-
-
-        result.style.display =
-            "none";
-
-
-        translationBox.classList.add(
-            "hidden"
-        );
-
-
-        originalText.value =
-            "";
-
-        translatedText.value =
-            "";
-
-
-        status.classList.add(
-            "hidden"
-        );
-
-    }
-);
-
-
-/* =========================================
-   تحديث التقدم
-========================================= */
-
-function setProgress(
-    percent,
-    text
-) {
-
-    progressFill.style.width =
-        percent + "%";
-
-    progressPercent.textContent =
-        percent + "%";
-
-    progressStatus.textContent =
-        text;
-
-}
-
-
-/* =========================================
-   اسم اللغة
-========================================= */
-
-function languageName(code) {
-
-    if (code === "ja") {
-        return "اليابانية";
-    }
-
-    if (code === "en") {
-        return "الإنجليزية";
-    }
-
-    if (code === "id") {
-        return "الإندونيسية";
-    }
-
-    if (code === "ar") {
-        return "العربية";
-    }
-
-    if (code === "fr") {
-        return "الفرنسية";
-    }
-
-    return code;
-}
-
-
-/* =========================================
-   استخراج النص من الصورة باستخدام Vision AI
-========================================= */
-
-analyzeButton.addEventListener(
-    "click",
-    async function() {
-
-
-        if (!selectedImage) {
-
-            alert(
-                "اختر صورة أولًا."
-            );
-
-            return;
-        }
-
-
-        analyzeButton.disabled =
-            true;
-
-
-        progress.style.display =
-            "block";
-
-
-        status.classList.remove(
-            "hidden"
-        );
-
-
-        result.style.display =
-            "none";
-
-
-        setProgress(
-            5,
-            "جاري تجهيز الصورة..."
-        );
-
 
         try {
 
-
-            const source =
-                languageName(
-                    sourceLanguage.value
-                );
-
-
-            setProgress(
-                15,
-                "جاري إرسال الصورة إلى الذكاء الاصطناعي..."
+            setStatus(
+                "جاري تجهيز الصورة...",
+                "loading"
             );
 
+            workingFile =
+                await prepareImage(file);
 
-            /*
-             * نرسل File نفسه إلى Puter.
-             *
-             * لا نستخدم Tesseract.
-             * لا نستخدم Worker.
-             * لا نحتاج API Key.
-             */
-
-            const prompt = `
-
-أنت متخصص في قراءة وترجمة صفحات المانغا والكوميكس.
-
-انظر إلى الصورة المرفقة بعناية شديدة.
-
-المطلوب هو استخراج النص الموجود داخل:
-- فقاعات الكلام
-- فقاعات التفكير
-- مربعات الحوار
-- النصوص المكتوبة داخل المشاهد إذا كانت جزءًا من الحوار
-
-لغة النص الأصلية هي: ${source}
-
-مهم جدًا:
-
-1. اقرأ الكلام داخل كل فقاعة بشكل مستقل.
-2. لا تجمع الحروف الموجودة في فقاعات مختلفة.
-3. لا تقرأ الصفحة ككتلة نص واحدة.
-4. حافظ على الكلمات كما تظهر في الصورة.
-5. صحح أخطاء القراءة الواضحة الناتجة عن جودة الصورة.
-6. لا تكتب وصفًا للصورة.
-7. لا تكتب أسماء الأشياء التي لا تحتوي على نص.
-8. لا تخمن نصًا غير موجود.
-9. إذا كانت هناك عدة فقاعات، افصل بينها بأسطر.
-10. حافظ على ترتيب القراءة الطبيعي.
-11. إذا كان النص قصيرًا جدًا فلا تضف أي كلام من عندك.
-
-أريد الناتج بهذا الشكل فقط:
-
-[النص الموجود في الفقاعة الأولى]
-
-[النص الموجود في الفقاعة الثانية]
-
-[النص الموجود في الفقاعة الثالثة]
-
-ولا تكتب:
-- شرحًا
-- تحليلًا
-- مقدمة
-- خاتمة
-- كلمة "OCR"
-- كلمة "لا أستطيع"
-
-اقرأ الصورة مباشرة.
-
-`;
-
-
-            /*
-             * النموذج الحالي.
-             *
-             * لا نضع temperature
-             * حتى لا نعود إلى خطأ 400
-             * الذي ظهر عندك سابقًا.
-             */
-
-            const response =
-                await puter.ai.chat(
-                    prompt,
-                    selectedImage,
-                    false,
-                    {
-                        model:
-                            "gpt-5.6-luna"
-                    }
-                );
-
-
-            setProgress(
-                85,
-                "جاري ترتيب النص..."
+            await loadPreview(
+                workingFile
             );
 
-
-            let text = "";
-
-
-            /*
-             * محاولة استخراج النص
-             * من مختلف أشكال استجابة Puter.
-             */
-
-            if (
-                typeof response ===
-                "string"
-            ) {
-
-                text =
-                    response;
-
-            }
-
-            else if (
-                response &&
-                response.message &&
-                typeof response.message.content ===
-                "string"
-            ) {
-
-                text =
-                    response.message.content;
-
-            }
-
-            else if (
-                response &&
-                response.message &&
-                Array.isArray(
-                    response.message.content
-                )
-            ) {
-
-                text =
-                    response.message.content
-                    .map(
-                        item =>
-                            item?.text ||
-                            ""
-                    )
-                    .join("");
-
-            }
-
-            else if (
-                response &&
-                typeof response.content ===
-                "string"
-            ) {
-
-                text =
-                    response.content;
-
-            }
-
-
-            text =
-                text
-                .replace(/\r/g, "")
-                .trim();
-
-
-            /*
-             * إزالة Markdown إذا ظهر
-             */
-
-            text =
-                text
-                .replace(/^```[a-zA-Z]*\n?/g, "")
-                .replace(/\n?```$/g, "")
-                .trim();
-
-
-            if (!text) {
-
-                throw new Error(
-                    "لم يتم العثور على نص في الصورة."
-                );
-
-            }
-
-
-            originalText.value =
-                text;
-
-
-            result.style.display =
-                "block";
-
-
-            setProgress(
-                100,
-                "اكتمل استخراج النص."
-            );
-
-
-            status.textContent =
-                "✅ تم استخراج النص بنجاح بواسطة تحليل الصورة مباشرة.";
-
-
-        }
-
-        catch(error) {
-
-            console.error(
-                "IMAGE AI ERROR:",
-                error
-            );
-
-
-            setProgress(
-                100,
-                "حدث خطأ."
-            );
-
-
-            status.textContent =
-                "❌ حدث خطأ أثناء قراءة الصورة: " +
-                (
-                    error?.message ||
-                    String(error)
-                );
-
-        }
-
-
-        finally {
-
-            analyzeButton.disabled =
+            translateButton.disabled =
                 false;
+
+            downloadButton.style.display =
+                "none";
+
+            results.style.display =
+                "none";
+
+            detectedBlocks = [];
+
+            setStatus(
+                "✅ الصورة جاهزة.\nاضغط ترجمة الصورة.",
+                "success"
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            setStatus(
+                "حدث خطأ أثناء تحميل الصورة.",
+                "error"
+            );
 
         }
 
@@ -965,213 +471,350 @@ analyzeButton.addEventListener(
 );
 
 
-/* =========================================
-   ترجمة النص
-========================================= */
+/* ===============================
+   RESIZE IMAGE
+================================ */
+
+async function prepareImage(file) {
+
+    const img =
+        await fileToImage(file);
+
+    const maxDimension = 1800;
+
+    let width =
+        img.naturalWidth;
+
+    let height =
+        img.naturalHeight;
+
+    if (
+        width <= maxDimension &&
+        height <= maxDimension
+    ) {
+
+        return file;
+
+    }
+
+    const ratio =
+        Math.min(
+            maxDimension / width,
+            maxDimension / height
+        );
+
+    width =
+        Math.round(width * ratio);
+
+    height =
+        Math.round(height * ratio);
+
+    const tempCanvas =
+        document.createElement("canvas");
+
+    tempCanvas.width =
+        width;
+
+    tempCanvas.height =
+        height;
+
+    const tempCtx =
+        tempCanvas.getContext("2d");
+
+    tempCtx.drawImage(
+        img,
+        0,
+        0,
+        width,
+        height
+    );
+
+    const blob =
+        await new Promise(resolve => {
+
+            tempCanvas.toBlob(
+                resolve,
+                "image/jpeg",
+                0.9
+            );
+
+        });
+
+    return new File(
+        [blob],
+        "manga-page.jpg",
+        {
+            type: "image/jpeg"
+        }
+    );
+
+}
+
+
+/* ===============================
+   FILE -> IMAGE
+================================ */
+
+function fileToImage(file) {
+
+    return new Promise(
+        (resolve, reject) => {
+
+            const url =
+                URL.createObjectURL(file);
+
+            const img =
+                new Image();
+
+            img.onload = () => {
+
+                URL.revokeObjectURL(url);
+
+                resolve(img);
+
+            };
+
+            img.onerror = () => {
+
+                URL.revokeObjectURL(url);
+
+                reject(
+                    new Error("Image load error")
+                );
+
+            };
+
+            img.src = url;
+
+        }
+    );
+
+}
+
+
+/* ===============================
+   PREVIEW
+================================ */
+
+async function loadPreview(file) {
+
+    workingImage =
+        await fileToImage(file);
+
+    canvas.width =
+        workingImage.naturalWidth;
+
+    canvas.height =
+        workingImage.naturalHeight;
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.drawImage(
+        workingImage,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    previewContainer.style.display =
+        "block";
+
+}
+
+
+/* ===============================
+   TRANSLATION BUTTON
+================================ */
 
 translateButton.addEventListener(
     "click",
-    async function() {
+    async function () {
 
+        if (!workingFile) {
 
-        const text =
-            originalText.value.trim();
-
-
-        if (!text) {
-
-            alert(
-                "استخرج النص أولًا."
+            setStatus(
+                "اختر صورة أولاً.",
+                "error"
             );
 
             return;
-        }
 
+        }
 
         translateButton.disabled =
             true;
 
+        downloadButton.style.display =
+            "none";
 
-        translationBox.classList.remove(
-            "hidden"
-        );
+        results.style.display =
+            "none";
 
-
-        translatedText.value =
-            "جاري الترجمة...";
-
-
-        status.classList.remove(
-            "hidden"
-        );
-
-
-        const source =
-            languageName(
-                sourceLanguage.value
-            );
-
-
-        const target =
-            languageName(
-                targetLanguage.value
-            );
-
+        textResults.innerHTML =
+            "";
 
         try {
 
-
-            const prompt = `
-
-أنت مترجم محترف متخصص في المانغا والكوميكس.
-
-ترجم النص التالي من ${source} إلى ${target}.
-
-القواعد:
-
-- أخرج الترجمة فقط.
-- لا تشرح.
-- لا تضف مقدمة.
-- لا تضف خاتمة.
-- لا تذكر أخطاء OCR.
-- حافظ على ترتيب الفقرات.
-- حافظ على أسماء الشخصيات.
-- حافظ على معنى الحوار.
-- اجعل اللغة طبيعية ومناسبة للمانغا.
-- حافظ على المشاعر والانفعالات.
-- لا تحذف أي جملة.
-- لا تضف أحداثًا غير موجودة.
-- إذا كانت هناك علامات استفهام أو تعجب، حافظ عليها.
-- إذا كان النص غير واضح قليلًا، استخدم السياق لتصحيح الخطأ بأفضل شكل ممكن.
-
-النص:
-
-${text}
-
-`;
-
-
-            status.textContent =
-                "🌐 جاري ترجمة الحوار...";
-
-
             /*
-             * لا temperature هنا.
-             */
-
-            const response =
-                await puter.ai.chat(
-                    prompt,
-                    {
-                        model:
-                            "gpt-5.6-luna"
-                    }
-                );
-
-
-            let translated =
-                "";
-
+             Puter login
+            */
 
             if (
-                typeof response ===
-                "string"
+                !puter.auth.isSignedIn()
             ) {
 
-                translated =
-                    response;
-
-            }
-
-            else if (
-                response &&
-                response.message &&
-                typeof response.message.content ===
-                "string"
-            ) {
-
-                translated =
-                    response.message.content;
-
-            }
-
-            else if (
-                response &&
-                response.message &&
-                Array.isArray(
-                    response.message.content
-                )
-            ) {
-
-                translated =
-                    response.message.content
-                    .map(
-                        item =>
-                            item?.text ||
-                            ""
-                    )
-                    .join("");
-
-            }
-
-            else if (
-                response &&
-                typeof response.content ===
-                "string"
-            ) {
-
-                translated =
-                    response.content;
-
-            }
-
-
-            translated =
-                translated.trim();
-
-
-            if (!translated) {
-
-                throw new Error(
-                    "لم يرجع الذكاء الاصطناعي ترجمة."
+                setStatus(
+                    "جاري الاتصال بـ Puter...\nقد تظهر نافذة تسجيل الدخول.",
+                    "loading"
                 );
 
+                await puter.auth.signIn({
+                    attempt_temp_user_creation: true
+                });
+
             }
 
 
-            translatedText.value =
-                translated;
-
-
-            status.textContent =
-                "✅ تمت الترجمة بنجاح.";
-
-
-        }
-
-        catch(error) {
-
-            console.error(
-                "TRANSLATION ERROR:",
-                error
+            setStatus(
+                "🔍 الذكاء الاصطناعي يقرأ الصفحة...\nيرجى الانتظار.",
+                "loading"
             );
 
 
-            translatedText.value =
-                "";
+            const prompt =
+                buildPrompt();
 
 
-            status.textContent =
-                "❌ حدث خطأ في الترجمة: " +
-                (
-                    error?.message ||
-                    String(error)
+            /*
+             Vision AI
+            */
+
+            let response;
+
+            try {
+
+                response =
+                    await puter.ai.chat(
+                        prompt,
+                        workingFile,
+                        {
+                            model:
+                                "gpt-5.6-luna"
+                        }
+                    );
+
+            } catch (firstError) {
+
+                console.warn(
+                    "First model failed:",
+                    firstError
                 );
 
-        }
+                setStatus(
+                    "إعادة المحاولة بنموذج آخر...",
+                    "loading"
+                );
+
+                response =
+                    await puter.ai.chat(
+                        prompt,
+                        workingFile
+                    );
+
+            }
 
 
-        finally {
+            const responseText =
+                extractResponseText(
+                    response
+                );
+
+
+            console.log(
+                "RAW AI RESPONSE:",
+                responseText
+            );
+
+
+            const blocks =
+                parseAIResponse(
+                    responseText
+                );
+
+
+            if (
+                !blocks ||
+                blocks.length === 0
+            ) {
+
+                throw new Error(
+                    "لم يتم العثور على نصوص في الصورة."
+                );
+
+            }
+
+
+            detectedBlocks =
+                blocks
+                    .map(normalizeBlock)
+                    .filter(Boolean);
+
+
+            if (
+                detectedBlocks.length === 0
+            ) {
+
+                throw new Error(
+                    "فشل تحليل أماكن النص."
+                );
+
+            }
+
+
+            drawTranslatedImage(
+                detectedBlocks
+            );
+
+
+            showTextResults(
+                detectedBlocks
+            );
+
+
+            downloadButton.style.display =
+                "block";
+
+            setStatus(
+                "✅ تمت الترجمة.\nتم العثور على " +
+                detectedBlocks.length +
+                " منطقة نصية.",
+                "success"
+            );
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            let message =
+                error?.message ||
+                error?.msg ||
+                String(error);
+
+
+            setStatus(
+                "❌ حدث خطأ:\n" +
+                message,
+                "error"
+            );
+
+        } finally {
 
             translateButton.disabled =
                 false;
@@ -1181,9 +824,1085 @@ ${text}
     }
 );
 
+
+/* ===============================
+   AI PROMPT
+================================ */
+
+function buildPrompt() {
+
+    const source =
+        sourceLanguage.value;
+
+    const target =
+        targetLanguage.value;
+
+
+    return `
+
+You are an expert manga and comic OCR translator.
+
+Analyze the ENTIRE image carefully.
+
+SOURCE LANGUAGE:
+${source}
+
+TARGET LANGUAGE:
+${target}
+
+TASK:
+
+1. Detect all meaningful text regions:
+   - speech bubbles
+   - narration boxes
+   - captions
+   - dialogue
+   - important sound effects
+
+2. Treat each complete speech bubble or text region as ONE block.
+
+3. VERY IMPORTANT:
+   Do NOT split Japanese characters into individual blocks.
+   Do NOT create one block per letter.
+   Keep vertical Japanese text together when it belongs to the same bubble.
+
+4. Read the original text exactly.
+
+5. Translate naturally into ${target}.
+
+6. Find the approximate position of every text region.
+
+Coordinates MUST use a 0 to 1000 coordinate system:
+
+x = left edge
+y = top edge
+width = region width
+height = region height
+
+All coordinates refer to the FULL IMAGE.
+
+Return ONLY valid JSON.
+
+NO markdown.
+NO explanation.
+NO code fences.
+
+Required format:
+
+[
+  {
+    "x": 120,
+    "y": 80,
+    "width": 250,
+    "height": 160,
+    "original": "original text",
+    "translation": "translated text",
+    "type": "dialogue"
+  }
+]
+
+Allowed type values:
+
+dialogue
+narration
+caption
+sfx
+
+Rules:
+
+- Never invent text.
+- Ignore page numbers and meaningless tiny marks.
+- Preserve names when appropriate.
+- Make Arabic translation natural and readable.
+- Combine text belonging to the same bubble.
+- Return [] if there is no readable text.
+
+`;
+
+}
+
+
+/* ===============================
+   RESPONSE TEXT
+================================ */
+
+function extractResponseText(response) {
+
+    if (
+        typeof response === "string"
+    ) {
+        return response;
+    }
+
+
+    const content =
+        response?.message?.content ??
+        response?.content ??
+        response?.text;
+
+
+    if (
+        typeof content === "string"
+    ) {
+
+        return content;
+
+    }
+
+
+    if (
+        Array.isArray(content)
+    ) {
+
+        return content
+            .map(item => {
+
+                if (
+                    typeof item === "string"
+                ) {
+                    return item;
+                }
+
+                return (
+                    item?.text ||
+                    item?.content ||
+                    ""
+                );
+
+            })
+            .join("\n");
+
+    }
+
+
+    return JSON.stringify(
+        response
+    );
+
+}
+
+
+/* ===============================
+   JSON PARSER
+================================ */
+
+function parseAIResponse(text) {
+
+    if (!text) {
+        return [];
+    }
+
+
+    let cleaned =
+        text
+            .trim()
+            .replace(
+                /```json/gi,
+                ""
+            )
+            .replace(
+                /```/g,
+                ""
+            )
+            .trim();
+
+
+    /*
+     Try direct JSON
+    */
+
+    try {
+
+        const parsed =
+            JSON.parse(cleaned);
+
+        if (
+            Array.isArray(parsed)
+        ) {
+
+            return parsed;
+
+        }
+
+        if (
+            Array.isArray(
+                parsed.blocks
+            )
+        ) {
+
+            return parsed.blocks;
+
+        }
+
+    } catch (e) {
+
+    }
+
+
+    /*
+     Search JSON array inside response
+    */
+
+    const first =
+        cleaned.indexOf("[");
+
+    const last =
+        cleaned.lastIndexOf("]");
+
+
+    if (
+        first !== -1 &&
+        last !== -1 &&
+        last > first
+    ) {
+
+        const json =
+            cleaned.substring(
+                first,
+                last + 1
+            );
+
+        try {
+
+            return JSON.parse(
+                json
+            );
+
+        } catch (e) {
+
+            console.error(
+                "JSON parsing failed",
+                e
+            );
+
+        }
+
+    }
+
+
+    throw new Error(
+        "الذكاء الاصطناعي لم يرجع JSON صالحًا."
+    );
+
+}
+
+
+/* ===============================
+   NORMALIZE BLOCKS
+================================ */
+
+function normalizeBlock(block) {
+
+    if (!block) {
+        return null;
+    }
+
+
+    let x =
+        Number(block.x);
+
+    let y =
+        Number(block.y);
+
+    let width =
+        Number(block.width);
+
+    let height =
+        Number(block.height);
+
+
+    /*
+     Optional bounding-box formats
+    */
+
+    if (
+        Array.isArray(block.bbox) &&
+        block.bbox.length >= 4
+    ) {
+
+        x =
+            Number(block.bbox[0]);
+
+        y =
+            Number(block.bbox[1]);
+
+        width =
+            Number(block.bbox[2]);
+
+        height =
+            Number(block.bbox[3]);
+
+    }
+
+
+    /*
+     Model sometimes returns 0-1 coordinates
+    */
+
+    const maxValue =
+        Math.max(
+            x,
+            y,
+            width,
+            height
+        );
+
+
+    if (
+        maxValue <= 1.5
+    ) {
+
+        x *= 1000;
+        y *= 1000;
+        width *= 1000;
+        height *= 1000;
+
+    }
+
+
+    if (
+        !Number.isFinite(x) ||
+        !Number.isFinite(y) ||
+        !Number.isFinite(width) ||
+        !Number.isFinite(height)
+    ) {
+
+        return null;
+
+    }
+
+
+    x =
+        clamp(x, 0, 1000);
+
+    y =
+        clamp(y, 0, 1000);
+
+    width =
+        clamp(
+            width,
+            20,
+            1000 - x
+        );
+
+    height =
+        clamp(
+            height,
+            20,
+            1000 - y
+        );
+
+
+    const translation =
+        String(
+            block.translation || ""
+        ).trim();
+
+
+    const original =
+        String(
+            block.original || ""
+        ).trim();
+
+
+    if (
+        !translation &&
+        !original
+    ) {
+
+        return null;
+
+    }
+
+
+    return {
+
+        x,
+        y,
+        width,
+        height,
+
+        original,
+
+        translation:
+            translation || original,
+
+        type:
+            block.type || "dialogue"
+
+    };
+
+}
+
+
+function clamp(
+    number,
+    min,
+    max
+) {
+
+    return Math.min(
+        Math.max(
+            number,
+            min
+        ),
+        max
+    );
+
+}
+
+
+/* ===============================
+   DRAW TRANSLATION
+================================ */
+
+function drawTranslatedImage(blocks) {
+
+    /*
+     Original image
+    */
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.drawImage(
+        workingImage,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    blocks.forEach(
+        block => {
+
+            const x =
+                block.x / 1000 *
+                canvas.width;
+
+            const y =
+                block.y / 1000 *
+                canvas.height;
+
+            const width =
+                block.width / 1000 *
+                canvas.width;
+
+            const height =
+                block.height / 1000 *
+                canvas.height;
+
+
+            drawTranslationBox(
+                block.translation,
+                x,
+                y,
+                width,
+                height
+            );
+
+        }
+    );
+
+}
+
+
+/* ===============================
+   TRANSLATION BOX
+================================ */
+
+function drawTranslationBox(
+    text,
+    x,
+    y,
+    width,
+    height
+) {
+
+    const padding =
+        Math.max(
+            4,
+            Math.min(
+                width,
+                height
+            ) * 0.06
+        );
+
+
+    /*
+     Cover old text
+    */
+
+    ctx.save();
+
+    ctx.fillStyle =
+        "rgba(255,255,255,0.94)";
+
+    roundedRect(
+        ctx,
+        x,
+        y,
+        width,
+        height,
+        Math.min(
+            width,
+            height
+        ) * 0.12
+    );
+
+    ctx.fill();
+
+    ctx.restore();
+
+
+    /*
+     Find font size
+    */
+
+    const maxWidth =
+        width -
+        padding * 2;
+
+    const maxHeight =
+        height -
+        padding * 2;
+
+
+    let fontSize =
+        Math.max(
+            11,
+            Math.min(
+                height * 0.35,
+                width * 0.16,
+                52
+            )
+        );
+
+
+    let lines = [];
+
+
+    while (
+        fontSize >= 10
+    ) {
+
+        ctx.font =
+            `bold ${fontSize}px Arial, Tahoma, sans-serif`;
+
+
+        lines =
+            wrapText(
+                text,
+                maxWidth
+            );
+
+
+        const lineHeight =
+            fontSize * 1.25;
+
+
+        if (
+            lines.length *
+            lineHeight <=
+            maxHeight
+        ) {
+
+            break;
+
+        }
+
+
+        fontSize -= 1;
+
+    }
+
+
+    const lineHeight =
+        fontSize * 1.25;
+
+
+    ctx.save();
+
+    ctx.fillStyle =
+        "#111111";
+
+    ctx.font =
+        `bold ${fontSize}px Arial, Tahoma, sans-serif`;
+
+    ctx.textAlign =
+        "center";
+
+    ctx.textBaseline =
+        "middle";
+
+
+    if (
+        targetLanguage.value ===
+        "Arabic"
+    ) {
+
+        ctx.direction =
+            "rtl";
+
+    } else {
+
+        ctx.direction =
+            "ltr";
+
+    }
+
+
+    const totalHeight =
+        lines.length *
+        lineHeight;
+
+
+    let currentY =
+        y +
+        height / 2 -
+        totalHeight / 2 +
+        lineHeight / 2;
+
+
+    lines.forEach(
+        line => {
+
+            ctx.fillText(
+                line,
+                x + width / 2,
+                currentY
+            );
+
+            currentY +=
+                lineHeight;
+
+        }
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/* ===============================
+   WORD WRAPPING
+================================ */
+
+function wrapText(
+    text,
+    maxWidth
+) {
+
+    text =
+        String(text)
+            .replace(/\s+/g, " ")
+            .trim();
+
+
+    if (!text) {
+        return [];
+    }
+
+
+    const words =
+        text.split(" ");
+
+    const lines = [];
+
+    let line =
+        "";
+
+
+    for (
+        const word of words
+    ) {
+
+        const testLine =
+            line
+                ? line + " " + word
+                : word;
+
+
+        const width =
+            ctx.measureText(
+                testLine
+            ).width;
+
+
+        if (
+            width <= maxWidth
+        ) {
+
+            line =
+                testLine;
+
+        } else {
+
+            if (line) {
+
+                lines.push(
+                    line
+                );
+
+            }
+
+
+            /*
+             Very long word
+            */
+
+            if (
+                ctx.measureText(
+                    word
+                ).width >
+                maxWidth
+            ) {
+
+                let charLine =
+                    "";
+
+                for (
+                    const char of word
+                ) {
+
+                    const test =
+                        charLine +
+                        char;
+
+                    if (
+                        ctx.measureText(
+                            test
+                        ).width >
+                        maxWidth
+                    ) {
+
+                        if (
+                            charLine
+                        ) {
+
+                            lines.push(
+                                charLine
+                            );
+
+                        }
+
+                        charLine =
+                            char;
+
+                    } else {
+
+                        charLine =
+                            test;
+
+                    }
+
+                }
+
+                line =
+                    charLine;
+
+            } else {
+
+                line =
+                    word;
+
+            }
+
+        }
+
+    }
+
+
+    if (line) {
+
+        lines.push(
+            line
+        );
+
+    }
+
+
+    return lines;
+
+}
+
+
+/* ===============================
+   ROUNDED RECTANGLE
+================================ */
+
+function roundedRect(
+    ctx,
+    x,
+    y,
+    width,
+    height,
+    radius
+) {
+
+    radius =
+        Math.min(
+            radius,
+            width / 2,
+            height / 2
+        );
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        x + radius,
+        y
+    );
+
+    ctx.lineTo(
+        x + width - radius,
+        y
+    );
+
+    ctx.quadraticCurveTo(
+        x + width,
+        y,
+        x + width,
+        y + radius
+    );
+
+    ctx.lineTo(
+        x + width,
+        y + height - radius
+    );
+
+    ctx.quadraticCurveTo(
+        x + width,
+        y + height,
+        x + width - radius,
+        y + height
+    );
+
+    ctx.lineTo(
+        x + radius,
+        y + height
+    );
+
+    ctx.quadraticCurveTo(
+        x,
+        y + height,
+        x,
+        y + height - radius
+    );
+
+    ctx.lineTo(
+        x,
+        y + radius
+    );
+
+    ctx.quadraticCurveTo(
+        x,
+        y,
+        x + radius,
+        y
+    );
+
+    ctx.closePath();
+
+}
+
+
+/* ===============================
+   TEXT RESULTS
+================================ */
+
+function showTextResults(blocks) {
+
+    textResults.innerHTML =
+        "";
+
+
+    blocks.forEach(
+        (block, index) => {
+
+            const container =
+                document.createElement(
+                    "div"
+                );
+
+            container.className =
+                "textBlock";
+
+
+            const original =
+                document.createElement(
+                    "div"
+                );
+
+            original.className =
+                "original";
+
+            original.textContent =
+                (index + 1) +
+                ". الأصل: " +
+                block.original;
+
+
+            const translation =
+                document.createElement(
+                    "div"
+                );
+
+            translation.className =
+                "translated";
+
+            translation.textContent =
+                block.translation;
+
+
+            container.appendChild(
+                original
+            );
+
+            container.appendChild(
+                translation
+            );
+
+            textResults.appendChild(
+                container
+            );
+
+        }
+    );
+
+
+    results.style.display =
+        "block";
+
+}
+
+
+/* ===============================
+   DOWNLOAD
+================================ */
+
+downloadButton.addEventListener(
+    "click",
+    function () {
+
+        canvas.toBlob(
+            blob => {
+
+                if (!blob) {
+
+                    setStatus(
+                        "تعذر إنشاء الصورة.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                const url =
+                    URL.createObjectURL(
+                        blob
+                    );
+
+
+                const a =
+                    document.createElement(
+                        "a"
+                    );
+
+                a.href =
+                    url;
+
+                a.download =
+                    "manga-translated.png";
+
+
+                document.body.appendChild(
+                    a
+                );
+
+                a.click();
+
+                a.remove();
+
+
+                setTimeout(
+                    () => {
+
+                        URL.revokeObjectURL(
+                            url
+                        );
+
+                    },
+                    1000
+                );
+
+            },
+            "image/png"
+        );
+
+    }
+);
+
+
+/* ===============================
+   CLEAR
+================================ */
+
+clearButton.addEventListener(
+    "click",
+    function () {
+
+        imageInput.value =
+            "";
+
+        workingFile =
+            null;
+
+        workingImage =
+            null;
+
+        detectedBlocks =
+            [];
+
+        canvas.width =
+            1;
+
+        canvas.height =
+            1;
+
+        previewContainer.style.display =
+            "none";
+
+        results.style.display =
+            "none";
+
+        downloadButton.style.display =
+            "none";
+
+        translateButton.disabled =
+            true;
+
+        textResults.innerHTML =
+            "";
+
+        setStatus(
+            "اختر صورة للبدء"
+        );
+
+    }
+);
+
 </script>
 
-
 </body>
-
-</html> 
+      </html>
