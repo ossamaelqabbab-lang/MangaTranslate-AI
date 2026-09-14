@@ -2,7 +2,6 @@
 <html lang="ar" dir="rtl">
 
 <head>
-
 <meta charset="UTF-8">
 
 <meta
@@ -10,7 +9,7 @@
     content="width=device-width, initial-scale=1.0"
 >
 
-<title>MangaTranslate AI V3</title>
+<title>MangaTranslate AI V4</title>
 
 <style>
 
@@ -26,6 +25,7 @@ body {
 }
 
 .app {
+    width: 100%;
     max-width: 850px;
     margin: auto;
     padding: 18px;
@@ -42,17 +42,16 @@ header h1 {
 }
 
 header p {
+    margin: 8px 0;
     color: #9ca3af;
-    margin-top: 8px;
 }
 
 .version {
     display: inline-block;
-    padding: 5px 11px;
-    margin-top: 4px;
-    border-radius: 20px;
     background: #252c3c;
-    color: #b4bdce;
+    color: #b8c0d0;
+    border-radius: 20px;
+    padding: 6px 11px;
     font-size: 12px;
 }
 
@@ -81,10 +80,10 @@ button {
 
 input,
 select {
-    padding: 10px;
-    color: white;
     background: #222938;
+    color: white;
     border: 1px solid #3a455e;
+    padding: 10px;
 }
 
 #apiKey {
@@ -93,13 +92,13 @@ select {
 
 .upload {
     display: block;
-    margin-top: 16px;
-    padding: 25px 12px;
-    text-align: center;
-    cursor: pointer;
-    border-radius: 14px;
-    background: #202735;
     border: 2px dashed #4a5875;
+    background: #202735;
+    text-align: center;
+    padding: 25px 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    margin-top: 16px;
 }
 
 .upload small {
@@ -118,9 +117,9 @@ select {
 
 button {
     border: none;
+    color: white;
     padding: 12px;
     margin-top: 12px;
-    color: white;
     cursor: pointer;
     font-weight: bold;
 }
@@ -135,13 +134,13 @@ button:disabled {
 }
 
 #downloadButton {
-    display: none;
     background: #07885f;
+    display: none;
 }
 
-#restoreButton {
-    display: none;
+#compareButton {
     background: #3b465e;
+    display: none;
 }
 
 #newButton {
@@ -185,10 +184,10 @@ canvas {
 }
 
 .result {
+    background: #232a39;
+    border-radius: 10px;
     padding: 12px;
     margin-bottom: 10px;
-    border-radius: 10px;
-    background: #232a39;
 }
 
 .original {
@@ -204,16 +203,22 @@ canvas {
     direction: auto;
 }
 
+.displayTranslation {
+    color: #b7c1d6;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
 .note {
     color: #9ca3af;
     font-size: 13px;
-    line-height: 1.7;
+    line-height: 1.6;
 }
 
 .model-info {
     margin-top: 8px;
-    text-align: center;
     color: #9ca3af;
+    text-align: center;
     font-size: 13px;
 }
 
@@ -230,7 +235,6 @@ canvas {
 }
 
 </style>
-
 </head>
 
 
@@ -247,7 +251,7 @@ canvas {
 </p>
 
 <div class="version">
-V3 — Bubble Shape Engine
+V4 — Hybrid Bubble Engine
 </div>
 
 </header>
@@ -267,8 +271,7 @@ V3 — Bubble Shape Engine
 />
 
 <p class="note">
-المفتاح لا يتم حفظه في كود GitHub.
-تضعه فقط عند تشغيل الموقع.
+المفتاح لا يُحفظ داخل GitHub. لا ترسل المفتاح لأي شخص.
 </p>
 
 
@@ -276,15 +279,9 @@ V3 — Bubble Shape Engine
     class="upload"
     for="imageInput"
 >
-
 📷 اضغط هنا واختر صورة المانغا
-
 <br>
-
-<small>
-JPG / PNG / WEBP
-</small>
-
+<small>JPG / PNG / WEBP</small>
 </label>
 
 
@@ -390,7 +387,7 @@ JPG / PNG / WEBP
 </button>
 
 
-<button id="restoreButton">
+<button id="compareButton">
 ↩ عرض الصورة الأصلية
 </button>
 
@@ -442,7 +439,7 @@ JPG / PNG / WEBP
 <script>
 
 /* =====================================================
-   عناصر الصفحة
+   العناصر
 ===================================================== */
 
 const apiKeyInput =
@@ -463,8 +460,8 @@ const translateButton =
 const downloadButton =
     document.getElementById("downloadButton");
 
-const restoreButton =
-    document.getElementById("restoreButton");
+const compareButton =
+    document.getElementById("compareButton");
 
 const newButton =
     document.getElementById("newButton");
@@ -488,13 +485,13 @@ const canvas =
     document.getElementById("canvas");
 
 const ctx =
-    canvas.getContext("2d");
+    canvas.getContext(
+        "2d",
+        {
+            willReadFrequently: true
+        }
+    );
 
-
-/*
-   Canvas مخفي يحتوي دائماً
-   على الصورة الأصلية.
-*/
 
 const sourceCanvas =
     document.createElement("canvas");
@@ -509,16 +506,16 @@ const sourceCtx =
 
 
 let preparedImage = null;
+
 let preparedBase64 = null;
 
 let lastBlocks = [];
 
-let translatedVisible =
-    false;
+let translatedVisible = false;
 
 
 /* =====================================================
-   الحالة
+   Status
 ===================================================== */
 
 function setStatus(
@@ -548,7 +545,9 @@ imageInput.addEventListener(
 
 
         if (!file) {
+
             return;
+
         }
 
 
@@ -621,7 +620,7 @@ imageInput.addEventListener(
             );
 
 
-            drawOriginalImage();
+            drawOriginal();
 
 
             canvasCard.style.display =
@@ -636,7 +635,7 @@ imageInput.addEventListener(
                 "none";
 
 
-            restoreButton.style.display =
+            compareButton.style.display =
                 "none";
 
 
@@ -685,7 +684,9 @@ imageInput.addEventListener(
    تجهيز الصورة
 ===================================================== */
 
-async function prepareImage(file) {
+async function prepareImage(
+    file
+) {
 
     const original =
         await fileToImage(
@@ -700,11 +701,6 @@ async function prepareImage(file) {
     let height =
         original.naturalHeight;
 
-
-    /*
-       نترك دقة جيدة لأن قراءة
-       اليابانية تحتاج تفاصيل.
-    */
 
     const maxDimension =
         2000;
@@ -758,9 +754,7 @@ async function prepareImage(file) {
 
 
     const tempCtx =
-        temp.getContext(
-            "2d"
-        );
+        temp.getContext("2d");
 
 
     tempCtx.fillStyle =
@@ -787,11 +781,11 @@ async function prepareImage(file) {
     const dataURL =
         temp.toDataURL(
             "image/jpeg",
-            0.94
+            0.95
         );
 
 
-    const resized =
+    const image =
         new Image();
 
 
@@ -801,15 +795,15 @@ async function prepareImage(file) {
             reject
         ) => {
 
-            resized.onload =
+            image.onload =
                 resolve;
 
 
-            resized.onerror =
+            image.onerror =
                 reject;
 
 
-            resized.src =
+            image.src =
                 dataURL;
 
         }
@@ -818,8 +812,7 @@ async function prepareImage(file) {
 
     return {
 
-        image:
-            resized,
+        image,
 
         base64:
             dataURL.split(
@@ -835,7 +828,9 @@ async function prepareImage(file) {
    File -> Image
 ===================================================== */
 
-function fileToImage(file) {
+function fileToImage(
+    file
+) {
 
     return new Promise(
         (
@@ -878,7 +873,7 @@ function fileToImage(file) {
 
                     reject(
                         new Error(
-                            "فشل فتح الصورة."
+                            "فشل تحميل الصورة."
                         )
                     );
 
@@ -895,14 +890,12 @@ function fileToImage(file) {
 
 
 /* =====================================================
-   الصورة الأصلية
+   الأصل
 ===================================================== */
 
-function drawOriginalImage() {
+function drawOriginal() {
 
-    if (
-        !preparedImage
-    ) {
+    if (!preparedImage) {
 
         return;
 
@@ -952,9 +945,7 @@ translateButton.addEventListener(
         }
 
 
-        if (
-            !preparedBase64
-        ) {
+        if (!preparedBase64) {
 
             setStatus(
                 "❌ اختر صورة أولاً.",
@@ -970,15 +961,15 @@ translateButton.addEventListener(
             true;
 
 
+        results.style.display =
+            "none";
+
+
         downloadButton.style.display =
             "none";
 
 
-        restoreButton.style.display =
-            "none";
-
-
-        results.style.display =
+        compareButton.style.display =
             "none";
 
 
@@ -989,7 +980,7 @@ translateButton.addEventListener(
         try {
 
             setStatus(
-                "🔎 جاري البحث عن نموذج Gemini مناسب...",
+                "🔎 البحث عن نموذج Gemini مناسب...",
                 "loading"
             );
 
@@ -1000,29 +991,23 @@ translateButton.addEventListener(
                 );
 
 
-            if (
-                !models.length
-            ) {
+            if (!models.length) {
 
                 throw new Error(
-                    "لم يتم العثور على نموذج Gemini مناسب."
+                    "لم يتم العثور على نموذج مناسب."
                 );
 
             }
 
 
-            const prompt =
-                createPrompt();
-
-
             const result =
-                await callGeminiWithFallback(
+                await callGemini(
 
                     apiKey,
 
                     models,
 
-                    prompt,
+                    createPrompt(),
 
                     preparedBase64
 
@@ -1040,9 +1025,7 @@ translateButton.addEventListener(
                 );
 
 
-            if (
-                !blocks.length
-            ) {
+            if (!blocks.length) {
 
                 throw new Error(
                     "لم يتم العثور على نص قابل للترجمة."
@@ -1073,11 +1056,11 @@ translateButton.addEventListener(
                 "block";
 
 
-            restoreButton.style.display =
+            compareButton.style.display =
                 "block";
 
 
-            restoreButton.textContent =
+            compareButton.textContent =
                 "↩ عرض الصورة الأصلية";
 
 
@@ -1120,22 +1103,18 @@ translateButton.addEventListener(
 
 
 /* =====================================================
-   النماذج المتاحة
+   Gemini models
 ===================================================== */
 
 async function getAvailableModels(
     apiKey
 ) {
 
-    const url =
-        "https://generativelanguage.googleapis.com/v1beta/models?pageSize=100";
-
-
     try {
 
         const response =
             await fetch(
-                url,
+                "https://generativelanguage.googleapis.com/v1beta/models?pageSize=100",
                 {
 
                     headers: {
@@ -1159,15 +1138,13 @@ async function getAvailableModels(
         ) {
 
             throw new Error(
-                "مفتاح Gemini غير صالح أو لا يملك صلاحية استخدام Gemini."
+                "مفتاح Gemini غير صالح أو لا يملك صلاحية."
             );
 
         }
 
 
-        if (
-            !response.ok
-        ) {
+        if (!response.ok) {
 
             return fallbackModels();
 
@@ -1221,7 +1198,7 @@ async function getAvailableModels(
                         }
 
 
-                        const forbidden = [
+                        const excluded = [
 
                             "embedding",
                             "imagen",
@@ -1234,10 +1211,10 @@ async function getAvailableModels(
                         ];
 
 
-                        return !forbidden.some(
-                            item =>
+                        return !excluded.some(
+                            value =>
                                 name.includes(
-                                    item
+                                    value
                                 )
                         );
 
@@ -1262,18 +1239,16 @@ async function getAvailableModels(
                 b
             ) =>
 
-                scoreModel(b) -
-                scoreModel(a)
+                modelScore(b) -
+                modelScore(a)
 
         );
 
 
         return [
-
             ...new Set(
                 usable
             )
-
         ].slice(
             0,
             8
@@ -1305,10 +1280,12 @@ async function getAvailableModels(
 
 
 /* =====================================================
-   ترتيب النماذج
+   Model score
 ===================================================== */
 
-function scoreModel(name) {
+function modelScore(
+    name
+) {
 
     const model =
         String(
@@ -1378,25 +1355,13 @@ function scoreModel(name) {
     }
 
 
-    if (
-        model.includes(
-            "exp"
-        )
-    ) {
-
-        score -=
-            20;
-
-    }
-
-
     return score;
 
 }
 
 
 /* =====================================================
-   نماذج احتياطية
+   Fallback models
 ===================================================== */
 
 function fallbackModels() {
@@ -1417,10 +1382,10 @@ function fallbackModels() {
 
 
 /* =====================================================
-   إرسال الصورة إلى Gemini
+   Call Gemini
 ===================================================== */
 
-async function callGeminiWithFallback(
+async function callGemini(
     apiKey,
     models,
     prompt,
@@ -1461,7 +1426,7 @@ async function callGeminiWithFallback(
         ) {
 
             setStatus(
-                "🤖 النموذج: " +
+                "🤖 " +
                 model +
                 "\nالمحاولة " +
                 attempt +
@@ -1580,7 +1545,7 @@ async function callGeminiWithFallback(
 
 
                     lastError =
-                        "النموذج أعاد استجابة فارغة.";
+                        "Gemini أعاد استجابة فارغة.";
 
 
                     break;
@@ -1600,13 +1565,6 @@ async function callGeminiWithFallback(
                     message;
 
 
-                console.warn(
-                    model,
-                    response.status,
-                    message
-                );
-
-
                 if (
                     response.status === 401 ||
                     response.status === 403
@@ -1620,11 +1578,6 @@ async function callGeminiWithFallback(
                 }
 
 
-                /*
-                   إذا كان النموذج غير مناسب
-                   ننتقل للذي بعده.
-                */
-
                 if (
                     response.status === 400 ||
                     response.status === 404
@@ -1635,16 +1588,16 @@ async function callGeminiWithFallback(
                 }
 
 
-                /*
-                   ازدحام أو Rate Limit.
-                */
-
                 if (
-                    response.status === 429 ||
-                    response.status === 500 ||
-                    response.status === 502 ||
-                    response.status === 503 ||
-                    response.status === 504
+                    [
+                        429,
+                        500,
+                        502,
+                        503,
+                        504
+                    ].includes(
+                        response.status
+                    )
                 ) {
 
                     if (
@@ -1658,7 +1611,7 @@ async function callGeminiWithFallback(
 
 
                         setStatus(
-                            "⏳ النموذج مشغول.\nإعادة المحاولة بعد قليل...",
+                            "⏳ النموذج مشغول.\nسيتم إعادة المحاولة...",
                             "loading"
                         );
 
@@ -1712,7 +1665,6 @@ async function callGeminiWithFallback(
                         attempt
                     );
 
-
                     continue;
 
                 }
@@ -1725,7 +1677,7 @@ async function callGeminiWithFallback(
 
 
     throw new Error(
-        "تعذر استخدام نماذج Gemini حالياً.\n\nآخر رسالة:\n" +
+        "تعذر استخدام Gemini حالياً.\n\nآخر رسالة:\n" +
         lastError
     );
 
@@ -1733,31 +1685,17 @@ async function callGeminiWithFallback(
 
 
 /* =====================================================
-   استخراج نص Gemini
+   Extract Gemini text
 ===================================================== */
 
 function extractGeminiText(
     data
 ) {
 
-    const candidates =
-        data?.candidates;
-
-
-    if (
-        !Array.isArray(
-            candidates
-        ) ||
-        !candidates.length
-    ) {
-
-        return "";
-
-    }
-
-
     const parts =
-        candidates[0]
+        data
+            ?.candidates
+            ?.[0]
             ?.content
             ?.parts;
 
@@ -1786,7 +1724,7 @@ function extractGeminiText(
 
 
 /* =====================================================
-   Prompt V3
+   Prompt V4
 ===================================================== */
 
 function createPrompt() {
@@ -1801,18 +1739,9 @@ function createPrompt() {
 
     return `
 
-You are an expert professional manga localization system.
+You are a professional manga localization engine.
 
-You must perform:
-
-- manga OCR
-- text region detection
-- speech bubble detection
-- speech bubble shape detection
-- translation
-- layout analysis
-
-Analyze the ENTIRE image.
+Analyze the complete manga/comic image.
 
 SOURCE LANGUAGE:
 ${source}
@@ -1821,136 +1750,90 @@ TARGET LANGUAGE:
 ${target}
 
 
-FOR EACH meaningful text region return:
+For every meaningful speech bubble, narration box or caption return:
 
 1. original
-   Exact original text.
+The exact original text.
 
 2. translation
-   Natural concise translation into ${target}.
+A natural accurate translation into ${target}.
 
-3. text_box_2d
-   Bounding box around the original printed text.
+3. display_translation
+A concise version of the same translation optimized to fit naturally inside the original speech bubble.
 
-4. bubble_inner_polygon_2d
-   Polygon following the INNER WHITE AREA of the speech bubble.
+Do NOT change the meaning.
 
-5. text_safe_box_2d
-   A rectangular area completely inside that polygon where the translated text can safely be drawn.
+For Arabic, use fluent natural Arabic and avoid unnecessary long wording.
 
 
-VERY IMPORTANT ABOUT THE POLYGON:
+4. text_box_2d
 
-bubble_inner_polygon_2d must follow the real shape of the white/empty interior of the speech bubble.
+This box MUST contain ALL original printed characters belonging to that speech bubble.
 
-DO NOT return a large rectangle around the bubble.
+Include punctuation.
 
-DO NOT include surrounding artwork.
+For vertical Japanese, include the full vertical text.
 
-DO NOT include faces.
-
-DO NOT include character bodies.
-
-DO NOT include black bubble outlines.
-
-Keep polygon points slightly INSIDE the black outline.
-
-The polygon should describe only the clean interior area that can safely be painted white.
-
-Use approximately 6 to 20 points when possible.
-
-If the speech bubble is oval, follow the oval.
-
-If the speech bubble is irregular, follow its irregular shape.
-
-Do not include the bubble tail unless it contains original text or is necessary for the text area.
+Do not make this box too tight.
 
 
-TEXT SAFE BOX:
+5. bubble_box_2d
 
-text_safe_box_2d must:
+This is extremely important.
 
-- be completely inside bubble_inner_polygon_2d
-- avoid edges
-- leave comfortable margins
-- be large enough for translated text
-- preferably be centered in the main body of the speech bubble
+Return a rectangular box representing the LARGE SAFE INNER AREA of the speech bubble where translated text can be placed.
+
+bubble_box_2d should:
+
+- stay inside the black bubble border
+- include most of the usable white interior
+- be considerably larger than text_box_2d when possible
+- avoid the bubble outline
+- avoid faces and artwork
+- avoid the speech-bubble tail when possible
+- be centered in the main body of the bubble
+
+DO NOT return only the area occupied by the original Japanese text.
+
+The translated Arabic needs enough room.
 
 
 TEXT GROUPING:
 
-One speech bubble = normally one block.
+One speech bubble normally equals ONE result.
 
-Do NOT split Japanese characters one by one.
+Never split Japanese character-by-character.
 
-Do NOT split vertical Japanese text into separate character blocks.
+Never split vertical Japanese into separate letters.
 
-Group all text belonging to the same speech bubble.
-
-
-TRANSLATION:
-
-Translate naturally.
-
-Do NOT translate word-for-word if that sounds unnatural.
-
-For Arabic:
-use fluent natural Arabic.
-
-Keep the translation concise enough to fit inside the original bubble.
-
-Preserve character names.
-
-Do not invent unreadable text.
-
-Ignore page numbers and meaningless marks.
+Group all text belonging to the same bubble.
 
 
 COORDINATES:
 
-All coordinates are normalized from 0 to 1000.
+Coordinates use normalized values 0 to 1000.
 
-Boxes use:
+Format:
 
 [ymin, xmin, ymax, xmax]
 
-Polygon points use:
 
-[y, x]
-
-
-RETURN ONLY VALID JSON.
-
-
-Example:
+EXAMPLE:
 
 [
   {
     "text_box_2d": [
-      190,
-      700,
-      310,
-      845
+      180,
+      690,
+      320,
+      820
     ],
 
-    "bubble_inner_polygon_2d": [
-      [130, 660],
-      [115, 720],
-      [130, 815],
-      [180, 875],
-      [265, 885],
-      [345, 850],
-      [380, 770],
-      [350, 685],
-      [285, 645],
-      [200, 640]
-    ],
-
-    "text_safe_box_2d": [
-      155,
-      675,
-      345,
-      850
+    "bubble_box_2d": [
+      100,
+      610,
+      370,
+      890
     ],
 
     "original":
@@ -1959,13 +1842,16 @@ Example:
     "translation":
       "إنها مهمتك!",
 
+    "display_translation":
+      "إنها مهمتك!",
+
     "type":
       "dialogue"
   }
 ]
 
 
-Allowed type values:
+Allowed types:
 
 dialogue
 narration
@@ -1973,23 +1859,23 @@ caption
 sfx
 
 
-For rectangular narration boxes:
-return the inner area polygon.
+For an SFX written directly over artwork and NOT inside a bubble:
 
-For sound effects placed directly on artwork:
-if there is NO white bubble or clean background,
-bubble_inner_polygon_2d may be null.
+bubble_box_2d may be null.
 
-Do NOT erase artwork simply to translate an SFX.
+Do not invent text.
+
+Ignore page numbers and meaningless marks.
+
+Return ONLY JSON.
+
+No Markdown.
+No explanation.
+No code fences.
 
 If there is no readable text:
 
 []
-
-No markdown.
-No explanation.
-No code fences.
-Only JSON.
 
 `;
 
@@ -1997,10 +1883,12 @@ Only JSON.
 
 
 /* =====================================================
-   تحليل JSON
+   Parse response
 ===================================================== */
 
-function parseResponse(text) {
+function parseResponse(
+    text
+) {
 
     let cleaned =
         String(
@@ -2058,25 +1946,13 @@ function parseResponse(text) {
         }
 
 
-        try {
-
-            parsed =
-                JSON.parse(
-                    cleaned.slice(
-                        start,
-                        end + 1
-                    )
-                );
-
-        }
-
-        catch {
-
-            throw new Error(
-                "تعذر قراءة نتيجة Gemini."
+        parsed =
+            JSON.parse(
+                cleaned.slice(
+                    start,
+                    end + 1
+                )
             );
-
-        }
 
     }
 
@@ -2121,7 +1997,7 @@ function parseResponse(text) {
 
 
 /* =====================================================
-   تنظيف block
+   Normalize block
 ===================================================== */
 
 function normalizeBlock(
@@ -2135,132 +2011,72 @@ function normalizeBlock(
     }
 
 
-    let textBox =
-        block.text_box_2d ||
-        block.box_2d ||
-        block.bbox ||
-        block.box;
+    const textBox =
+        normalizeBox(
+
+            block.text_box_2d ||
+            block.box_2d ||
+            block.bbox ||
+            block.box
+
+        );
 
 
-    if (
-        !Array.isArray(
-            textBox
-        )
-    ) {
+    if (!textBox) {
 
         return null;
 
     }
 
 
-    textBox =
+    let bubbleBox =
         normalizeBox(
-            textBox
-        );
-
-
-    if (
-        !textBox
-    ) {
-
-        return null;
-
-    }
-
-
-    let polygon =
-        normalizePolygon(
-            block.bubble_inner_polygon_2d ||
-            block.bubble_polygon ||
-            block.polygon
-        );
-
-
-    let safeBox =
-        normalizeBox(
-            block.text_safe_box_2d ||
+            block.bubble_box_2d ||
             block.safe_box_2d
         );
 
 
-    /*
-       إذا Gemini لم يرجع Polygon
-       نستعمل fallback.
-    */
+    if (!bubbleBox) {
 
-    if (
-        !polygon
-    ) {
-
-        if (
-            !safeBox
-        ) {
-
-            safeBox =
-                expandBox(
-                    textBox,
-                    55,
-                    65
-                );
-
-        }
-
-
-        polygon =
-            boxToPolygon(
-                safeBox
-            );
-
-    }
-
-
-    const polygonBox =
-        polygonBoundingBox(
-            polygon
-        );
-
-
-    /*
-       إذا لم يعد safe box
-       نصنع واحداً داخل Polygon.
-    */
-
-    if (
-        !safeBox
-    ) {
-
-        safeBox =
-            insetBox(
-                polygonBox,
-                60
+        bubbleBox =
+            expandBox(
+                textBox,
+                85,
+                100
             );
 
     }
 
 
     /*
-       نبقي safe box داخل
-       Bounding Box للـ Polygon.
+       bubble box يجب أن يحتوي text box.
     */
 
-    safeBox =
-        intersectBoxes(
-            safeBox,
-            polygonBox
-        );
+    bubbleBox = [
 
+        Math.min(
+            bubbleBox[0],
+            textBox[0]
+        ),
 
-    if (
-        !safeBox
-    ) {
+        Math.min(
+            bubbleBox[1],
+            textBox[1]
+        ),
 
-        safeBox =
-            insetBox(
-                polygonBox,
-                40
-            );
+        Math.max(
+            bubbleBox[2],
+            textBox[2]
+        ),
 
-    }
+        Math.max(
+            bubbleBox[3],
+            textBox[3]
+        )
+
+    ].map(
+        clamp1000
+    );
 
 
     const original =
@@ -2279,6 +2095,14 @@ function normalizeBlock(
         ).trim();
 
 
+    const displayTranslation =
+        String(
+            block.display_translation ||
+            block.short_translation ||
+            translation
+        ).trim();
+
+
     if (
         !original &&
         !translation
@@ -2291,17 +2115,18 @@ function normalizeBlock(
 
     return {
 
-        text_box_2d:
-            textBox,
+        textBox,
 
-        polygon,
-
-        safe_box_2d:
-            safeBox,
+        bubbleBox,
 
         original,
 
         translation:
+            translation ||
+            original,
+
+        displayTranslation:
+            displayTranslation ||
             translation ||
             original,
 
@@ -2315,10 +2140,12 @@ function normalizeBlock(
 
 
 /* =====================================================
-   Normalize Box
+   Normalize box
 ===================================================== */
 
-function normalizeBox(box) {
+function normalizeBox(
+    box
+) {
 
     if (
         !Array.isArray(
@@ -2366,7 +2193,7 @@ function normalizeBox(box) {
         values;
 
 
-    const largest =
+    const maxValue =
         Math.max(
             Math.abs(ymin),
             Math.abs(xmin),
@@ -2376,12 +2203,15 @@ function normalizeBox(box) {
 
 
     if (
-        largest <= 1.5
+        maxValue <= 1.5
     ) {
 
         ymin *= 1000;
+
         xmin *= 1000;
+
         ymax *= 1000;
+
         xmax *= 1000;
 
     }
@@ -2434,142 +2264,6 @@ function normalizeBox(box) {
 
 
 /* =====================================================
-   Normalize Polygon
-===================================================== */
-
-function normalizePolygon(
-    polygon
-) {
-
-    if (
-        !Array.isArray(
-            polygon
-        )
-    ) {
-
-        return null;
-
-    }
-
-
-    const rawPoints =
-        polygon
-            .filter(
-                point =>
-                    Array.isArray(
-                        point
-                    ) &&
-                    point.length >= 2
-            )
-            .map(
-                point => [
-
-                    Number(
-                        point[0]
-                    ),
-
-                    Number(
-                        point[1]
-                    )
-
-                ]
-            )
-            .filter(
-                point =>
-
-                    Number.isFinite(
-                        point[0]
-                    ) &&
-
-                    Number.isFinite(
-                        point[1]
-                    )
-
-            );
-
-
-    if (
-        rawPoints.length < 3
-    ) {
-
-        return null;
-
-    }
-
-
-    let largest =
-        0;
-
-
-    rawPoints.forEach(
-        point => {
-
-            largest =
-                Math.max(
-
-                    largest,
-
-                    Math.abs(
-                        point[0]
-                    ),
-
-                    Math.abs(
-                        point[1]
-                    )
-
-                );
-
-        }
-    );
-
-
-    const normalized =
-        rawPoints.map(
-            point => {
-
-                let y =
-                    point[0];
-
-
-                let x =
-                    point[1];
-
-
-                if (
-                    largest <= 1.5
-                ) {
-
-                    y *=
-                        1000;
-
-                    x *=
-                        1000;
-
-                }
-
-
-                return [
-
-                    clamp1000(
-                        y
-                    ),
-
-                    clamp1000(
-                        x
-                    )
-
-                ];
-
-            }
-        );
-
-
-    return normalized;
-
-}
-
-
-/* =====================================================
    Clamp
 ===================================================== */
 
@@ -2589,7 +2283,7 @@ function clamp1000(
 
 
 /* =====================================================
-   Expand Box
+   Expand box
 ===================================================== */
 
 function expandBox(
@@ -2598,34 +2292,25 @@ function expandBox(
     horizontal
 ) {
 
-    const [
-        ymin,
-        xmin,
-        ymax,
-        xmax
-    ] =
-        box;
-
-
     return [
 
         clamp1000(
-            ymin -
+            box[0] -
             vertical
         ),
 
         clamp1000(
-            xmin -
+            box[1] -
             horizontal
         ),
 
         clamp1000(
-            ymax +
+            box[2] +
             vertical
         ),
 
         clamp1000(
-            xmax +
+            box[3] +
             horizontal
         )
 
@@ -2635,247 +2320,32 @@ function expandBox(
 
 
 /* =====================================================
-   Box -> Polygon
-===================================================== */
-
-function boxToPolygon(
-    box
-) {
-
-    const [
-        ymin,
-        xmin,
-        ymax,
-        xmax
-    ] =
-        box;
-
-
-    return [
-
-        [
-            ymin,
-            xmin
-        ],
-
-        [
-            ymin,
-            xmax
-        ],
-
-        [
-            ymax,
-            xmax
-        ],
-
-        [
-            ymax,
-            xmin
-        ]
-
-    ];
-
-}
-
-
-/* =====================================================
-   Polygon Bounding Box
-===================================================== */
-
-function polygonBoundingBox(
-    polygon
-) {
-
-    const ys =
-        polygon.map(
-            point =>
-                point[0]
-        );
-
-
-    const xs =
-        polygon.map(
-            point =>
-                point[1]
-        );
-
-
-    return [
-
-        Math.min(
-            ...ys
-        ),
-
-        Math.min(
-            ...xs
-        ),
-
-        Math.max(
-            ...ys
-        ),
-
-        Math.max(
-            ...xs
-        )
-
-    ];
-
-}
-
-
-/* =====================================================
-   Inset Box
-===================================================== */
-
-function insetBox(
-    box,
-    amount
-) {
-
-    const [
-        ymin,
-        xmin,
-        ymax,
-        xmax
-    ] =
-        box;
-
-
-    const height =
-        ymax -
-        ymin;
-
-
-    const width =
-        xmax -
-        xmin;
-
-
-    const insetY =
-        Math.min(
-            amount,
-            height *
-            0.15
-        );
-
-
-    const insetX =
-        Math.min(
-            amount,
-            width *
-            0.15
-        );
-
-
-    const result = [
-
-        ymin +
-        insetY,
-
-        xmin +
-        insetX,
-
-        ymax -
-        insetY,
-
-        xmax -
-        insetX
-
-    ];
-
-
-    if (
-        result[2] <=
-        result[0] ||
-        result[3] <=
-        result[1]
-    ) {
-
-        return box;
-
-    }
-
-
-    return result;
-
-}
-
-
-/* =====================================================
-   تقاطع صندوقين
-===================================================== */
-
-function intersectBoxes(
-    a,
-    b
-) {
-
-    const ymin =
-        Math.max(
-            a[0],
-            b[0]
-        );
-
-
-    const xmin =
-        Math.max(
-            a[1],
-            b[1]
-        );
-
-
-    const ymax =
-        Math.min(
-            a[2],
-            b[2]
-        );
-
-
-    const xmax =
-        Math.min(
-            a[3],
-            b[3]
-        );
-
-
-    if (
-        ymax <= ymin ||
-        xmax <= xmin
-    ) {
-
-        return null;
-
-    }
-
-
-    return [
-
-        ymin,
-        xmin,
-        ymax,
-        xmax
-
-    ];
-
-}
-
-
-/* =====================================================
-   الرسم النهائي
+   Draw translation
 ===================================================== */
 
 function drawTranslation(
     blocks
 ) {
 
-    drawOriginalImage();
+    drawOriginal();
 
 
     for (
         const block of blocks
     ) {
 
-        drawBlock(
+        cleanOriginalText(
+            block
+        );
+
+    }
+
+
+    for (
+        const block of blocks
+    ) {
+
+        drawTranslatedText(
             block
         );
 
@@ -2885,94 +2355,160 @@ function drawTranslation(
 
 
 /* =====================================================
-   رسم Block
+   Clean original Japanese
 ===================================================== */
 
-function drawBlock(
+function cleanOriginalText(
     block
 ) {
 
+    const box =
+        block.textBox;
+
+
+    const boxHeight =
+        box[2] -
+        box[0];
+
+
+    const boxWidth =
+        box[3] -
+        box[1];
+
+
     /*
-       إذا SFX بدون فقاعة حقيقية
-       لا نمسح الرسم.
+       نوسّع منطقة النص نفسه
+       وليس الفقاعة كلها.
     */
 
+    const extraY =
+        Math.max(
+            18,
+            boxHeight *
+            0.28
+        );
+
+
+    const extraX =
+        Math.max(
+            18,
+            boxWidth *
+            0.28
+        );
+
+
+    let cleaningBox = [
+
+        box[0] -
+        extraY,
+
+        box[1] -
+        extraX,
+
+        box[2] +
+        extraY,
+
+        box[3] +
+        extraX
+
+    ];
+
+
+    /*
+       لا نسمح لمنطقة التنظيف
+       بالخروج بعيداً عن الفقاعة.
+    */
+
+    cleaningBox = [
+
+        Math.max(
+            cleaningBox[0],
+            block.bubbleBox[0] +
+            5
+        ),
+
+        Math.max(
+            cleaningBox[1],
+            block.bubbleBox[1] +
+            5
+        ),
+
+        Math.min(
+            cleaningBox[2],
+            block.bubbleBox[2] -
+            5
+        ),
+
+        Math.min(
+            cleaningBox[3],
+            block.bubbleBox[3] -
+            5
+        )
+
+    ];
+
+
     if (
-        !block.polygon ||
-        block.polygon.length < 3
+        cleaningBox[2] <=
+        cleaningBox[0] ||
+        cleaningBox[3] <=
+        cleaningBox[1]
     ) {
 
-        return;
+        cleaningBox =
+            box;
 
     }
 
 
-    let points =
-        block.polygon.map(
-            point => {
-
-                const y =
-                    point[0] /
-                    1000 *
-                    canvas.height;
+    const pixelBox =
+        normalizedBoxToPixels(
+            cleaningBox
+        );
 
 
-                const x =
-                    point[1] /
-                    1000 *
-                    canvas.width;
-
-
-                return {
-
-                    x,
-                    y
-
-                };
-
-            }
+    const bubblePixelBox =
+        normalizedBoxToPixels(
+            block.bubbleBox
         );
 
 
     /*
-       نقلل الشكل نحو الداخل قليلاً
-       حتى لا نلمس الخط الأسود.
+       لون الخلفية مأخوذ من الفقاعة نفسها.
     */
 
-    points =
-        shrinkPolygon(
-            points,
-            0.975
+    const background =
+        detectLightBackground(
+            bubblePixelBox
         );
 
-
-    /*
-       نحاول معرفة لون خلفية
-       الفقاعة من الصورة الأصلية.
-    */
-
-    const backgroundColor =
-        detectBubbleColor(
-            points
-        );
-
-
-    /*
-       نمسح النص القديم
-       داخل شكل الفقاعة فقط.
-    */
 
     ctx.save();
 
 
-    buildSmoothPolygonPath(
-        ctx,
-        points
-    );
-
-
     ctx.fillStyle =
-        backgroundColor;
+        background;
+
+
+    roundedRect(
+
+        pixelBox.x,
+
+        pixelBox.y,
+
+        pixelBox.width,
+
+        pixelBox.height,
+
+        Math.min(
+            13,
+            pixelBox.width *
+            0.10,
+            pixelBox.height *
+            0.10
+        )
+
+    );
 
 
     ctx.fill();
@@ -2980,376 +2516,66 @@ function drawBlock(
 
     ctx.restore();
 
-
-    /*
-       Safe Box للكتابة.
-    */
-
-    const box =
-        block.safe_box_2d;
-
-
-    const [
-        ymin,
-        xmin,
-        ymax,
-        xmax
-    ] =
-        box;
-
-
-    const x =
-        xmin /
-        1000 *
-        canvas.width;
-
-
-    const y =
-        ymin /
-        1000 *
-        canvas.height;
-
-
-    const width =
-        (
-            xmax -
-            xmin
-        ) /
-        1000 *
-        canvas.width;
-
-
-    const height =
-        (
-            ymax -
-            ymin
-        ) /
-        1000 *
-        canvas.height;
-
-
-    /*
-       Clip:
-       حتى لو اقترب النص من الطرف
-       لن يخرج خارج الفقاعة.
-    */
-
-    ctx.save();
-
-
-    buildSmoothPolygonPath(
-        ctx,
-        points
-    );
-
-
-    ctx.clip();
-
-
-    drawFittedText(
-        block.translation,
-        x,
-        y,
-        width,
-        height
-    );
-
-
-    ctx.restore();
-
 }
 
 
 /* =====================================================
-   Shrink Polygon
+   Bubble background
 ===================================================== */
 
-function shrinkPolygon(
-    points,
-    factor
-) {
-
-    if (
-        !points.length
-    ) {
-
-        return points;
-
-    }
-
-
-    const center =
-        points.reduce(
-            (
-                result,
-                point
-            ) => {
-
-                result.x +=
-                    point.x;
-
-
-                result.y +=
-                    point.y;
-
-
-                return result;
-
-            },
-            {
-                x: 0,
-                y: 0
-            }
-        );
-
-
-    center.x /=
-        points.length;
-
-
-    center.y /=
-        points.length;
-
-
-    return points.map(
-        point => ({
-
-            x:
-                center.x +
-                (
-                    point.x -
-                    center.x
-                ) *
-                factor,
-
-            y:
-                center.y +
-                (
-                    point.y -
-                    center.y
-                ) *
-                factor
-
-        })
-    );
-
-}
-
-
-/* =====================================================
-   Smooth Polygon Path
-===================================================== */
-
-function buildSmoothPolygonPath(
-    targetCtx,
-    points
-) {
-
-    if (
-        points.length < 3
-    ) {
-
-        return;
-
-    }
-
-
-    const last =
-        points[
-            points.length -
-            1
-        ];
-
-
-    const first =
-        points[0];
-
-
-    const startX =
-        (
-            last.x +
-            first.x
-        ) /
-        2;
-
-
-    const startY =
-        (
-            last.y +
-            first.y
-        ) /
-        2;
-
-
-    targetCtx.beginPath();
-
-
-    targetCtx.moveTo(
-        startX,
-        startY
-    );
-
-
-    for (
-        let i = 0;
-        i < points.length;
-        i++
-    ) {
-
-        const current =
-            points[i];
-
-
-        const next =
-            points[
-                (
-                    i +
-                    1
-                ) %
-                points.length
-            ];
-
-
-        const midX =
-            (
-                current.x +
-                next.x
-            ) /
-            2;
-
-
-        const midY =
-            (
-                current.y +
-                next.y
-            ) /
-            2;
-
-
-        targetCtx.quadraticCurveTo(
-
-            current.x,
-
-            current.y,
-
-            midX,
-
-            midY
-
-        );
-
-    }
-
-
-    targetCtx.closePath();
-
-}
-
-
-/* =====================================================
-   تحديد لون خلفية الفقاعة
-===================================================== */
-
-function detectBubbleColor(
-    points
+function detectLightBackground(
+    box
 ) {
 
     try {
 
-        const xs =
-            points.map(
-                p =>
-                    p.x
-            );
-
-
-        const ys =
-            points.map(
-                p =>
-                    p.y
-            );
-
-
-        const minX =
+        const left =
             Math.max(
                 0,
                 Math.floor(
-                    Math.min(
-                        ...xs
-                    )
+                    box.x
                 )
             );
 
 
-        const maxX =
-            Math.min(
-                sourceCanvas.width -
-                1,
-                Math.ceil(
-                    Math.max(
-                        ...xs
-                    )
-                )
-            );
-
-
-        const minY =
+        const top =
             Math.max(
                 0,
                 Math.floor(
-                    Math.min(
-                        ...ys
-                    )
+                    box.y
                 )
             );
 
 
-        const maxY =
+        const right =
             Math.min(
-                sourceCanvas.height -
-                1,
+                sourceCanvas.width,
                 Math.ceil(
-                    Math.max(
-                        ...ys
-                    )
+                    box.x +
+                    box.width
                 )
             );
 
 
-        const width =
-            maxX -
-            minX;
+        const bottom =
+            Math.min(
+                sourceCanvas.height,
+                Math.ceil(
+                    box.y +
+                    box.height
+                )
+            );
 
-
-        const height =
-            maxY -
-            minY;
-
-
-        if (
-            width <= 0 ||
-            height <= 0
-        ) {
-
-            return "#ffffff";
-
-        }
-
-
-        /*
-           لا نأخذ كل Pixel حتى
-           يبقى الهاتف سريعاً.
-        */
 
         const step =
             Math.max(
-                5,
+                4,
                 Math.floor(
-                    Math.sqrt(
-                        width *
-                        height
+                    Math.max(
+                        box.width,
+                        box.height
                     ) /
-                    60
+                    35
                 )
             );
 
@@ -3357,43 +2583,27 @@ function detectBubbleColor(
         let r =
             0;
 
-
         let g =
             0;
 
-
         let b =
             0;
-
 
         let count =
             0;
 
 
         for (
-            let y = minY;
-            y <= maxY;
+            let y = top;
+            y < bottom;
             y += step
         ) {
 
             for (
-                let x = minX;
-                x <= maxX;
+                let x = left;
+                x < right;
                 x += step
             ) {
-
-                if (
-                    !pointInPolygon(
-                        x,
-                        y,
-                        points
-                    )
-                ) {
-
-                    continue;
-
-                }
-
 
                 const pixel =
                     sourceCtx.getImageData(
@@ -3404,7 +2614,7 @@ function detectBubbleColor(
                     ).data;
 
 
-                const luminance =
+                const brightness =
                     (
                         pixel[0] *
                         0.299
@@ -3420,25 +2630,21 @@ function detectBubbleColor(
 
 
                 /*
-                   نتجاهل الحروف السوداء.
-                   نأخذ الخلفية الفاتحة.
+                   نتجاهل اليابانية السوداء.
                 */
 
                 if (
-                    luminance >= 180
+                    brightness > 205
                 ) {
 
                     r +=
                         pixel[0];
 
-
                     g +=
                         pixel[1];
 
-
                     b +=
                         pixel[2];
-
 
                     count++;
 
@@ -3459,49 +2665,35 @@ function detectBubbleColor(
 
 
         r =
-            Math.round(
-                r /
-                count
-            );
-
-
-        g =
-            Math.round(
-                g /
-                count
-            );
-
-
-        b =
-            Math.round(
-                b /
-                count
-            );
-
-
-        /*
-           نرفع اللون قليلاً
-           حتى تبقى الفقاعة نظيفة.
-        */
-
-        r =
             Math.min(
                 255,
-                r + 5
+                Math.round(
+                    r /
+                    count
+                ) +
+                3
             );
 
 
         g =
             Math.min(
                 255,
-                g + 5
+                Math.round(
+                    g /
+                    count
+                ) +
+                3
             );
 
 
         b =
             Math.min(
                 255,
-                b + 5
+                Math.round(
+                    b /
+                    count
+                ) +
+                3
             );
 
 
@@ -3517,13 +2709,7 @@ function detectBubbleColor(
 
     }
 
-    catch (error) {
-
-        console.warn(
-            "Bubble color detection failed",
-            error
-        );
-
+    catch {
 
         return "#ffffff";
 
@@ -3533,103 +2719,158 @@ function detectBubbleColor(
 
 
 /* =====================================================
-   Point in Polygon
+   كتابة الترجمة
 ===================================================== */
 
-function pointInPolygon(
-    x,
-    y,
-    points
+function drawTranslatedText(
+    block
 ) {
 
-    let inside =
-        false;
+    /*
+       SFX فوق الرسم بدون Bubble
+       يمكن تجاوزه في النسخة الحالية.
+    */
 
-
-    for (
-        let i = 0,
-            j =
-                points.length -
-                1;
-
-        i <
-        points.length;
-
-        j = i++
+    if (
+        block.type === "sfx" &&
+        !block.bubbleBox
     ) {
 
-        const xi =
-            points[i].x;
-
-
-        const yi =
-            points[i].y;
-
-
-        const xj =
-            points[j].x;
-
-
-        const yj =
-            points[j].y;
-
-
-        const intersect =
-            (
-                (
-                    yi >
-                    y
-                ) !==
-                (
-                    yj >
-                    y
-                )
-            ) &&
-            (
-                x <
-                (
-                    (
-                        xj -
-                        xi
-                    ) *
-                    (
-                        y -
-                        yi
-                    )
-                ) /
-                (
-                    (
-                        yj -
-                        yi
-                    ) ||
-                    0.00001
-                ) +
-                xi
-            );
-
-
-        if (
-            intersect
-        ) {
-
-            inside =
-                !inside;
-
-        }
+        return;
 
     }
 
 
-    return inside;
+    const box =
+        normalizedBoxToPixels(
+            block.bubbleBox
+        );
+
+
+    /*
+       هامش داخلي كبير قليلاً.
+    */
+
+    const padX =
+        Math.max(
+            8,
+            box.width *
+            0.12
+        );
+
+
+    const padY =
+        Math.max(
+            8,
+            box.height *
+            0.12
+        );
+
+
+    const x =
+        box.x +
+        padX;
+
+
+    const y =
+        box.y +
+        padY;
+
+
+    const width =
+        box.width -
+        padX *
+        2;
+
+
+    const height =
+        box.height -
+        padY *
+        2;
+
+
+    if (
+        width <= 20 ||
+        height <= 20
+    ) {
+
+        return;
+
+    }
+
+
+    fitAndDrawText(
+
+        block.displayTranslation,
+
+        x,
+
+        y,
+
+        width,
+
+        height
+
+    );
 
 }
 
 
 /* =====================================================
-   كتابة النص
+   Box normalized -> pixels
 ===================================================== */
 
-function drawFittedText(
+function normalizedBoxToPixels(
+    box
+) {
+
+    const [
+        ymin,
+        xmin,
+        ymax,
+        xmax
+    ] =
+        box;
+
+
+    return {
+
+        x:
+            xmin /
+            1000 *
+            canvas.width,
+
+        y:
+            ymin /
+            1000 *
+            canvas.height,
+
+        width:
+            (
+                xmax -
+                xmin
+            ) /
+            1000 *
+            canvas.width,
+
+        height:
+            (
+                ymax -
+                ymin
+            ) /
+            1000 *
+            canvas.height
+
+    };
+
+}
+
+
+/* =====================================================
+   Fit text
+===================================================== */
+
+function fitAndDrawText(
     text,
     x,
     y,
@@ -3649,11 +2890,7 @@ function drawFittedText(
             .trim();
 
 
-    if (
-        !text ||
-        width < 15 ||
-        height < 15
-    ) {
+    if (!text) {
 
         return;
 
@@ -3661,93 +2898,48 @@ function drawFittedText(
 
 
     /*
-       هامش أكبر من V2.
-    */
-
-    const paddingX =
-        Math.max(
-            7,
-            width *
-            0.11
-        );
-
-
-    const paddingY =
-        Math.max(
-            7,
-            height *
-            0.11
-        );
-
-
-    const maxWidth =
-        Math.max(
-            10,
-            width -
-            paddingX *
-            2
-        );
-
-
-    const maxHeight =
-        Math.max(
-            10,
-            height -
-            paddingY *
-            2
-        );
-
-
-    /*
-       نبدأ بحجم أكثر اعتدالاً
-       من V2.
+       حجم بداية أكبر من V3
+       لأن BubbleBox الآن أكبر.
     */
 
     let fontSize =
         Math.min(
 
-            54,
+            62,
 
             height *
-            0.27,
+            0.34,
 
             width *
-            0.14
+            0.17
 
         );
 
 
     fontSize =
         Math.max(
-            11,
+            13,
             fontSize
         );
 
 
-    let bestLines =
+    let selectedLines =
         [];
 
 
     while (
-        fontSize >= 9
+        fontSize >= 10
     ) {
 
-        setCanvasFont(
+        setFont(
             fontSize
         );
 
 
         let lines =
-            smartWrapText(
+            wrapTextBalanced(
                 text,
-                maxWidth
-            );
-
-
-        lines =
-            balanceLines(
-                lines,
-                maxWidth
+                width
             );
 
 
@@ -3763,12 +2955,11 @@ function drawFittedText(
 
         if (
             totalHeight <=
-            maxHeight
+            height
         ) {
 
-            bestLines =
+            selectedLines =
                 lines;
-
 
             break;
 
@@ -3782,22 +2973,22 @@ function drawFittedText(
 
 
     if (
-        !bestLines.length
+        !selectedLines.length
     ) {
 
         fontSize =
-            9;
+            10;
 
 
-        setCanvasFont(
+        setFont(
             fontSize
         );
 
 
-        bestLines =
-            smartWrapText(
+        selectedLines =
+            wrapTextBalanced(
                 text,
-                maxWidth
+                width
             );
 
     }
@@ -3805,18 +2996,18 @@ function drawFittedText(
 
     const lineHeight =
         fontSize *
-        1.30;
+        1.28;
 
 
     const totalHeight =
-        bestLines.length *
+        selectedLines.length *
         lineHeight;
 
 
     ctx.save();
 
 
-    setCanvasFont(
+    setFont(
         fontSize
     );
 
@@ -3851,7 +3042,7 @@ function drawFittedText(
 
 
     for (
-        const line of bestLines
+        const line of selectedLines
     ) {
 
         ctx.fillText(
@@ -3864,7 +3055,7 @@ function drawFittedText(
 
             currentY,
 
-            maxWidth
+            width
 
         );
 
@@ -3884,7 +3075,7 @@ function drawFittedText(
    Font
 ===================================================== */
 
-function setCanvasFont(
+function setFont(
     size
 ) {
 
@@ -3897,10 +3088,10 @@ function setCanvasFont(
 
 
 /* =====================================================
-   Wrap
+   Wrap text
 ===================================================== */
 
-function smartWrapText(
+function wrapTextBalanced(
     text,
     maxWidth
 ) {
@@ -3915,14 +3106,45 @@ function smartWrapText(
             );
 
 
-    if (
-        !words.length
-    ) {
+    if (!words.length) {
 
         return [];
 
     }
 
+
+    /*
+       الطريقة الأولى:
+       تقسيم عادي.
+    */
+
+    const normal =
+        wrapWords(
+            words,
+            maxWidth
+        );
+
+
+    /*
+       نحاول تحسين توازن الأسطر.
+    */
+
+    return balanceLines(
+        normal,
+        maxWidth
+    );
+
+}
+
+
+/* =====================================================
+   Wrap words
+===================================================== */
+
+function wrapWords(
+    words,
+    maxWidth
+) {
 
     const lines =
         [];
@@ -3958,9 +3180,7 @@ function smartWrapText(
 
         else {
 
-            if (
-                current
-            ) {
+            if (current) {
 
                 lines.push(
                     current
@@ -4026,9 +3246,7 @@ function smartWrapText(
     }
 
 
-    if (
-        current
-    ) {
+    if (current) {
 
         lines.push(
             current
@@ -4043,7 +3261,7 @@ function smartWrapText(
 
 
 /* =====================================================
-   موازنة الأسطر
+   Balance lines
 ===================================================== */
 
 function balanceLines(
@@ -4051,27 +3269,22 @@ function balanceLines(
     maxWidth
 ) {
 
-    if (
-        lines.length < 2
-    ) {
-
-        return lines;
-
-    }
-
-
     const result =
         [...lines];
 
 
-    /*
-       نحاول نقل كلمة من السطر
-       الطويل إلى السطر القصير.
-    */
+    if (
+        result.length < 2
+    ) {
+
+        return result;
+
+    }
+
 
     for (
         let pass = 0;
-        pass < 4;
+        pass < 5;
         pass++
     ) {
 
@@ -4087,7 +3300,7 @@ function balanceLines(
             i++
         ) {
 
-            const firstWords =
+            const first =
                 result[i]
                     .split(
                         " "
@@ -4095,7 +3308,7 @@ function balanceLines(
 
 
             if (
-                firstWords.length <= 1
+                first.length <= 1
             ) {
 
                 continue;
@@ -4103,7 +3316,7 @@ function balanceLines(
             }
 
 
-            const secondWords =
+            const second =
                 result[
                     i + 1
                 ].split(
@@ -4111,15 +3324,15 @@ function balanceLines(
                 );
 
 
-            const movedWord =
-                firstWords[
-                    firstWords.length -
+            const moved =
+                first[
+                    first.length -
                     1
                 ];
 
 
             const newFirst =
-                firstWords
+                first
                     .slice(
                         0,
                         -1
@@ -4131,86 +3344,80 @@ function balanceLines(
 
             const newSecond =
                 [
-                    movedWord,
-                    ...secondWords
+                    moved,
+                    ...second
                 ].join(
                     " "
                 );
 
 
-            const firstWidth =
-                ctx.measureText(
-                    result[i]
-                ).width;
-
-
-            const secondWidth =
-                ctx.measureText(
-                    result[
-                        i + 1
-                    ]
-                ).width;
-
-
-            const newFirstWidth =
-                ctx.measureText(
-                    newFirst
-                ).width;
-
-
-            const newSecondWidth =
+            if (
                 ctx.measureText(
                     newSecond
-                ).width;
-
-
-            if (
-                newSecondWidth <=
+                ).width >
                 maxWidth
             ) {
 
-                const before =
-                    Math.abs(
-                        firstWidth -
-                        secondWidth
-                    );
+                continue;
+
+            }
 
 
-                const after =
-                    Math.abs(
-                        newFirstWidth -
-                        newSecondWidth
-                    );
+            const before =
+                Math.abs(
+
+                    ctx.measureText(
+                        result[i]
+                    ).width -
+
+                    ctx.measureText(
+                        result[
+                            i + 1
+                        ]
+                    ).width
+
+                );
 
 
-                if (
-                    after <
-                    before
-                ) {
+            const after =
+                Math.abs(
 
-                    result[i] =
-                        newFirst;
+                    ctx.measureText(
+                        newFirst
+                    ).width -
+
+                    ctx.measureText(
+                        newSecond
+                    ).width
+
+                );
 
 
-                    result[
-                        i + 1
-                    ] =
-                        newSecond;
+            if (
+                newFirst &&
+                after <
+                before
+            ) {
+
+                result[i] =
+                    newFirst;
 
 
-                    changed =
-                        true;
+                result[
+                    i + 1
+                ] =
+                    newSecond;
 
-                }
+
+                changed =
+                    true;
 
             }
 
         }
 
 
-        if (
-            !changed
-        ) {
+        if (!changed) {
 
             break;
 
@@ -4225,7 +3432,7 @@ function balanceLines(
 
 
 /* =====================================================
-   الكلمات الطويلة
+   Long word
 ===================================================== */
 
 function splitLongWord(
@@ -4245,21 +3452,19 @@ function splitLongWord(
         const char of word
     ) {
 
-        const test =
+        const candidate =
             current +
             char;
 
 
         if (
             ctx.measureText(
-                test
+                candidate
             ).width >
             maxWidth
         ) {
 
-            if (
-                current
-            ) {
+            if (current) {
 
                 parts.push(
                     current
@@ -4276,16 +3481,14 @@ function splitLongWord(
         else {
 
             current =
-                test;
+                candidate;
 
         }
 
     }
 
 
-    if (
-        current
-    ) {
+    if (current) {
 
         parts.push(
             current
@@ -4300,7 +3503,147 @@ function splitLongWord(
 
 
 /* =====================================================
-   إظهار النتائج
+   Rounded rect
+===================================================== */
+
+function roundedRect(
+    x,
+    y,
+    width,
+    height,
+    radius
+) {
+
+    radius =
+        Math.max(
+            0,
+            Math.min(
+
+                radius,
+
+                width /
+                2,
+
+                height /
+                2
+
+            )
+        );
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        x +
+        radius,
+        y
+    );
+
+
+    ctx.lineTo(
+        x +
+        width -
+        radius,
+        y
+    );
+
+
+    ctx.quadraticCurveTo(
+
+        x +
+        width,
+
+        y,
+
+        x +
+        width,
+
+        y +
+        radius
+
+    );
+
+
+    ctx.lineTo(
+        x +
+        width,
+        y +
+        height -
+        radius
+    );
+
+
+    ctx.quadraticCurveTo(
+
+        x +
+        width,
+
+        y +
+        height,
+
+        x +
+        width -
+        radius,
+
+        y +
+        height
+
+    );
+
+
+    ctx.lineTo(
+        x +
+        radius,
+        y +
+        height
+    );
+
+
+    ctx.quadraticCurveTo(
+
+        x,
+
+        y +
+        height,
+
+        x,
+
+        y +
+        height -
+        radius
+
+    );
+
+
+    ctx.lineTo(
+        x,
+        y +
+        radius
+    );
+
+
+    ctx.quadraticCurveTo(
+
+        x,
+
+        y,
+
+        x +
+        radius,
+
+        y
+
+    );
+
+
+    ctx.closePath();
+
+}
+
+
+/* =====================================================
+   Results
 ===================================================== */
 
 function showResults(
@@ -4370,6 +3713,39 @@ function showResults(
             );
 
 
+            /*
+               إذا كانت النسخة المختصرة
+               مختلفة عن الترجمة الكاملة.
+            */
+
+            if (
+                block.displayTranslation &&
+                block.displayTranslation !==
+                block.translation
+            ) {
+
+                const display =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                display.className =
+                    "displayTranslation";
+
+
+                display.textContent =
+                    "داخل الفقاعة: " +
+                    block.displayTranslation;
+
+
+                wrapper.appendChild(
+                    display
+                );
+
+            }
+
+
             textResults.appendChild(
                 wrapper
             );
@@ -4385,16 +3761,14 @@ function showResults(
 
 
 /* =====================================================
-   الأصل / الترجمة
+   Compare
 ===================================================== */
 
-restoreButton.addEventListener(
+compareButton.addEventListener(
     "click",
     () => {
 
-        if (
-            !preparedImage
-        ) {
+        if (!preparedImage) {
 
             return;
 
@@ -4405,14 +3779,14 @@ restoreButton.addEventListener(
             translatedVisible
         ) {
 
-            drawOriginalImage();
+            drawOriginal();
 
 
             translatedVisible =
                 false;
 
 
-            restoreButton.textContent =
+            compareButton.textContent =
                 "✨ عرض الصورة المترجمة";
 
         }
@@ -4428,7 +3802,7 @@ restoreButton.addEventListener(
                 true;
 
 
-            restoreButton.textContent =
+            compareButton.textContent =
                 "↩ عرض الصورة الأصلية";
 
         }
@@ -4438,7 +3812,7 @@ restoreButton.addEventListener(
 
 
 /* =====================================================
-   حفظ الصورة
+   Download
 ===================================================== */
 
 downloadButton.addEventListener(
@@ -4459,7 +3833,7 @@ downloadButton.addEventListener(
                 true;
 
 
-            restoreButton.textContent =
+            compareButton.textContent =
                 "↩ عرض الصورة الأصلية";
 
         }
@@ -4468,15 +3842,12 @@ downloadButton.addEventListener(
         canvas.toBlob(
             blob => {
 
-                if (
-                    !blob
-                ) {
+                if (!blob) {
 
                     setStatus(
                         "❌ تعذر إنشاء الصورة.",
                         "error"
                     );
-
 
                     return;
 
@@ -4500,7 +3871,7 @@ downloadButton.addEventListener(
 
 
                 link.download =
-                    "manga-translated-v3.png";
+                    "manga-translated-v4.png";
 
 
                 document.body.appendChild(
@@ -4515,13 +3886,10 @@ downloadButton.addEventListener(
 
 
                 setTimeout(
-                    () => {
-
+                    () =>
                         URL.revokeObjectURL(
                             url
-                        );
-
-                    },
+                        ),
                     1000
                 );
 
@@ -4536,7 +3904,7 @@ downloadButton.addEventListener(
 
 
 /* =====================================================
-   صورة جديدة
+   New image
 ===================================================== */
 
 newButton.addEventListener(
@@ -4591,7 +3959,7 @@ newButton.addEventListener(
             "none";
 
 
-        restoreButton.style.display =
+        compareButton.style.display =
             "none";
 
 
