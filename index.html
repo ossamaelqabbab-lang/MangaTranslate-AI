@@ -3,130 +3,1763 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MangaTranslate AI V8</title>
+<title>MangaTranslate AI V9</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@600;700&family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+
 <style>
-*{box-sizing:border-box}body{margin:0;background:#0d1017;color:#fff;font-family:Arial,Tahoma,sans-serif}.app{width:100%;max-width:850px;margin:auto;padding:18px}header{text-align:center;padding:18px 0}header h1{margin:0;font-size:27px}header p{margin:8px 0;color:#9ca3af}.version{display:inline-block;padding:6px 11px;border-radius:20px;background:#252c3c;color:#b9c1d0;font-size:12px}.card{background:#171c27;border:1px solid #2b3345;border-radius:16px;padding:16px;margin-bottom:16px}label{display:block;margin:10px 0 7px;font-weight:bold}input,select,textarea,button{width:100%;border-radius:10px;font-size:16px}input,select{min-height:48px;padding:10px;color:#fff;background:#222938;border:1px solid #3a455e}textarea{min-height:82px;resize:vertical;padding:12px;color:#fff;background:#1d2432;border:1px solid #3a455e;font-family:"Noto Naskh Arabic",Tahoma,Arial,sans-serif;font-size:18px;line-height:1.6}#apiKey{direction:ltr}.upload{display:block;margin-top:16px;padding:25px 12px;text-align:center;cursor:pointer;border-radius:14px;background:#202735;border:2px dashed #4a5875}.upload small{color:#aab1c0}#imageInput{display:none}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}button{min-height:48px;border:none;padding:12px;margin-top:12px;color:#fff;cursor:pointer;font-weight:bold}button:disabled{opacity:.5;cursor:not-allowed}#translateButton,#applyEditsButton{background:#6757e8}#downloadButton{display:none;background:#07885f}#strongCleanButton{display:none;background:#b06b16}#compareButton{display:none;background:#3b465e}#retryFailedButton{display:none;background:#9a5bd4}#newButton,#resetEditsButton{background:#30394e}#status{padding:16px 5px 5px;text-align:center;line-height:1.7;white-space:pre-line;word-break:break-word}.success{color:#4ade80}.error{color:#ff6b6b}.loading{color:#ffd166}.progressWrap{display:none;margin-top:14px}.progressBar{height:10px;border-radius:10px;overflow:hidden;background:#2a3242}.progressFill{height:100%;width:0;background:#6757e8;transition:width .25s}.progressText{margin-top:7px;color:#b8c0d0;text-align:center;font-size:13px}#canvasCard,#editorCard,#results{display:none}canvas{display:block;width:100%;height:auto;background:#fff;border-radius:10px}.result,.editorItem{padding:12px;margin-bottom:12px;border-radius:10px;background:#232a39}.editorItem{border:1px solid #333d52}.editorNumber{font-weight:bold;margin-bottom:8px;color:#d4d8e2}.editorOriginal{color:#979faf;font-size:13px;margin-bottom:8px;direction:auto}.editorFull{color:#c0c7d4;font-size:14px;margin-bottom:10px}.original{margin-bottom:7px;color:#a7adbb;font-size:14px;direction:auto}.translation{font-size:17px;font-weight:bold;direction:auto}.displayTranslation{margin-top:6px;color:#b8c1d5;font-size:13px}.note,.model-info{color:#9ca3af;font-size:13px;line-height:1.65}.model-info{text-align:center;margin-top:8px}.settingsTitle{margin-top:18px;margin-bottom:5px;font-weight:bold}.warning{margin-top:10px;padding:10px;border-radius:10px;background:#242b39;color:#c7cfdd;font-size:13px;line-height:1.6}.failedBox{margin-top:10px;padding:10px;border-radius:10px;background:#30232f;color:#ffd1e5;font-size:13px;line-height:1.6}.badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#343d50;color:#c8d1df;font-size:11px;margin-inline-start:6px}@media(max-width:600px){.grid{grid-template-columns:1fr}header h1{font-size:24px}}
+*{box-sizing:border-box}
+body{margin:0;background:#0d1017;color:#fff;font-family:Arial,Tahoma,sans-serif}
+.app{width:100%;max-width:850px;margin:auto;padding:18px}
+header{text-align:center;padding:18px 0}
+header h1{margin:0;font-size:27px}
+header p{margin:8px 0;color:#9ca3af}
+.version{display:inline-block;padding:6px 11px;border-radius:20px;background:#252c3c;color:#b9c1d0;font-size:12px}
+.card{background:#171c27;border:1px solid #2b3345;border-radius:16px;padding:16px;margin-bottom:16px}
+label{display:block;margin:10px 0 7px;font-weight:bold}
+input,select,textarea,button{width:100%;border-radius:10px;font-size:16px}
+input,select{min-height:48px;padding:10px;color:#fff;background:#222938;border:1px solid #3a455e}
+textarea{min-height:90px;resize:vertical;padding:12px;color:#fff;background:#1d2432;border:1px solid #3a455e;font-family:"Noto Naskh Arabic",Tahoma,Arial,sans-serif;font-size:18px;line-height:1.6}
+#apiKey{direction:ltr}
+.upload{display:block;margin-top:16px;padding:25px 12px;text-align:center;cursor:pointer;border-radius:14px;background:#202735;border:2px dashed #4a5875}
+.upload small{color:#aab1c0}
+#imageInput{display:none}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{min-height:48px;border:none;padding:12px;margin-top:12px;color:#fff;cursor:pointer;font-weight:bold}
+button:disabled{opacity:.5;cursor:not-allowed}
+#translateButton{background:#6757e8}
+#downloadButton{display:none;background:#07885f}
+#strongCleanButton{display:none;background:#b06b16}
+#compareButton{display:none;background:#3b465e}
+#newButton{background:#30394e}
+#retryButton{display:none;background:#9a5ce0}
+#applyEditsButton{background:#6757e8}
+#resetEditsButton{background:#3b465e}
+#status{padding:16px 5px 5px;text-align:center;line-height:1.7;white-space:pre-line;word-break:break-word}
+.success{color:#4ade80}
+.error{color:#ff6b6b}
+.loading{color:#ffd166}
+.warn{color:#fbbf24}
+#canvasCard{display:none}
+canvas{display:block;width:100%;height:auto;background:#fff;border-radius:10px}
+#editorCard,#results{display:none}
+.result,.editorItem{padding:12px;margin-bottom:12px;border-radius:10px;background:#232a39}
+.editorItem{border:1px solid #333d52}
+.editorNumber{font-weight:bold;margin-bottom:8px;color:#d4d8e2}
+.editorOriginal{color:#979faf;font-size:13px;margin-bottom:8px;direction:auto}
+.editorFullTranslation{color:#c0c7d4;font-size:14px;margin-bottom:10px}
+.original{margin-bottom:7px;color:#a7adbb;font-size:14px;direction:auto}
+.translation{font-size:17px;font-weight:bold;direction:auto}
+.displayTranslation{margin-top:6px;color:#b8c1d5;font-size:13px}
+.note{color:#9ca3af;font-size:13px;line-height:1.65}
+.model-info{margin-top:10px;color:#9ca3af;text-align:center;font-size:13px;white-space:pre-line}
+.editorHelp{color:#aeb6c5;line-height:1.7;font-size:14px;margin-bottom:15px}
+.progressWrap{display:none;margin-top:14px}
+.progressTrack{height:10px;border-radius:999px;background:#293143;overflow:hidden}
+.progressBar{height:100%;width:0%;background:#6757e8;transition:width .25s ease}
+.progressText{margin-top:8px;color:#b9c1d0;font-size:13px;text-align:center}
+.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#273044;color:#c5cede;font-size:12px;margin:3px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}header h1{font-size:24px}}
 </style>
 </head>
+
 <body>
 <div class="app">
-<header><h1>📖 MangaTranslate AI</h1><p>ترجمة المانغا على دفعات مع سياق الصفحة</p><div class="version">V8 — Batch Context Engine</div></header>
+<header>
+  <h1>📖 MangaTranslate AI</h1>
+  <p>ترجمة المانغا في طلب واحد ذكي لتجنب حدود Gemini</p>
+  <div class="version">V9 — One‑Pass Zoom Engine</div>
+</header>
+
 <div class="card">
-<label>🔑 Gemini API Key</label><input id="apiKey" type="password" autocomplete="off" placeholder="ألصق مفتاح Gemini هنا">
-<p class="note">المفتاح لا يُحفظ داخل GitHub. هذه النسخة للاختبار الشخصي.</p>
-<label class="upload" for="imageInput">📷 اضغط هنا واختر صورة المانغا<br><small>JPG / PNG / WEBP</small></label><input id="imageInput" type="file" accept="image/*">
-<div class="grid">
-<div><label>لغة النص الأصلية</label><select id="sourceLanguage"><option value="Automatic per region">اكتشاف تلقائي لكل فقاعة</option><option value="Japanese">اليابانية</option><option value="English">الإنجليزية</option><option value="Korean">الكورية</option><option value="Chinese">الصينية</option><option value="French">الفرنسية</option><option value="Spanish">الإسبانية</option><option value="Indonesian">الإندونيسية</option></select></div>
-<div><label>الترجمة إلى</label><select id="targetLanguage"><option value="Arabic">العربية</option><option value="English">الإنجليزية</option><option value="French">الفرنسية</option><option value="Spanish">الإسبانية</option><option value="Japanese">اليابانية</option></select></div>
+  <label>🔑 Gemini API Key</label>
+  <input id="apiKey" type="password" autocomplete="off" placeholder="ألصق مفتاح Gemini هنا">
+  <p class="note">المفتاح للاختبار الشخصي فقط ولا يُحفظ داخل GitHub. هذه النسخة تقلّل استهلاك الحصة إلى طلب تحليل واحد للصفحة في الحالة الطبيعية.</p>
+
+  <label class="upload" for="imageInput">
+    📷 اضغط هنا واختر صورة المانغا<br>
+    <small>JPG / PNG / WEBP</small>
+  </label>
+  <input id="imageInput" type="file" accept="image/*">
+
+  <div class="grid">
+    <div>
+      <label>لغة النص الأصلية</label>
+      <select id="sourceLanguage">
+        <option value="Automatic per region">اكتشاف تلقائي لكل فقاعة</option>
+        <option value="Japanese">اليابانية</option>
+        <option value="English">الإنجليزية</option>
+        <option value="Korean">الكورية</option>
+        <option value="Chinese">الصينية</option>
+        <option value="French">الفرنسية</option>
+        <option value="Spanish">الإسبانية</option>
+        <option value="Indonesian">الإندونيسية</option>
+      </select>
+    </div>
+    <div>
+      <label>الترجمة إلى</label>
+      <select id="targetLanguage">
+        <option value="Arabic">العربية</option>
+        <option value="English">الإنجليزية</option>
+        <option value="French">الفرنسية</option>
+        <option value="Spanish">الإسبانية</option>
+        <option value="Japanese">اليابانية</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <label>الخط</label>
+      <select id="fontFamily">
+        <option value="Noto Naskh Arabic">Noto Naskh Arabic</option>
+        <option value="Tajawal">Tajawal</option>
+        <option value="Tahoma">Tahoma</option>
+        <option value="Arial">Arial</option>
+      </select>
+    </div>
+    <div>
+      <label>حجم الخط</label>
+      <select id="fontSizeMode">
+        <option value="auto">تلقائي</option>
+        <option value="small">صغير</option>
+        <option value="large">كبير</option>
+      </select>
+    </div>
+  </div>
+
+  <button id="translateButton" disabled>✨ تحليل وترجمة الصفحة</button>
+  <button id="retryButton">🔁 إعادة المحاولة</button>
+  <button id="downloadButton">⬇ حفظ الصورة المترجمة</button>
+  <button id="strongCleanButton">🧽 تنظيف أقوى لبقايا النص</button>
+  <button id="compareButton">↩ عرض الصورة الأصلية</button>
+  <button id="newButton">🗑 صورة جديدة</button>
+
+  <div class="progressWrap" id="progressWrap">
+    <div class="progressTrack"><div class="progressBar" id="progressBar"></div></div>
+    <div class="progressText" id="progressText"></div>
+  </div>
+
+  <div id="status">اختر صورة للبدء</div>
+  <div id="modelInfo" class="model-info"></div>
 </div>
-<div class="settingsTitle">🎨 شكل النص داخل الفقاعة</div>
-<div class="grid">
-<div><label>الخط</label><select id="fontFamily"><option value="Noto Naskh Arabic">Noto Naskh Arabic</option><option value="Tajawal">Tajawal</option><option value="Arial">Arial</option><option value="Tahoma">Tahoma</option></select></div>
-<div><label>حجم الخط</label><select id="fontSizeMode"><option value="auto">تلقائي</option><option value="small">صغير</option><option value="large">كبير</option></select></div>
+
+<div id="canvasCard" class="card">
+  <canvas id="canvas"></canvas>
 </div>
-<button id="translateButton" disabled>✨ تحليل وترجمة الصفحة</button>
-<button id="downloadButton">⬇ حفظ الصورة المترجمة</button>
-<button id="strongCleanButton">🧽 تنظيف أقوى لبقايا النص</button>
-<button id="retryFailedButton">🔁 إعادة محاولة المناطق الفاشلة</button>
-<button id="compareButton">↩ عرض الصورة الأصلية</button>
-<button id="newButton">🗑 صورة جديدة</button>
-<div id="status">اختر صورة للبدء</div>
-<div id="progressWrap" class="progressWrap"><div class="progressBar"><div id="progressFill" class="progressFill"></div></div><div id="progressText" class="progressText"></div></div>
-<div id="modelInfo" class="model-info"></div>
-<div id="failedInfo" class="failedBox" style="display:none"></div>
-<div class="warning">V8 تكتشف المناطق أولًا، ثم ترسل الصفحة الكاملة مع عدة قصاصات في الطلب نفسه. هذا يقلل عدد الطلبات ويحافظ على سياق الصفحة مقارنةً بـ V7.</div>
+
+<div id="editorCard" class="card">
+  <h3>✏️ محرر الترجمة</h3>
+  <p class="editorHelp">عدّل أي جملة ثم اضغط «تحديث النص داخل الصورة». لا يتم إرسال طلب جديد إلى Gemini.</p>
+  <div id="editorList"></div>
+  <button id="applyEditsButton">🔄 تحديث النص داخل الصورة</button>
+  <button id="resetEditsButton">↩ إعادة ترجمة Gemini الأصلية</button>
 </div>
-<div id="canvasCard" class="card"><canvas id="canvas"></canvas></div>
-<div id="editorCard" class="card"><h3>✏️ محرر الترجمة</h3><p class="note">عدّل النص الذي سيظهر داخل أي فقاعة ثم اضغط «تحديث النص داخل الصورة». لا يتم إرسال الصورة إلى Gemini مرة أخرى.</p><div id="editorList"></div><button id="applyEditsButton">🔄 تحديث النص داخل الصورة</button><button id="resetEditsButton">↩ إعادة ترجمة Gemini الأصلية</button></div>
-<div id="results" class="card"><h3>📝 النصوص المكتشفة</h3><div id="textResults"></div></div>
+
+<div id="results" class="card">
+  <h3>📝 النصوص المكتشفة</h3>
+  <div id="textResults"></div>
 </div>
+</div>
+
 <script>
-const $=id=>document.getElementById(id);
-const apiKeyInput=$('apiKey'),imageInput=$('imageInput'),sourceLanguage=$('sourceLanguage'),targetLanguage=$('targetLanguage'),fontFamilySelect=$('fontFamily'),fontSizeMode=$('fontSizeMode');
-const translateButton=$('translateButton'),downloadButton=$('downloadButton'),strongCleanButton=$('strongCleanButton'),retryFailedButton=$('retryFailedButton'),compareButton=$('compareButton'),newButton=$('newButton'),applyEditsButton=$('applyEditsButton'),resetEditsButton=$('resetEditsButton');
-const statusBox=$('status'),progressWrap=$('progressWrap'),progressFill=$('progressFill'),progressText=$('progressText'),modelInfo=$('modelInfo'),failedInfo=$('failedInfo'),canvasCard=$('canvasCard'),editorCard=$('editorCard'),editorList=$('editorList'),results=$('results'),textResults=$('textResults');
-const canvas=$('canvas'),ctx=canvas.getContext('2d',{willReadFrequently:true});
-const sourceCanvas=document.createElement('canvas'),sourceCtx=sourceCanvas.getContext('2d',{willReadFrequently:true});
-let preparedImage=null,preparedBase64=null,contextBase64=null,lastBlocks=[],translatedVisible=false,currentCleanStrength=1,activeModels=[],lastRegions=[],failedRegionIds=[];
-const BATCH_SIZE=5;
-function setStatus(text,type=''){statusBox.textContent=text;statusBox.className=type}
-function setProgress(done,total,label=''){progressWrap.style.display='block';const p=total?Math.max(0,Math.min(100,done/total*100)):0;progressFill.style.width=p+'%';progressText.textContent=label||`${done}/${total}`}
-function hideProgress(){progressWrap.style.display='none';progressFill.style.width='0%';progressText.textContent=''}
-function showFailed(ids){failedRegionIds=[...new Set(ids)].sort((a,b)=>a-b);if(failedRegionIds.length){failedInfo.style.display='block';failedInfo.textContent=`⚠️ مناطق تحتاج إعادة محاولة: ${failedRegionIds.join(', ')}`;retryFailedButton.style.display='block'}else{failedInfo.style.display='none';failedInfo.textContent='';retryFailedButton.style.display='none'}}
-imageInput.addEventListener('change',async()=>{const file=imageInput.files[0];if(!file)return;if(!file.type.startsWith('image/')){setStatus('❌ الملف المختار ليس صورة.','error');return}try{setStatus('⏳ جاري تجهيز الصورة...','loading');const p=await prepareImage(file);preparedImage=p.image;preparedBase64=p.base64;contextBase64=p.contextBase64;canvas.width=preparedImage.width;canvas.height=preparedImage.height;sourceCanvas.width=preparedImage.width;sourceCanvas.height=preparedImage.height;sourceCtx.clearRect(0,0,sourceCanvas.width,sourceCanvas.height);sourceCtx.drawImage(preparedImage,0,0);drawOriginal();canvasCard.style.display='block';editorCard.style.display=results.style.display='none';downloadButton.style.display=strongCleanButton.style.display=compareButton.style.display='none';translateButton.disabled=false;lastBlocks=[];lastRegions=[];translatedVisible=false;currentCleanStrength=1;modelInfo.textContent='';editorList.innerHTML='';showFailed([]);hideProgress();setStatus('✅ الصورة جاهزة.\nاضغط تحليل وترجمة الصفحة.','success')}catch(e){console.error(e);setStatus('❌ تعذر تجهيز الصورة.','error')}});
-async function prepareImage(file){const original=await fileToImage(file);let w=original.naturalWidth,h=original.naturalHeight;const max=2200;if(w>max||h>max){const r=Math.min(max/w,max/h);w=Math.round(w*r);h=Math.round(h*r)}const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(original,0,0,w,h);const dataURL=c.toDataURL('image/jpeg',0.95);const image=new Image();await new Promise((res,rej)=>{image.onload=res;image.onerror=rej;image.src=dataURL});const context=resizeCanvasToBase64(c,1200,0.88);return{image,base64:dataURL.split(',')[1],contextBase64:context}}
-function resizeCanvasToBase64(src,maxDim=1200,quality=.88){let w=src.width,h=src.height;const r=Math.min(1,maxDim/Math.max(w,h));w=Math.max(1,Math.round(w*r));h=Math.max(1,Math.round(h*r));const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(src,0,0,w,h);return c.toDataURL('image/jpeg',quality).split(',')[1]}
-function fileToImage(file){return new Promise((res,rej)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{URL.revokeObjectURL(url);res(img)};img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('فشل تحميل الصورة'))};img.src=url})}
-function drawOriginal(){if(!preparedImage)return;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(preparedImage,0,0)}
-translateButton.addEventListener('click',async()=>{const key=apiKeyInput.value.trim();if(!key){setStatus('❌ ضع Gemini API Key أولاً.','error');return}if(!preparedBase64){setStatus('❌ اختر صورة أولاً.','error');return}translateButton.disabled=true;editorCard.style.display=results.style.display='none';downloadButton.style.display=strongCleanButton.style.display=compareButton.style.display='none';modelInfo.textContent='';lastBlocks=[];lastRegions=[];showFailed([]);hideProgress();try{setStatus('🔎 اختيار نماذج Gemini المناسبة...','loading');activeModels=await getAvailableModels(key);if(!activeModels.length)throw new Error('لم يتم العثور على نموذج Gemini Flash مناسب.');modelInfo.textContent='نماذج التحليل: '+activeModels.slice(0,3).join(' • ');
-setStatus('🔎 المرحلة 1/2: اكتشاف جميع مناطق النص...','loading');setProgress(0,2,'المسح الأول للصفحة...');const first=await detectRegions(key,activeModels,preparedBase64,[],'first');setProgress(1,2,`تم العثور مبدئيًا على ${first.length} منطقة. مراجعة الصفحة...`);const second=await detectRegions(key,activeModels,preparedBase64,first,'review');let regions=dedupeRegions([...first,...second]).slice(0,30);if(!regions.length)throw new Error('لم يتم اكتشاف مناطق نصية في الصفحة.');lastRegions=regions.map((r,i)=>({...r,id:i+1}));setProgress(2,2,`تم تثبيت ${lastRegions.length} منطقة نصية.`);
-setStatus(`📦 المرحلة 2/2: تحليل ${lastRegions.length} منطقة على دفعات...`,'loading');const {blocks,failed}=await analyzeAllBatches(key,lastRegions);if(!blocks.length)throw new Error('تم اكتشاف المناطق، لكن تعذر تحليل نصوصها.');lastBlocks=sortBlocksReadingOrder(blocks);currentCleanStrength=1;await ensureSelectedFont();drawTranslation(lastBlocks,currentCleanStrength);showEditor(lastBlocks);showResults(lastBlocks);translatedVisible=true;editorCard.style.display=results.style.display='block';downloadButton.style.display=strongCleanButton.style.display=compareButton.style.display='block';compareButton.textContent='↩ عرض الصورة الأصلية';showFailed(failed);const failText=failed.length?`\n⚠️ بقيت ${failed.length} منطقة تحتاج إعادة محاولة.`:'';setStatus(`✅ اكتملت الصفحة.\nتمت ترجمة ${lastBlocks.length} منطقة من أصل ${lastRegions.length}.${failText}`,'success')}catch(e){console.error(e);setStatus('❌ حدث خطأ:\n'+(e?.message||String(e)),'error')}finally{translateButton.disabled=false;setTimeout(hideProgress,1500)}});
-function isUsefulTranslationModel(model){const name=String(model?.name||'').toLowerCase(),methods=model?.supportedGenerationMethods||[];if(!name.startsWith('models/gemini-'))return false;if(!methods.includes('generateContent'))return false;if(!name.includes('flash'))return false;const excluded=['-image','image-','imagen','-tts','tts-','-live','live-','transcribe','omni','embedding','aqa','veo','lyria','computer-use','robotics'];return !excluded.some(x=>name.includes(x))}
-async function getAvailableModels(key){try{const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=100',{headers:{'x-goog-api-key':key}});const data=await r.json();if(r.status===401||r.status===403)throw new Error('مفتاح Gemini غير صالح أو لا يملك صلاحية.');if(!r.ok)return fallbackModels();const names=(Array.isArray(data.models)?data.models:[]).filter(isUsefulTranslationModel).map(m=>String(m.name).replace(/^models\//,'')).sort((a,b)=>modelScore(b)-modelScore(a));const unique=[...new Set(names)];return unique.length?unique.slice(0,6):fallbackModels()}catch(e){if(String(e?.message||'').includes('مفتاح Gemini'))throw e;return fallbackModels()}}
-function modelScore(n){n=String(n).toLowerCase();let s=100;if(n.includes('3.8-flash'))s=500;else if(n.includes('3.6-flash'))s=460;else if(n.includes('3.5-flash')&&!n.includes('lite'))s=430;else if(n.includes('3.5-flash-lite'))s=350;else if(n.includes('3.1-flash-lite'))s=320;else if(n.includes('2.5-flash')&&!n.includes('-image'))s=290;else if(n.includes('flash')&&!n.includes('lite'))s=260;else if(n.includes('flash-lite'))s=220;if(n.includes('preview'))s-=30;if(n.includes('exp'))s-=50;return s}
-function fallbackModels(){return['gemini-3.8-flash','gemini-3.6-flash','gemini-3.5-flash','gemini-3.5-flash-lite','gemini-2.5-flash']}
-function safeModelList(models,maxModels=4){return models.filter(m=>{const s=m.toLowerCase();return !['-image','image-','tts','live','transcribe','omni','embedding','imagen','veo','lyria'].some(x=>s.includes(x))}).slice(0,maxModels)}
-async function callGeminiParts(key,models,parts,schema=null,maxModels=4){let last='فشل الاتصال بـ Gemini.';for(const model of safeModelList(models,maxModels)){let schemaEnabled=!!schema;for(let attempt=1;attempt<=2;attempt++){try{const generationConfig={responseMimeType:'application/json'};if(schemaEnabled)generationConfig.responseSchema=schema;const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify({contents:[{role:'user',parts}],generationConfig})});let data={};try{data=await r.json()}catch{}if(r.ok){const text=extractGeminiText(data);if(text)return{model,text};last='Gemini أعاد استجابة فارغة.';break}const msg=data?.error?.message||`HTTP ${r.status}`;last=msg;if(r.status===401||r.status===403)throw new Error('مشكلة في Gemini API Key:\n'+msg);if(r.status===400&&schemaEnabled&&/schema|response.*mime|structured|unsupported/i.test(msg)){schemaEnabled=false;attempt--;continue}if([400,404].includes(r.status))break;if([429,500,502,503,504].includes(r.status)&&attempt<2){await sleep(1800);continue}break}catch(e){if(String(e?.message||'').includes('Gemini API Key'))throw e;last=e?.message||String(e);if(attempt<2){await sleep(1500);continue}}}}throw new Error(last)}
-function extractGeminiText(data){const parts=data?.candidates?.[0]?.content?.parts;if(!Array.isArray(parts))return'';return parts.map(p=>p?.text||'').join('').trim()}
-const boxSchema={type:'array',items:{type:'number'},minItems:4,maxItems:4};
-const detectionSchema={type:'object',properties:{regions:{type:'array',items:{type:'object',properties:{region_box_2d:boxSchema,kind:{type:'string',enum:['dialogue','narration','caption','sign','sfx']},confidence:{type:'number'}},required:['region_box_2d','kind','confidence']}}},required:['regions']};
-const batchResultSchema={type:'object',properties:{results:{type:'array',items:{type:'object',properties:{region_id:{type:'integer'},detected_language:{type:'string'},original:{type:'string'},translation:{type:'string'},display_translation:{type:'string'},text_box_2d:boxSchema,erase_boxes_2d:{type:'array',items:boxSchema},bubble_box_2d:boxSchema,type:{type:'string',enum:['dialogue','narration','caption','sign','sfx']}},required:['region_id','detected_language','original','translation','display_translation','text_box_2d','erase_boxes_2d','bubble_box_2d','type']}}},required:['results']};
-function detectionPrompt(existing=[],mode='first'){const existingText=existing.length?JSON.stringify(existing.map(r=>r.box)):'[]';return `You are a manga page layout detector. Your ONLY task is to find EVERY distinct readable text region on the full page. Do not translate and do not perform detailed OCR.\n\nDetect speech bubbles, narration boxes, captions, signs, and meaningful standalone text. Ignore tiny page numbers and meaningless marks. A single speech bubble should be one region even if its text is vertical or has multiple columns. Return the FULL bubble/text container area, not just the letters.\n\nCoordinates are normalized 0..1000, box format [ymin,xmin,ymax,xmax].\n\n${mode==='review'?`This is a SECOND REVIEW PASS. These regions were already detected: ${existingText}. Find ONLY additional readable text regions that are missing. Do not repeat existing regions unless one existing box is clearly wrong.`:'Scan the ENTIRE page carefully from top to bottom and left to right. Be exhaustive.'}\n\nReturn JSON matching the provided schema.`}
-async function detectRegions(key,models,base64,existing,mode){const parts=[{text:detectionPrompt(existing,mode)},{inline_data:{mime_type:'image/jpeg',data:base64}}];const r=await callGeminiParts(key,models,parts,detectionSchema,3);const obj=parseJsonObject(r.text);const arr=Array.isArray(obj.regions)?obj.regions:parseJsonArray(r.text);return arr.map(o=>({box:normalizeBox(o.region_box_2d||o.box_2d||o.box),kind:String(o.kind||'dialogue'),confidence:Number(o.confidence||0.7)})).filter(o=>o.box)}
-function cropRegion(box,padRatio=0.12){let[y1,x1,y2,x2]=box;const bh=y2-y1,bw=x2-x1;y1=clamp1000(y1-bh*padRatio);y2=clamp1000(y2+bh*padRatio);x1=clamp1000(x1-bw*padRatio);x2=clamp1000(x2+bw*padRatio);const px1=Math.max(0,Math.floor(x1/1000*sourceCanvas.width)),py1=Math.max(0,Math.floor(y1/1000*sourceCanvas.height)),px2=Math.min(sourceCanvas.width,Math.ceil(x2/1000*sourceCanvas.width)),py2=Math.min(sourceCanvas.height,Math.ceil(y2/1000*sourceCanvas.height));const ow=Math.max(1,px2-px1),oh=Math.max(1,py2-py1);const raw=document.createElement('canvas');raw.width=ow;raw.height=oh;raw.getContext('2d').drawImage(sourceCanvas,px1,py1,ow,oh,0,0,ow,oh);let scale=1;const maxSide=Math.max(ow,oh);if(maxSide<700)scale=Math.min(2.2,850/maxSide);else if(maxSide>1100)scale=1100/maxSide;const c=document.createElement('canvas');c.width=Math.max(1,Math.round(ow*scale));c.height=Math.max(1,Math.round(oh*scale));c.getContext('2d').drawImage(raw,0,0,c.width,c.height);const dataURL=c.toDataURL('image/jpeg',0.94);return{base64:dataURL.split(',')[1],x:px1,y:py1,width:ow,height:oh,fullWidth:sourceCanvas.width,fullHeight:sourceCanvas.height}}
-function batchPrompt(batch){const ids=batch.map(x=>x.region.id).join(', ');return `You are a professional manga OCR and localization engine. You are receiving the FULL PAGE first for context, followed by labeled cropped images for regions: ${ids}.\n\nSOURCE LANGUAGE SETTING: ${sourceLanguage.value}. If it says Automatic per region, detect the language separately for each crop.\nTARGET LANGUAGE: ${targetLanguage.value}.\n\nFor EVERY labeled crop, return exactly one result with the same region_id. Do not omit a region merely because the text is difficult; make your best faithful reading and keep unreadable fragments minimal.\n\nFor each region return:\n- region_id\n- detected_language\n- original: exact readable source text\n- translation: faithful natural translation\n- display_translation: concise version with SAME meaning that fits the bubble\n- text_box_2d: ALL source text in THAT CROP, normalized 0..1000\n- erase_boxes_2d: boxes covering every source character group/punctuation/furigana/vertical columns to remove, relative to THAT CROP\n- bubble_box_2d: large safe inner rectangular area for translated text, relative to THAT CROP; keep inside bubble/narration box and away from artwork/border\n- type\n\nOne crop corresponds to one detected region. Do not combine different region IDs. For Arabic use fluent natural Arabic. Preserve tone and meaning. Return JSON matching the provided schema.`}
-function buildBatchParts(batch){const parts=[{text:batchPrompt(batch)},{text:'FULL_PAGE_CONTEXT'},{inline_data:{mime_type:'image/jpeg',data:contextBase64}}];for(const item of batch){parts.push({text:`REGION_${item.region.id} — kind=${item.region.kind}`});parts.push({inline_data:{mime_type:'image/jpeg',data:item.crop.base64}})}return parts}
-async function analyzeBatch(key,batch){const parts=buildBatchParts(batch);const r=await callGeminiParts(key,activeModels,parts,batchResultSchema,4);const obj=parseJsonObject(r.text);return{model:r.model,results:Array.isArray(obj.results)?obj.results:[]}}
-function normalizeBatchResult(obj,item){const crop=item.crop,region=item.region;const textBox=normalizeBox(obj.text_box_2d||obj.box_2d);if(!textBox)return null;let bubbleBox=normalizeBox(obj.bubble_box_2d||obj.safe_box_2d)||expandBox(textBox,90,110);let eraseBoxes=Array.isArray(obj.erase_boxes_2d)?obj.erase_boxes_2d.map(normalizeBox).filter(Boolean):[];if(!eraseBoxes.length)eraseBoxes=[textBox];bubbleBox=[Math.min(bubbleBox[0],textBox[0]),Math.min(bubbleBox[1],textBox[1]),Math.max(bubbleBox[2],textBox[2]),Math.max(bubbleBox[3],textBox[3])].map(clamp1000);eraseBoxes=mergeNearbyBoxes(eraseBoxes);const original=cleanupOcrText(String(obj.original||'')),translation=String(obj.translation||'').trim(),display=String(obj.display_translation||translation||'').trim();if(!original&&!translation)return null;const block={regionId:region.id,textBox,eraseBoxes,bubbleBox,original,translation:translation||original,displayTranslation:display||translation||original,originalDisplayTranslation:display||translation||original,type:String(obj.type||region.kind||'dialogue'),detectedLanguage:String(obj.detected_language||'')};return mapCropBlockToFull(block,crop)}
-function cleanupOcrText(text){return String(text||'').replace(/\?{3,}/g,'??').replace(/!{4,}/g,'!!!').replace(/\.{5,}/g,'...').replace(/\s+/g,' ').trim()}
-async function analyzeAllBatches(key,regions){const items=regions.map(region=>({region,crop:cropRegion(region.box,0.12)}));const blocks=[],failed=[];const totalBatches=Math.ceil(items.length/BATCH_SIZE);let completed=0;for(let start=0,batchNo=1;start<items.length;start+=BATCH_SIZE,batchNo++){const batch=items.slice(start,start+BATCH_SIZE);setProgress(completed,items.length,`📦 تحليل الدفعة ${batchNo}/${totalBatches} — المناطق ${batch.map(x=>x.region.id).join(', ')}...`);try{const analyzed=await analyzeBatch(key,batch);const byId=new Map(analyzed.results.map(r=>[Number(r.region_id),r]));for(const item of batch){const raw=byId.get(item.region.id);if(!raw){failed.push(item.region.id);continue}const block=normalizeBatchResult(raw,item);if(block)blocks.push(block);else failed.push(item.region.id)}}catch(e){console.warn('Batch failed',batch.map(x=>x.region.id),e);failed.push(...batch.map(x=>x.region.id))}completed+=batch.length;setProgress(completed,items.length,`اكتمل ${completed}/${items.length}`);await sleep(450)}const stillFailed=[...new Set(failed)].filter(id=>!blocks.some(b=>b.regionId===id));if(stillFailed.length){setStatus(`🔁 إعادة محاولة ${stillFailed.length} منطقة لم تُحلل في الدفعات الأولى...`,'loading');const retried=await retryRegionIds(key,regions,stillFailed,blocks);return{blocks:retried.blocks,failed:retried.failed}}return{blocks,failed:[]}}
-async function retryRegionIds(key,regions,ids,existingBlocks=[]){const blocks=[...existingBlocks],failed=[];const target=regions.filter(r=>ids.includes(r.id)).map(region=>({region,crop:cropRegion(region.box,0.16)}));const retryBatchSize=3;for(let start=0;start<target.length;start+=retryBatchSize){const batch=target.slice(start,start+retryBatchSize);try{const analyzed=await analyzeBatch(key,batch);const byId=new Map(analyzed.results.map(r=>[Number(r.region_id),r]));for(const item of batch){const raw=byId.get(item.region.id);if(!raw){failed.push(item.region.id);continue}const block=normalizeBatchResult(raw,item);if(block)blocks.push(block);else failed.push(item.region.id)}}catch(e){failed.push(...batch.map(x=>x.region.id))}await sleep(500)}return{blocks,failed:[...new Set(failed)]}}
-retryFailedButton.addEventListener('click',async()=>{const key=apiKeyInput.value.trim();if(!key||!failedRegionIds.length)return;retryFailedButton.disabled=true;try{setStatus(`🔁 إعادة محاولة المناطق: ${failedRegionIds.join(', ')}...`,'loading');const r=await retryRegionIds(key,lastRegions,failedRegionIds,lastBlocks);lastBlocks=sortBlocksReadingOrder(dedupeBlocks(r.blocks));showFailed(r.failed);await ensureSelectedFont();drawTranslation(lastBlocks,currentCleanStrength);showEditor(lastBlocks);showResults(lastBlocks);translatedVisible=true;editorCard.style.display=results.style.display='block';setStatus(`✅ أصبحت النتيجة ${lastBlocks.length}/${lastRegions.length} منطقة مترجمة.${r.failed.length?' ما زالت بعض المناطق تحتاج محاولة أخرى.':''}`,'success')}catch(e){setStatus('❌ فشلت إعادة المحاولة:\n'+(e?.message||String(e)),'error')}finally{retryFailedButton.disabled=false}});
-function dedupeBlocks(blocks){const out=[];for(const b of blocks){const idx=out.findIndex(o=>duplicateScore(o.bubbleBox,b.bubbleBox)>.7);if(idx<0)out.push(b);else if(String(b.original||'').length>String(out[idx].original||'').length)out[idx]=b}return out}
-function mapCropBoxToFull(box,crop){const y1=(crop.y+box[0]/1000*crop.height)/crop.fullHeight*1000,x1=(crop.x+box[1]/1000*crop.width)/crop.fullWidth*1000,y2=(crop.y+box[2]/1000*crop.height)/crop.fullHeight*1000,x2=(crop.x+box[3]/1000*crop.width)/crop.fullWidth*1000;return[y1,x1,y2,x2].map(clamp1000)}
-function mapCropBlockToFull(block,crop){return{...block,textBox:mapCropBoxToFull(block.textBox,crop),bubbleBox:mapCropBoxToFull(block.bubbleBox,crop),eraseBoxes:block.eraseBoxes.map(b=>mapCropBoxToFull(b,crop))}}
-function parseJsonArray(text){let s=String(text||'').trim().replace(/```json/gi,'').replace(/```/g,'').trim();try{const p=JSON.parse(s);if(Array.isArray(p))return p;if(Array.isArray(p?.regions))return p.regions;if(Array.isArray(p?.results))return p.results}catch{}const a=s.indexOf('['),b=s.lastIndexOf(']');if(a>=0&&b>a)return JSON.parse(s.slice(a,b+1));return[]}
-function parseJsonObject(text){let s=String(text||'').trim().replace(/```json/gi,'').replace(/```/g,'').trim();try{const p=JSON.parse(s);if(p&&typeof p==='object'&&!Array.isArray(p))return p;if(Array.isArray(p))return{results:p}}catch{}const a=s.indexOf('{'),b=s.lastIndexOf('}');if(a>=0&&b>a)return JSON.parse(s.slice(a,b+1));const arr=parseJsonArray(s);return{results:arr}}
-function normalizeBox(box){if(!Array.isArray(box)||box.length<4)return null;let v=box.slice(0,4).map(Number);if(v.some(x=>!Number.isFinite(x)))return null;let[y1,x1,y2,x2]=v;const largest=Math.max(...v.map(Math.abs));if(largest<=1.5){y1*=1000;x1*=1000;y2*=1000;x2*=1000}y1=clamp1000(y1);x1=clamp1000(x1);y2=clamp1000(y2);x2=clamp1000(x2);if(y2<=y1||x2<=x1)return null;return[y1,x1,y2,x2]}
-function clamp1000(v){return Math.max(0,Math.min(1000,Number(v)))}
-function expandBox(box,v,h){return[clamp1000(box[0]-v),clamp1000(box[1]-h),clamp1000(box[2]+v),clamp1000(box[3]+h)]}
-function boxArea(b){return Math.max(0,b[2]-b[0])*Math.max(0,b[3]-b[1])}
-function intersectionArea(a,b){const y1=Math.max(a[0],b[0]),x1=Math.max(a[1],b[1]),y2=Math.min(a[2],b[2]),x2=Math.min(a[3],b[3]);return Math.max(0,y2-y1)*Math.max(0,x2-x1)}
-function duplicateScore(a,b){const inter=intersectionArea(a,b);if(!inter)return 0;const iou=inter/(boxArea(a)+boxArea(b)-inter);const contain=inter/Math.min(boxArea(a),boxArea(b));return Math.max(iou,contain*.9)}
-function dedupeRegions(items){const sorted=items.filter(r=>r.box).sort((a,b)=>(b.confidence||0)-(a.confidence||0));const out=[];for(const item of sorted){const idx=out.findIndex(o=>duplicateScore(o.box,item.box)>.58);if(idx<0)out.push(item);else if(boxArea(item.box)>boxArea(out[idx].box)*1.25)out[idx]=item}return sortRegions(out)}
-function sortRegions(items){return items.sort((a,b)=>{const ay=(a.box[0]+a.box[2])/2,by=(b.box[0]+b.box[2])/2;if(Math.abs(ay-by)>70)return ay-by;return b.box[1]-a.box[1]})}
-function sortBlocksReadingOrder(blocks){return blocks.sort((a,b)=>{const ay=(a.bubbleBox[0]+a.bubbleBox[2])/2,by=(b.bubbleBox[0]+b.bubbleBox[2])/2;if(Math.abs(ay-by)>70)return ay-by;return b.bubbleBox[1]-a.bubbleBox[1]})}
-function mergeNearbyBoxes(boxes){let result=boxes.map(b=>[...b]),changed=true;while(changed){changed=false;outer:for(let i=0;i<result.length;i++)for(let j=i+1;j<result.length;j++)if(boxesAreNear(result[i],result[j])){result[i]=[Math.min(result[i][0],result[j][0]),Math.min(result[i][1],result[j][1]),Math.max(result[i][2],result[j][2]),Math.max(result[i][3],result[j][3])];result.splice(j,1);changed=true;break outer}}return result}
-function boxesAreNear(a,b){const m=12;return !(a[2]+m<b[0]||b[2]+m<a[0]||a[3]+m<b[1]||b[3]+m<a[1])}
-function drawTranslation(blocks,strength=1){drawOriginal();for(const b of blocks)cleanBlock(b,strength);for(const b of blocks)drawTranslatedText(b)}
-function cleanBlock(block,strength){if(!block.bubbleBox)return;const bg=detectBubbleBackground(normalizedBoxToPixels(block.bubbleBox));for(const e of block.eraseBoxes)cleanEraseBox(e,block.bubbleBox,bg,strength)}
-function cleanEraseBox(eraseBox,bubbleBox,bg,strength){const h=eraseBox[2]-eraseBox[0],w=eraseBox[3]-eraseBox[1],ey=Math.max(10,h*.17*strength),ex=Math.max(10,w*.17*strength),m=strength>1?6:10;let c=[Math.max(eraseBox[0]-ey,bubbleBox[0]+m),Math.max(eraseBox[1]-ex,bubbleBox[1]+m),Math.min(eraseBox[2]+ey,bubbleBox[2]-m),Math.min(eraseBox[3]+ex,bubbleBox[3]-m)];if(c[2]<=c[0]||c[3]<=c[1])c=eraseBox;const p=normalizedBoxToPixels(c);ctx.save();ctx.fillStyle=bg.css;roundedRect(p.x,p.y,p.width,p.height,Math.min(12,p.width*.08,p.height*.08));ctx.fill();ctx.restore();inkCleaner(c,bubbleBox,bg,strength)}
-function inkCleaner(cleaningBox,bubbleBox,bg,strength){const extra=strength>1?25:14,scan=[Math.max(bubbleBox[0]+8,cleaningBox[0]-extra),Math.max(bubbleBox[1]+8,cleaningBox[1]-extra),Math.min(bubbleBox[2]-8,cleaningBox[2]+extra),Math.min(bubbleBox[3]-8,cleaningBox[3]+extra)],p=normalizedBoxToPixels(scan),x=Math.max(0,Math.floor(p.x)),y=Math.max(0,Math.floor(p.y)),w=Math.min(sourceCanvas.width-x,Math.max(1,Math.ceil(p.width))),h=Math.min(sourceCanvas.height-y,Math.max(1,Math.ceil(p.height)));if(w<=0||h<=0)return;try{const src=sourceCtx.getImageData(x,y,w,h),out=ctx.getImageData(x,y,w,h),th=strength>1?225:195;for(let i=0;i<src.data.length;i+=4){const br=src.data[i]*.299+src.data[i+1]*.587+src.data[i+2]*.114;if(br<th){out.data[i]=bg.r;out.data[i+1]=bg.g;out.data[i+2]=bg.b;out.data[i+3]=255}}ctx.putImageData(out,x,y)}catch(e){console.warn('Ink Cleaner',e)}}
-function detectBubbleBackground(box){try{const l=Math.max(0,Math.floor(box.x)),t=Math.max(0,Math.floor(box.y)),r=Math.min(sourceCanvas.width,Math.ceil(box.x+box.width)),b=Math.min(sourceCanvas.height,Math.ceil(box.y+box.height)),step=Math.max(4,Math.floor(Math.max(box.width,box.height)/40));let R=0,G=0,B=0,n=0;for(let y=t;y<b;y+=step)for(let x=l;x<r;x+=step){const p=sourceCtx.getImageData(x,y,1,1).data,br=p[0]*.299+p[1]*.587+p[2]*.114;if(br>=205){R+=p[0];G+=p[1];B+=p[2];n++}}if(n<4)return{r:255,g:255,b:255,css:'#fff'};const rr=Math.min(255,Math.round(R/n)+2),gg=Math.min(255,Math.round(G/n)+2),bb=Math.min(255,Math.round(B/n)+2);return{r:rr,g:gg,b:bb,css:`rgb(${rr},${gg},${bb})`}}catch{return{r:255,g:255,b:255,css:'#fff'}}}
-function getSelectedFontFamily(){const v=fontFamilySelect.value;if(v==='Noto Naskh Arabic')return '"Noto Naskh Arabic", Tahoma, Arial, sans-serif';if(v==='Tajawal')return '"Tajawal", Tahoma, Arial, sans-serif';if(v==='Tahoma')return 'Tahoma, Arial, sans-serif';return 'Arial, Tahoma, sans-serif'}
-function getFontScale(){return fontSizeMode.value==='small'?.86:fontSizeMode.value==='large'?1.14:1}
-async function ensureSelectedFont(){if(!document.fonts)return;try{await document.fonts.load('700 24px '+getSelectedFontFamily())}catch{}}
-function setFont(size){ctx.font=`700 ${size}px ${getSelectedFontFamily()}`}
-function drawTranslatedText(block){if(!block.bubbleBox)return;const b=normalizedBoxToPixels(block.bubbleBox),px=Math.max(7,b.width*.10),py=Math.max(7,b.height*.10),x=b.x+px,y=b.y+py,w=b.width-px*2,h=b.height-py*2;if(w<=20||h<=20)return;fitAndDrawText(block.displayTranslation,x,y,w,h)}
-function normalizedBoxToPixels(box){return{x:box[1]/1000*canvas.width,y:box[0]/1000*canvas.height,width:(box[3]-box[1])/1000*canvas.width,height:(box[2]-box[0])/1000*canvas.height}}
-function fitAndDrawText(text,x,y,w,h){text=String(text||'').replace(/\s+/g,' ').trim();if(!text)return;let size=Math.max(12,Math.min(64,h*.34,w*.17)*getFontScale()),lines=[];while(size>=9){setFont(size);const l=balanceLines(wrapWords(text,w),w),lh=size*1.27;if(l.length*lh<=h){lines=l;break}size-=1}if(!lines.length){size=9;setFont(size);lines=wrapWords(text,w)}const lh=size*1.28,total=lines.length*lh;ctx.save();setFont(size);ctx.fillStyle='#111';ctx.textAlign='center';ctx.textBaseline='middle';ctx.direction=targetLanguage.value==='Arabic'?'rtl':'ltr';let cy=y+h/2-total/2+lh/2;for(const line of lines){ctx.fillText(line,x+w/2,cy,w);cy+=lh}ctx.restore()}
-function wrapWords(text,maxWidth){const words=String(text).trim().split(/\s+/),lines=[];let cur='';for(const word of words){const cand=cur?cur+' '+word:word;if(ctx.measureText(cand).width<=maxWidth)cur=cand;else{if(cur)lines.push(cur);if(ctx.measureText(word).width<=maxWidth)cur=word;else{const pieces=splitLongWord(word,maxWidth);if(pieces.length>1){lines.push(...pieces.slice(0,-1));cur=pieces.at(-1)}else cur=pieces[0]||''}}}if(cur)lines.push(cur);return lines}
-function balanceLines(lines,maxWidth){const r=[...lines];if(r.length<2)return r;for(let pass=0;pass<5;pass++){let changed=false;for(let i=0;i<r.length-1;i++){const a=r[i].split(' ');if(a.length<=1)continue;const b=r[i+1].split(' '),m=a.at(-1),na=a.slice(0,-1).join(' '),nb=[m,...b].join(' ');if(ctx.measureText(nb).width>maxWidth)continue;const before=Math.abs(ctx.measureText(r[i]).width-ctx.measureText(r[i+1]).width),after=Math.abs(ctx.measureText(na).width-ctx.measureText(nb).width);if(na&&after<before){r[i]=na;r[i+1]=nb;changed=true}}if(!changed)break}return r}
-function splitLongWord(word,maxWidth){const parts=[];let cur='';for(const ch of word){const c=cur+ch;if(ctx.measureText(c).width>maxWidth){if(cur)parts.push(cur);cur=ch}else cur=c}if(cur)parts.push(cur);return parts}
-function roundedRect(x,y,w,h,r){r=Math.max(0,Math.min(r,w/2,h/2));ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
-function showEditor(blocks){editorList.innerHTML='';blocks.forEach((b,i)=>{const item=document.createElement('div');item.className='editorItem';const num=document.createElement('div');num.className='editorNumber';num.textContent=`الفقاعة ${i+1}${b.detectedLanguage?' — '+b.detectedLanguage:''}`;const orig=document.createElement('div');orig.className='editorOriginal';orig.textContent='الأصل: '+b.original;const full=document.createElement('div');full.className='editorFull';full.textContent='الترجمة: '+b.translation;const ta=document.createElement('textarea');ta.dataset.index=i;ta.value=b.displayTranslation;ta.placeholder='اكتب النص الذي سيظهر داخل الفقاعة';item.append(num,orig,full,ta);editorList.appendChild(item)})}
-applyEditsButton.addEventListener('click',async()=>{if(!lastBlocks.length)return;editorList.querySelectorAll('textarea[data-index]').forEach(f=>{const i=Number(f.dataset.index),v=f.value.trim();if(lastBlocks[i]&&v)lastBlocks[i].displayTranslation=v});await ensureSelectedFont();drawTranslation(lastBlocks,currentCleanStrength);translatedVisible=true;compareButton.textContent='↩ عرض الصورة الأصلية';showResults(lastBlocks);setStatus('✅ تم تحديث النص داخل الصورة.','success')});
-resetEditsButton.addEventListener('click',async()=>{lastBlocks.forEach(b=>b.displayTranslation=b.originalDisplayTranslation);showEditor(lastBlocks);await ensureSelectedFont();drawTranslation(lastBlocks,currentCleanStrength);translatedVisible=true;showResults(lastBlocks);setStatus('↩ تمت إعادة نصوص Gemini الأصلية.','success')});
-fontFamilySelect.addEventListener('change',redrawIfReady);fontSizeMode.addEventListener('change',redrawIfReady);async function redrawIfReady(){if(!lastBlocks.length)return;await ensureSelectedFont();drawTranslation(lastBlocks,currentCleanStrength);translatedVisible=true}
-strongCleanButton.addEventListener('click',async()=>{if(!lastBlocks.length)return;currentCleanStrength=1.55;await ensureSelectedFont();drawTranslation(lastBlocks,currentCleanStrength);translatedVisible=true;compareButton.textContent='↩ عرض الصورة الأصلية';setStatus('🧽 تم تطبيق التنظيف الأقوى.','success')});
-function showResults(blocks){textResults.innerHTML='';blocks.forEach((b,i)=>{const w=document.createElement('div');w.className='result';const o=document.createElement('div');o.className='original';o.textContent=`${i+1}. الأصل: ${b.original}${b.detectedLanguage?' ['+b.detectedLanguage+']':''}`;const t=document.createElement('div');t.className='translation';t.textContent=b.translation;w.append(o,t);if(b.displayTranslation&&b.displayTranslation!==b.translation){const d=document.createElement('div');d.className='displayTranslation';d.textContent='داخل الفقاعة: '+b.displayTranslation;w.appendChild(d)}textResults.appendChild(w)});results.style.display='block'}
-compareButton.addEventListener('click',async()=>{if(!preparedImage)return;if(translatedVisible){drawOriginal();translatedVisible=false;compareButton.textContent='✨ عرض الصورة المترجمة'}else{await ensureSelectedFont();drawTranslation(lastBlocks,currentCleanStrength);translatedVisible=true;compareButton.textContent='↩ عرض الصورة الأصلية'}});
-downloadButton.addEventListener('click',async()=>{if(!translatedVisible&&lastBlocks.length){await ensureSelectedFont();drawTranslation(lastBlocks,currentCleanStrength);translatedVisible=true}canvas.toBlob(blob=>{if(!blob){setStatus('❌ تعذر إنشاء الصورة.','error');return}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='manga-translated-v8.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)},'image/png')});
-newButton.addEventListener('click',()=>{imageInput.value='';preparedImage=preparedBase64=contextBase64=null;lastBlocks=[];lastRegions=[];failedRegionIds=[];translatedVisible=false;currentCleanStrength=1;canvas.width=canvas.height=sourceCanvas.width=sourceCanvas.height=1;canvasCard.style.display=editorCard.style.display=results.style.display='none';downloadButton.style.display=strongCleanButton.style.display=compareButton.style.display='none';translateButton.disabled=true;editorList.innerHTML=textResults.innerHTML=modelInfo.textContent='';showFailed([]);hideProgress();setStatus('اختر صورة للبدء')});
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+/* =========================================================
+   V9 DESIGN
+   - ONE Gemini analysis request per page in the normal path.
+   - Full page + several zoom tiles are sent in the SAME request.
+   - Uses Interactions API + JSON schema.
+   - 429 waits according to Retry-After / "retry in Xs".
+   - Only two safe model fallbacks are attempted automatically.
+   - No model-list request (saves quota).
+========================================================= */
+
+const apiKeyInput = document.getElementById("apiKey");
+const imageInput = document.getElementById("imageInput");
+const sourceLanguage = document.getElementById("sourceLanguage");
+const targetLanguage = document.getElementById("targetLanguage");
+const fontFamilySelect = document.getElementById("fontFamily");
+const fontSizeMode = document.getElementById("fontSizeMode");
+
+const translateButton = document.getElementById("translateButton");
+const retryButton = document.getElementById("retryButton");
+const downloadButton = document.getElementById("downloadButton");
+const strongCleanButton = document.getElementById("strongCleanButton");
+const compareButton = document.getElementById("compareButton");
+const newButton = document.getElementById("newButton");
+const applyEditsButton = document.getElementById("applyEditsButton");
+const resetEditsButton = document.getElementById("resetEditsButton");
+
+const statusBox = document.getElementById("status");
+const modelInfo = document.getElementById("modelInfo");
+const canvasCard = document.getElementById("canvasCard");
+const editorCard = document.getElementById("editorCard");
+const results = document.getElementById("results");
+const editorList = document.getElementById("editorList");
+const textResults = document.getElementById("textResults");
+
+const progressWrap = document.getElementById("progressWrap");
+const progressBar = document.getElementById("progressBar");
+const progressText = document.getElementById("progressText");
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d", {willReadFrequently:true});
+
+const sourceCanvas = document.createElement("canvas");
+const sourceCtx = sourceCanvas.getContext("2d", {willReadFrequently:true});
+
+let preparedImage = null;
+let preparedBase64 = null;
+let zoomTiles = [];
+let lastBlocks = [];
+let translatedVisible = false;
+let currentCleanStrength = 1;
+let requestRunning = false;
+
+/* ---------- UI ---------- */
+
+function setStatus(text, type=""){
+  statusBox.textContent = text;
+  statusBox.className = type;
+}
+
+function setProgress(percent, text=""){
+  progressWrap.style.display = "block";
+  progressBar.style.width = Math.max(0, Math.min(100, percent)) + "%";
+  progressText.textContent = text;
+}
+
+function hideProgress(){
+  progressWrap.style.display = "none";
+  progressBar.style.width = "0%";
+  progressText.textContent = "";
+}
+
+function sleep(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/* ---------- image load ---------- */
+
+imageInput.addEventListener("change", async () => {
+  const file = imageInput.files[0];
+  if(!file) return;
+
+  if(!file.type.startsWith("image/")){
+    setStatus("❌ الملف المختار ليس صورة.", "error");
+    return;
+  }
+
+  try{
+    setStatus("⏳ جاري تجهيز الصفحة وإنشاء مناطق تكبير داخل الهاتف...", "loading");
+    setProgress(8, "تجهيز الصورة");
+
+    const prepared = await prepareImage(file);
+    preparedImage = prepared.image;
+    preparedBase64 = prepared.base64;
+
+    canvas.width = preparedImage.width;
+    canvas.height = preparedImage.height;
+    sourceCanvas.width = preparedImage.width;
+    sourceCanvas.height = preparedImage.height;
+
+    sourceCtx.clearRect(0,0,sourceCanvas.width,sourceCanvas.height);
+    sourceCtx.drawImage(preparedImage,0,0);
+
+    drawOriginal();
+    zoomTiles = await buildZoomTiles(preparedImage);
+
+    canvasCard.style.display = "block";
+    editorCard.style.display = "none";
+    results.style.display = "none";
+    downloadButton.style.display = "none";
+    strongCleanButton.style.display = "none";
+    compareButton.style.display = "none";
+    retryButton.style.display = "none";
+
+    translateButton.disabled = false;
+    lastBlocks = [];
+    translatedVisible = false;
+    currentCleanStrength = 1;
+    modelInfo.textContent = "";
+
+    setProgress(100, "جاهزة");
+    await sleep(250);
+    hideProgress();
+
+    setStatus(
+      "✅ الصورة جاهزة.\nتم إنشاء " + zoomTiles.length +
+      " مناطق تكبير محليًا. سيُرسل كل شيء في طلب Gemini واحد.",
+      "success"
+    );
+  }catch(error){
+    console.error(error);
+    hideProgress();
+    setStatus("❌ تعذر تجهيز الصورة:\n" + (error?.message || String(error)), "error");
+  }
+});
+
+async function prepareImage(file){
+  const original = await fileToImage(file);
+
+  let width = original.naturalWidth;
+  let height = original.naturalHeight;
+
+  /* enough detail for OCR, but not unnecessarily huge */
+  const maxDimension = 1900;
+  if(width > maxDimension || height > maxDimension){
+    const ratio = Math.min(maxDimension/width, maxDimension/height);
+    width = Math.round(width*ratio);
+    height = Math.round(height*ratio);
+  }
+
+  const temp = document.createElement("canvas");
+  temp.width = width;
+  temp.height = height;
+  const tctx = temp.getContext("2d");
+
+  tctx.fillStyle = "#fff";
+  tctx.fillRect(0,0,width,height);
+  tctx.drawImage(original,0,0,width,height);
+
+  const dataURL = temp.toDataURL("image/jpeg",0.92);
+  const image = new Image();
+
+  await new Promise((resolve,reject)=>{
+    image.onload = resolve;
+    image.onerror = reject;
+    image.src = dataURL;
+  });
+
+  return {
+    image,
+    base64: dataURL.split(",")[1]
+  };
+}
+
+function fileToImage(file){
+  return new Promise((resolve,reject)=>{
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+
+    img.onload = ()=>{
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
+
+    img.onerror = ()=>{
+      URL.revokeObjectURL(url);
+      reject(new Error("فشل تحميل الصورة."));
+    };
+
+    img.src = url;
+  });
+}
+
+/* ---------- create zoom tiles locally, zero API calls ---------- */
+
+async function buildZoomTiles(image){
+  const tiles = [];
+  const W = image.width;
+  const H = image.height;
+
+  if(H >= W * 1.15){
+    /* Portrait page: 4 overlapping horizontal bands */
+    const count = 4;
+    const bandH = Math.min(H, Math.round(H * 0.34));
+    const maxStart = Math.max(0, H - bandH);
+
+    for(let i=0;i<count;i++){
+      const y = count === 1 ? 0 : Math.round(maxStart * i/(count-1));
+      tiles.push(
+        makeCropTile(image, 0, y, W, bandH, {
+          id:"T"+(i+1),
+          x0:0,
+          y0:y/H,
+          x1:1,
+          y1:(y+bandH)/H
+        })
+      );
+    }
+  }else{
+    /* Wide / square page: 2x2 overlapping tiles */
+    const tileW = Math.min(W, Math.round(W*0.62));
+    const tileH = Math.min(H, Math.round(H*0.62));
+
+    const starts = [
+      [0,0],
+      [Math.max(0,W-tileW),0],
+      [0,Math.max(0,H-tileH)],
+      [Math.max(0,W-tileW),Math.max(0,H-tileH)]
+    ];
+
+    starts.forEach((p,i)=>{
+      const [x,y] = p;
+      tiles.push(
+        makeCropTile(image,x,y,tileW,tileH,{
+          id:"T"+(i+1),
+          x0:x/W,
+          y0:y/H,
+          x1:(x+tileW)/W,
+          y1:(y+tileH)/H
+        })
+      );
+    });
+  }
+
+  return tiles;
+}
+
+function makeCropTile(image,x,y,w,h,meta){
+  const c = document.createElement("canvas");
+
+  /* keep each zoom reasonably small */
+  const maxSide = 1100;
+  const scale = Math.min(1, maxSide / Math.max(w,h));
+
+  c.width = Math.max(1, Math.round(w*scale));
+  c.height = Math.max(1, Math.round(h*scale));
+
+  const cctx = c.getContext("2d");
+  cctx.fillStyle = "#fff";
+  cctx.fillRect(0,0,c.width,c.height);
+  cctx.drawImage(image,x,y,w,h,0,0,c.width,c.height);
+
+  return {
+    ...meta,
+    base64:c.toDataURL("image/jpeg",0.88).split(",")[1]
+  };
+}
+
+/* ---------- draw original ---------- */
+
+function drawOriginal(){
+  if(!preparedImage) return;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(preparedImage,0,0);
+}
+
+/* =========================================================
+   GEMINI ONE-PASS
+========================================================= */
+
+translateButton.addEventListener("click", () => runAnalysis(false));
+retryButton.addEventListener("click", () => runAnalysis(true));
+
+async function runAnalysis(isRetry){
+  if(requestRunning) return;
+
+  const apiKey = apiKeyInput.value.trim();
+  if(!apiKey){
+    setStatus("❌ ضع Gemini API Key أولاً.", "error");
+    return;
+  }
+
+  if(!preparedBase64){
+    setStatus("❌ اختر صورة أولاً.", "error");
+    return;
+  }
+
+  requestRunning = true;
+  translateButton.disabled = true;
+  retryButton.disabled = true;
+  retryButton.style.display = "none";
+
+  editorCard.style.display = "none";
+  results.style.display = "none";
+  downloadButton.style.display = "none";
+  strongCleanButton.style.display = "none";
+  compareButton.style.display = "none";
+  modelInfo.textContent = "";
+
+  try{
+    setProgress(15, "إعداد طلب واحد: الصفحة + مناطق التكبير");
+    setStatus(
+      "🤖 سيتم تحليل الصفحة كلها في طلب واحد.\n" +
+      "لا توجد مرحلة ثانية ولا طلب لكل فقاعة.",
+      "loading"
+    );
+
+    const payloadInput = buildInteractionInput();
+    const models = chooseModels();
+
+    const result = await callInteractionsWithControlledFallback(
+      apiKey,
+      models,
+      payloadInput
+    );
+
+    setProgress(82, "فحص النتيجة وتنظيف التكرارات");
+
+    modelInfo.textContent =
+      "النموذج المستخدم: " + result.model +
+      "\nعدد طلبات التحليل الفعلية: " + result.attempts;
+
+    let blocks = parseInteractionResult(result.data);
+
+    if(!blocks.length){
+      throw new Error("Gemini أعاد JSON صالحًا لكنه لم يكتشف أي منطقة نصية.");
+    }
+
+    blocks = deduplicateBlocks(blocks);
+    blocks = sortBlocks(blocks);
+
+    lastBlocks = blocks;
+    currentCleanStrength = 1;
+
+    await ensureSelectedFont();
+    drawTranslation(lastBlocks,currentCleanStrength);
+    showEditor(lastBlocks);
+    showResults(lastBlocks);
+
+    translatedVisible = true;
+
+    editorCard.style.display = "block";
+    downloadButton.style.display = "block";
+    strongCleanButton.style.display = "block";
+    compareButton.style.display = "block";
+    compareButton.textContent = "↩ عرض الصورة الأصلية";
+
+    setProgress(100, "اكتملت الصفحة");
+    await sleep(300);
+    hideProgress();
+
+    setStatus(
+      "✅ اكتملت الصفحة في " + result.attempts + " طلب/طلبات فقط.\n" +
+      "تم اكتشاف وترجمة " + lastBlocks.length + " منطقة نصية.",
+      "success"
+    );
+  }catch(error){
+    console.error(error);
+    hideProgress();
+
+    const message = error?.message || String(error);
+
+    if(error?.quotaError){
+      retryButton.style.display = "block";
+      setStatus(
+        "⚠️ وصلت إلى حد Gemini المؤقت، وليس خطأ في الصورة أو الموقع.\n" +
+        message +
+        "\nلم يرسل V9 عشرات الطلبات. انتظر ثم اضغط «إعادة المحاولة».",
+        "warn"
+      );
+    }else{
+      retryButton.style.display = "block";
+      setStatus("❌ حدث خطأ:\n" + message, "error");
+    }
+  }finally{
+    requestRunning = false;
+    translateButton.disabled = false;
+    retryButton.disabled = false;
+  }
+}
+
+function chooseModels(){
+  /*
+    Intentionally hard-coded:
+    no model-list API call and no image/TTS/live models.
+    Max two automatic model families to avoid burning quota.
+  */
+  return [
+    "gemini-3.6-flash",
+    "gemini-3.5-flash"
+  ];
+}
+
+function buildInteractionInput(){
+  const source = sourceLanguage.value;
+  const target = targetLanguage.value;
+
+  const tileMap = zoomTiles.map(t => {
+    return `${t.id}: page rectangle x=${Math.round(t.x0*1000)}..${Math.round(t.x1*1000)}, y=${Math.round(t.y0*1000)}..${Math.round(t.y1*1000)}`;
+  }).join("\n");
+
+  const prompt = `
+You are a professional manga OCR, localization and layout engine.
+
+GOAL:
+Read and translate EVERY meaningful speech bubble, narration box, caption, and readable text block in the MASTER PAGE.
+
+SOURCE LANGUAGE:
+${source}
+
+TARGET LANGUAGE:
+${target}
+
+IMPORTANT INPUT STRUCTURE:
+- MASTER_PAGE is the complete original page.
+- The following TILES are zoomed crops of that SAME page.
+- Tiles are ONLY visual aids to read small text.
+- NEVER create duplicate results because the same bubble appears in MASTER_PAGE and a TILE.
+- ALL output coordinates MUST refer to MASTER_PAGE, normalized 0..1000.
+
+TILE MAP ON MASTER_PAGE:
+${tileMap}
+
+DETECTION RULES:
+1. Scan the page systematically from top to bottom.
+2. Inspect every visible speech bubble, narration box and caption.
+3. One bubble / narration area = one result object.
+4. Do not split vertical Japanese character-by-character.
+5. If two separate bubbles contain separate dialogue, return two objects.
+6. Ignore page numbers and meaningless decorative marks.
+7. Important sound effects may be included only if readable and useful.
+8. For mixed-language pages, detect each region's source language separately.
+
+TEXT:
+- "original": exact readable source text.
+- "translation": faithful natural ${target}.
+- "display_translation": concise version with the SAME meaning, optimized to fit inside the bubble.
+- Arabic must be fluent and natural, not literal machine Arabic.
+
+COORDINATES:
+All boxes are [ymin, xmin, ymax, xmax] on MASTER_PAGE, normalized to 0..1000.
+
+"text_box_2d":
+Must include ALL printed source characters belonging to the region, including punctuation.
+
+"erase_boxes_2d":
+One or more boxes that cover the printed source ink. For vertical Japanese, multiple column boxes are allowed.
+Keep them away from the black bubble outline and surrounding artwork.
+
+"bubble_box_2d":
+A large safe rectangle inside the main body of the bubble/narration box for drawing translated text.
+Use most of the useful white interior while avoiding the border and tail.
+
+"should_clean":
+true when this is a clean speech/narration bubble whose original ink may safely be erased.
+false when the text is directly over artwork and erasing would damage the drawing.
+
+Return every distinct readable region exactly once.
+`;
+
+  const input = [
+    {type:"text", text:prompt},
+    {type:"text", text:"MASTER_PAGE — all returned coordinates refer to this image."},
+    {
+      type:"image",
+      data:preparedBase64,
+      mime_type:"image/jpeg",
+      resolution:"high"
+    }
+  ];
+
+  zoomTiles.forEach(tile=>{
+    input.push({
+      type:"text",
+      text:`${tile.id} — zoom only. Location on MASTER_PAGE: x ${Math.round(tile.x0*1000)}..${Math.round(tile.x1*1000)}, y ${Math.round(tile.y0*1000)}..${Math.round(tile.y1*1000)}. Do not use tile-local coordinates in the output.`
+    });
+    input.push({
+      type:"image",
+      data:tile.base64,
+      mime_type:"image/jpeg",
+      resolution:"high"
+    });
+  });
+
+  return input;
+}
+
+function responseSchema(){
+  const boxSchema = {
+    type:"array",
+    items:{type:"integer"},
+    minItems:4,
+    maxItems:4,
+    description:"[ymin,xmin,ymax,xmax] normalized 0..1000 on MASTER_PAGE"
+  };
+
+  return {
+    type:"object",
+    properties:{
+      regions:{
+        type:"array",
+        items:{
+          type:"object",
+          properties:{
+            source_language:{type:"string"},
+            original:{type:"string"},
+            translation:{type:"string"},
+            display_translation:{type:"string"},
+            type:{type:"string"},
+            should_clean:{type:"boolean"},
+            text_box_2d:boxSchema,
+            erase_boxes_2d:{
+              type:"array",
+              items:boxSchema
+            },
+            bubble_box_2d:boxSchema
+          },
+          required:[
+            "source_language",
+            "original",
+            "translation",
+            "display_translation",
+            "type",
+            "should_clean",
+            "text_box_2d",
+            "erase_boxes_2d",
+            "bubble_box_2d"
+          ]
+        }
+      }
+    },
+    required:["regions"]
+  };
+}
+
+async function callInteractionsWithControlledFallback(apiKey, models, input){
+  let totalAttempts = 0;
+  let lastError = null;
+
+  /*
+    At most:
+    - one normal call per model
+    - one short retry for a 429 that explicitly gives a short retry delay
+    This avoids the runaway request loops from V7/V8.
+  */
+  for(let modelIndex=0; modelIndex<models.length; modelIndex++){
+    const model = models[modelIndex];
+
+    let retried429 = false;
+
+    while(true){
+      totalAttempts++;
+
+      setProgress(
+        25 + modelIndex*12,
+        `إرسال طلب التحليل إلى ${model} — المحاولة ${totalAttempts}`
+      );
+
+      try{
+        const response = await fetchWithTimeout(
+          "https://generativelanguage.googleapis.com/v1beta/interactions",
+          {
+            method:"POST",
+            headers:{
+              "Content-Type":"application/json",
+              "x-goog-api-key":apiKey,
+              "Api-Revision":"2026-05-20"
+            },
+            body:JSON.stringify({
+              model,
+              input,
+              store:false,
+              response_format:{
+                type:"text",
+                mime_type:"application/json",
+                schema:responseSchema()
+              }
+            })
+          },
+          90000
+        );
+
+        const rawText = await response.text();
+        let data = {};
+        try{
+          data = rawText ? JSON.parse(rawText) : {};
+        }catch{
+          data = {raw:rawText};
+        }
+
+        if(response.ok){
+          return {
+            model,
+            data,
+            attempts:totalAttempts
+          };
+        }
+
+        const apiMessage =
+          data?.error?.message ||
+          data?.message ||
+          rawText ||
+          `HTTP ${response.status}`;
+
+        /* Auth errors: do not waste more calls */
+        if(response.status === 401 || response.status === 403){
+          throw new Error("مشكلة في Gemini API Key أو صلاحياته:\n" + apiMessage);
+        }
+
+        /* Bad request/model mismatch: switch once to fallback model */
+        if(response.status === 400 || response.status === 404){
+          lastError = new Error(`${model}: ${apiMessage}`);
+          break;
+        }
+
+        if(response.status === 429){
+          const retrySeconds = getRetrySeconds(response, data, apiMessage);
+
+          /*
+            Only auto-wait when Google explicitly says it is a short temporary window.
+            This handles messages like "Please retry in 8.35s".
+          */
+          if(!retried429 && retrySeconds !== null && retrySeconds <= 20){
+            retried429 = true;
+            const waitMs = Math.ceil((retrySeconds + 1) * 1000);
+
+            for(let remaining=Math.ceil(waitMs/1000); remaining>0; remaining--){
+              setStatus(
+                `⏳ حد Gemini مؤقت.\nGoogle طلبت الانتظار ${remaining} ثانية ثم سيعيد V9 المحاولة مرة واحدة تلقائيًا.`,
+                "warn"
+              );
+              setProgress(38, `انتظار الحصة: ${remaining} ثانية`);
+              await sleep(1000);
+            }
+
+            continue;
+          }
+
+          const q = new Error(
+            retrySeconds !== null
+              ? `الحصة غير متاحة الآن. Google تقترح إعادة المحاولة بعد نحو ${Math.ceil(retrySeconds)} ثانية.`
+              : "تم استهلاك حصة الطلبات الحالية لهذا النموذج."
+          );
+          q.quotaError = true;
+          lastError = q;
+
+          /*
+            Try only the next safe model once.
+            No long chain of model calls.
+          */
+          break;
+        }
+
+        if([500,502,503,504].includes(response.status)){
+          lastError = new Error(`خدمة ${model} غير متاحة مؤقتًا: ${apiMessage}`);
+          break;
+        }
+
+        throw new Error(apiMessage);
+
+      }catch(error){
+        if(error?.name === "AbortError"){
+          lastError = new Error(`انتهت مهلة ${model} دون رد.`);
+          break;
+        }
+
+        if(error?.quotaError){
+          lastError = error;
+          break;
+        }
+
+        /* Direct auth/user errors should stop immediately */
+        if(String(error?.message || "").includes("API Key")){
+          throw error;
+        }
+
+        lastError = error;
+        break;
+      }
+    }
+  }
+
+  if(lastError) throw lastError;
+  throw new Error("تعذر الوصول إلى Gemini.");
+}
+
+async function fetchWithTimeout(url, options, timeoutMs){
+  const controller = new AbortController();
+  const timer = setTimeout(()=>controller.abort(),timeoutMs);
+
+  try{
+    return await fetch(url,{
+      ...options,
+      signal:controller.signal
+    });
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
+function getRetrySeconds(response, data, message){
+  const header = response.headers.get("Retry-After");
+  if(header){
+    const n = Number(header);
+    if(Number.isFinite(n)) return n;
+  }
+
+  const details = data?.error?.details;
+  if(Array.isArray(details)){
+    for(const d of details){
+      const s = d?.retryDelay || d?.retry_delay;
+      if(typeof s === "string"){
+        const m = s.match(/([\d.]+)s/i);
+        if(m) return Number(m[1]);
+      }
+    }
+  }
+
+  const text = String(message || "");
+  const match =
+    text.match(/retry\s+in\s+([\d.]+)\s*s/i) ||
+    text.match(/after\s+([\d.]+)\s*seconds?/i);
+
+  return match ? Number(match[1]) : null;
+}
+
+/* ---------- Interaction response parsing ---------- */
+
+function extractInteractionText(data){
+  if(typeof data?.output_text === "string" && data.output_text.trim()){
+    return data.output_text.trim();
+  }
+
+  const texts = [];
+
+  if(Array.isArray(data?.steps)){
+    for(const step of data.steps){
+      if(Array.isArray(step?.content)){
+        for(const item of step.content){
+          if(item?.type === "text" && typeof item?.text === "string"){
+            texts.push(item.text);
+          }
+        }
+      }
+    }
+  }
+
+  if(Array.isArray(data?.output)){
+    for(const item of data.output){
+      if(typeof item?.text === "string") texts.push(item.text);
+      if(Array.isArray(item?.content)){
+        for(const c of item.content){
+          if(typeof c?.text === "string") texts.push(c.text);
+        }
+      }
+    }
+  }
+
+  return texts.join("\n").trim();
+}
+
+function parseInteractionResult(data){
+  const text = extractInteractionText(data);
+  if(!text) throw new Error("Gemini أعاد استجابة بلا نص JSON.");
+
+  let parsed;
+  try{
+    parsed = JSON.parse(text);
+  }catch{
+    const first = text.indexOf("{");
+    const last = text.lastIndexOf("}");
+    if(first === -1 || last === -1 || last <= first){
+      throw new Error("تعذر قراءة JSON من Gemini.");
+    }
+    parsed = JSON.parse(text.slice(first,last+1));
+  }
+
+  const regions = Array.isArray(parsed?.regions) ? parsed.regions : [];
+  return regions.map(normalizeBlock).filter(Boolean);
+}
+
+/* =========================================================
+   NORMALIZATION / VALIDATION
+========================================================= */
+
+function normalizeBlock(block){
+  if(!block) return null;
+
+  const textBox = normalizeBox(block.text_box_2d);
+  if(!textBox) return null;
+
+  let bubbleBox = normalizeBox(block.bubble_box_2d);
+  if(!bubbleBox) bubbleBox = expandBox(textBox,70,85);
+
+  let eraseBoxes = [];
+  if(Array.isArray(block.erase_boxes_2d)){
+    eraseBoxes = block.erase_boxes_2d.map(normalizeBox).filter(Boolean);
+  }
+  if(!eraseBoxes.length) eraseBoxes = [textBox];
+
+  const original = String(block.original || "").trim();
+  const translation = String(block.translation || "").trim();
+  const displayTranslation = String(
+    block.display_translation || translation || original
+  ).trim();
+
+  if(!original && !translation) return null;
+
+  /* Bubble box must contain at least the text center, but do not explode to page size */
+  bubbleBox = clampBubbleBoxAroundText(bubbleBox,textBox);
+
+  return {
+    sourceLanguage:String(block.source_language || "").trim(),
+    original,
+    translation:translation || original,
+    displayTranslation:displayTranslation || translation || original,
+    originalDisplayTranslation:displayTranslation || translation || original,
+    type:String(block.type || "dialogue"),
+    shouldClean:block.should_clean !== false,
+    textBox,
+    eraseBoxes:mergeNearbyBoxes(eraseBoxes),
+    bubbleBox
+  };
+}
+
+function normalizeBox(box){
+  if(!Array.isArray(box) || box.length < 4) return null;
+
+  let vals = box.slice(0,4).map(Number);
+  if(vals.some(v=>!Number.isFinite(v))) return null;
+
+  let [ymin,xmin,ymax,xmax] = vals;
+  const largest = Math.max(...vals.map(v=>Math.abs(v)));
+
+  if(largest <= 1.5){
+    ymin*=1000; xmin*=1000; ymax*=1000; xmax*=1000;
+  }
+
+  ymin=clamp1000(ymin); xmin=clamp1000(xmin);
+  ymax=clamp1000(ymax); xmax=clamp1000(xmax);
+
+  if(ymax-ymin < 4 || xmax-xmin < 4) return null;
+
+  return [ymin,xmin,ymax,xmax];
+}
+
+function clamp1000(v){
+  return Math.max(0,Math.min(1000,Number(v)));
+}
+
+function expandBox(box,vertical,horizontal){
+  return [
+    clamp1000(box[0]-vertical),
+    clamp1000(box[1]-horizontal),
+    clamp1000(box[2]+vertical),
+    clamp1000(box[3]+horizontal)
+  ];
+}
+
+function clampBubbleBoxAroundText(bubble,text){
+  const cy = (text[0]+text[2])/2;
+  const cx = (text[1]+text[3])/2;
+
+  let out = [...bubble];
+
+  /* if wildly wrong, fall back near text */
+  if(
+    cy < out[0]-80 || cy > out[2]+80 ||
+    cx < out[1]-80 || cx > out[3]+80 ||
+    (out[2]-out[0]) > 700 ||
+    (out[3]-out[1]) > 700
+  ){
+    out = expandBox(text,90,110);
+  }
+
+  return out.map(clamp1000);
+}
+
+/* ---------- dedupe ---------- */
+
+function deduplicateBlocks(blocks){
+  const kept = [];
+
+  for(const block of blocks){
+    let duplicateIndex = -1;
+
+    for(let i=0;i<kept.length;i++){
+      const a = block.textBox;
+      const b = kept[i].textBox;
+
+      const iou = boxIoU(a,b);
+      const centerDistance = normalizedCenterDistance(a,b);
+
+      if(iou >= 0.48 || centerDistance < 24){
+        duplicateIndex = i;
+        break;
+      }
+    }
+
+    if(duplicateIndex === -1){
+      kept.push(block);
+    }else{
+      const existing = kept[duplicateIndex];
+
+      /* prefer the object that read more source text */
+      if(block.original.length > existing.original.length){
+        kept[duplicateIndex] = block;
+      }
+    }
+  }
+
+  return kept;
+}
+
+function boxIoU(a,b){
+  const y1=Math.max(a[0],b[0]);
+  const x1=Math.max(a[1],b[1]);
+  const y2=Math.min(a[2],b[2]);
+  const x2=Math.min(a[3],b[3]);
+
+  const inter=Math.max(0,y2-y1)*Math.max(0,x2-x1);
+  const areaA=(a[2]-a[0])*(a[3]-a[1]);
+  const areaB=(b[2]-b[0])*(b[3]-b[1]);
+
+  return inter / Math.max(1,areaA+areaB-inter);
+}
+
+function normalizedCenterDistance(a,b){
+  const ay=(a[0]+a[2])/2, ax=(a[1]+a[3])/2;
+  const by=(b[0]+b[2])/2, bx=(b[1]+b[3])/2;
+  return Math.hypot(ay-by,ax-bx);
+}
+
+function sortBlocks(blocks){
+  const rtl =
+    sourceLanguage.value === "Japanese" ||
+    sourceLanguage.value === "Arabic" ||
+    sourceLanguage.value === "Automatic per region";
+
+  return [...blocks].sort((a,b)=>{
+    const ay=a.textBox[0], by=b.textBox[0];
+    if(Math.abs(ay-by)>45) return ay-by;
+
+    return rtl
+      ? b.textBox[1]-a.textBox[1]
+      : a.textBox[1]-b.textBox[1];
+  });
+}
+
+/* ---------- merge erase boxes ---------- */
+
+function mergeNearbyBoxes(boxes){
+  let result=boxes.map(b=>[...b]);
+  let changed=true;
+
+  while(changed){
+    changed=false;
+
+    outer:
+    for(let i=0;i<result.length;i++){
+      for(let j=i+1;j<result.length;j++){
+        if(boxesAreNear(result[i],result[j])){
+          result[i]=[
+            Math.min(result[i][0],result[j][0]),
+            Math.min(result[i][1],result[j][1]),
+            Math.max(result[i][2],result[j][2]),
+            Math.max(result[i][3],result[j][3])
+          ];
+          result.splice(j,1);
+          changed=true;
+          break outer;
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
+function boxesAreNear(a,b){
+  const margin=10;
+  return !(
+    a[2]+margin < b[0] ||
+    b[2]+margin < a[0] ||
+    a[3]+margin < b[1] ||
+    b[3]+margin < a[1]
+  );
+}
+
+/* =========================================================
+   CLEAN + DRAW (stable V5/V6 logic)
+========================================================= */
+
+function drawTranslation(blocks,strength=1){
+  drawOriginal();
+
+  for(const block of blocks){
+    if(block.shouldClean) cleanBlock(block,strength);
+  }
+
+  for(const block of blocks){
+    drawTranslatedText(block);
+  }
+}
+
+function cleanBlock(block,strength){
+  if(!block.bubbleBox) return;
+
+  const bubblePixelBox = normalizedBoxToPixels(block.bubbleBox);
+  const background = detectBubbleBackground(bubblePixelBox);
+
+  for(const eraseBox of block.eraseBoxes){
+    cleanEraseBox(eraseBox,block.bubbleBox,background,strength);
+  }
+}
+
+function cleanEraseBox(eraseBox,bubbleBox,background,strength){
+  const h=eraseBox[2]-eraseBox[0];
+  const w=eraseBox[3]-eraseBox[1];
+
+  const extraY=Math.max(8,h*0.16*strength);
+  const extraX=Math.max(8,w*0.16*strength);
+
+  let cleaning=[
+    eraseBox[0]-extraY,
+    eraseBox[1]-extraX,
+    eraseBox[2]+extraY,
+    eraseBox[3]+extraX
+  ];
+
+  const margin = strength>1 ? 5 : 8;
+
+  cleaning=[
+    Math.max(cleaning[0],bubbleBox[0]+margin),
+    Math.max(cleaning[1],bubbleBox[1]+margin),
+    Math.min(cleaning[2],bubbleBox[2]-margin),
+    Math.min(cleaning[3],bubbleBox[3]-margin)
+  ];
+
+  if(cleaning[2]<=cleaning[0] || cleaning[3]<=cleaning[1]){
+    cleaning=eraseBox;
+  }
+
+  const p=normalizedBoxToPixels(cleaning);
+
+  ctx.save();
+  ctx.fillStyle=background.css;
+  roundedRect(
+    p.x,p.y,p.width,p.height,
+    Math.min(12,p.width*0.08,p.height*0.08)
+  );
+  ctx.fill();
+  ctx.restore();
+
+  inkCleaner(cleaning,bubbleBox,background,strength);
+}
+
+function inkCleaner(cleaningBox,bubbleBox,background,strength){
+  const extra = strength>1 ? 22 : 12;
+
+  const scan=[
+    Math.max(bubbleBox[0]+7,cleaningBox[0]-extra),
+    Math.max(bubbleBox[1]+7,cleaningBox[1]-extra),
+    Math.min(bubbleBox[2]-7,cleaningBox[2]+extra),
+    Math.min(bubbleBox[3]-7,cleaningBox[3]+extra)
+  ];
+
+  const p=normalizedBoxToPixels(scan);
+
+  const x=Math.max(0,Math.floor(p.x));
+  const y=Math.max(0,Math.floor(p.y));
+  const w=Math.min(sourceCanvas.width-x,Math.max(1,Math.ceil(p.width)));
+  const h=Math.min(sourceCanvas.height-y,Math.max(1,Math.ceil(p.height)));
+
+  if(w<=0 || h<=0) return;
+
+  try{
+    const sourceData=sourceCtx.getImageData(x,y,w,h);
+    const output=ctx.getImageData(x,y,w,h);
+
+    const threshold=strength>1 ? 220 : 190;
+
+    for(let i=0;i<sourceData.data.length;i+=4){
+      const r=sourceData.data[i];
+      const g=sourceData.data[i+1];
+      const b=sourceData.data[i+2];
+
+      const brightness=r*0.299+g*0.587+b*0.114;
+
+      if(brightness < threshold){
+        output.data[i]=background.r;
+        output.data[i+1]=background.g;
+        output.data[i+2]=background.b;
+        output.data[i+3]=255;
+      }
+    }
+
+    ctx.putImageData(output,x,y);
+  }catch(error){
+    console.warn("Ink cleaner:",error);
+  }
+}
+
+function detectBubbleBackground(box){
+  try{
+    const left=Math.max(0,Math.floor(box.x));
+    const top=Math.max(0,Math.floor(box.y));
+    const right=Math.min(sourceCanvas.width,Math.ceil(box.x+box.width));
+    const bottom=Math.min(sourceCanvas.height,Math.ceil(box.y+box.height));
+
+    const step=Math.max(4,Math.floor(Math.max(box.width,box.height)/40));
+
+    let tr=0,tg=0,tb=0,count=0;
+
+    for(let y=top;y<bottom;y+=step){
+      for(let x=left;x<right;x+=step){
+        const px=sourceCtx.getImageData(x,y,1,1).data;
+        const brightness=px[0]*0.299+px[1]*0.587+px[2]*0.114;
+
+        if(brightness>=205){
+          tr+=px[0];
+          tg+=px[1];
+          tb+=px[2];
+          count++;
+        }
+      }
+    }
+
+    if(count<4){
+      return {r:255,g:255,b:255,css:"#fff"};
+    }
+
+    const r=Math.min(255,Math.round(tr/count)+2);
+    const g=Math.min(255,Math.round(tg/count)+2);
+    const b=Math.min(255,Math.round(tb/count)+2);
+
+    return {r,g,b,css:`rgb(${r},${g},${b})`};
+
+  }catch{
+    return {r:255,g:255,b:255,css:"#fff"};
+  }
+}
+
+/* ---------- text drawing ---------- */
+
+function getSelectedFontFamily(){
+  const selected=fontFamilySelect.value;
+
+  if(selected==="Noto Naskh Arabic"){
+    return '"Noto Naskh Arabic", Tahoma, Arial, sans-serif';
+  }
+
+  if(selected==="Tajawal"){
+    return '"Tajawal", Tahoma, Arial, sans-serif';
+  }
+
+  if(selected==="Tahoma"){
+    return 'Tahoma, Arial, sans-serif';
+  }
+
+  return 'Arial, Tahoma, sans-serif';
+}
+
+function getFontScale(){
+  if(fontSizeMode.value==="small") return 0.86;
+  if(fontSizeMode.value==="large") return 1.14;
+  return 1;
+}
+
+async function ensureSelectedFont(){
+  if(!document.fonts) return;
+  try{
+    await document.fonts.load("700 24px " + getSelectedFontFamily());
+  }catch{}
+}
+
+function setFont(size){
+  ctx.font=`700 ${size}px ${getSelectedFontFamily()}`;
+}
+
+function drawTranslatedText(block){
+  if(!block.bubbleBox) return;
+
+  const box=normalizedBoxToPixels(block.bubbleBox);
+
+  const padX=Math.max(7,box.width*0.10);
+  const padY=Math.max(7,box.height*0.10);
+
+  const x=box.x+padX;
+  const y=box.y+padY;
+  const width=box.width-padX*2;
+  const height=box.height-padY*2;
+
+  if(width<=20 || height<=20) return;
+
+  fitAndDrawText(block.displayTranslation,x,y,width,height);
+}
+
+function normalizedBoxToPixels(box){
+  return {
+    x:box[1]/1000*canvas.width,
+    y:box[0]/1000*canvas.height,
+    width:(box[3]-box[1])/1000*canvas.width,
+    height:(box[2]-box[0])/1000*canvas.height
+  };
+}
+
+function fitAndDrawText(text,x,y,width,height){
+  text=String(text || "").replace(/\s+/g," ").trim();
+  if(!text) return;
+
+  const scale=getFontScale();
+
+  let fontSize=Math.min(
+    64,
+    height*0.34,
+    width*0.17
+  )*scale;
+
+  fontSize=Math.max(11,fontSize);
+
+  let chosen=[];
+
+  while(fontSize>=8){
+    setFont(fontSize);
+
+    const lines=balanceLines(
+      wrapWords(text,width),
+      width
+    );
+
+    const lineHeight=fontSize*1.27;
+
+    if(lines.length*lineHeight <= height){
+      chosen=lines;
+      break;
+    }
+
+    fontSize-=1;
+  }
+
+  if(!chosen.length){
+    fontSize=8;
+    setFont(fontSize);
+    chosen=wrapWords(text,width);
+  }
+
+  const lineHeight=fontSize*1.28;
+  const totalHeight=chosen.length*lineHeight;
+
+  ctx.save();
+  setFont(fontSize);
+  ctx.fillStyle="#111";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.direction=targetLanguage.value==="Arabic" ? "rtl" : "ltr";
+
+  let currentY=y+height/2-totalHeight/2+lineHeight/2;
+
+  for(const line of chosen){
+    ctx.fillText(line,x+width/2,currentY,width);
+    currentY+=lineHeight;
+  }
+
+  ctx.restore();
+}
+
+function wrapWords(text,maxWidth){
+  const words=String(text).trim().split(/\s+/);
+  const lines=[];
+  let current="";
+
+  for(const word of words){
+    const candidate=current ? current+" "+word : word;
+
+    if(ctx.measureText(candidate).width<=maxWidth){
+      current=candidate;
+    }else{
+      if(current) lines.push(current);
+
+      if(ctx.measureText(word).width<=maxWidth){
+        current=word;
+      }else{
+        const pieces=splitLongWord(word,maxWidth);
+
+        if(pieces.length>1){
+          lines.push(...pieces.slice(0,-1));
+          current=pieces[pieces.length-1];
+        }else{
+          current=pieces[0] || "";
+        }
+      }
+    }
+  }
+
+  if(current) lines.push(current);
+  return lines;
+}
+
+function balanceLines(lines,maxWidth){
+  const result=[...lines];
+  if(result.length<2) return result;
+
+  for(let pass=0;pass<4;pass++){
+    let changed=false;
+
+    for(let i=0;i<result.length-1;i++){
+      const first=result[i].split(" ");
+      if(first.length<=1) continue;
+
+      const second=result[i+1].split(" ");
+      const moved=first[first.length-1];
+
+      const newFirst=first.slice(0,-1).join(" ");
+      const newSecond=[moved,...second].join(" ");
+
+      if(ctx.measureText(newSecond).width>maxWidth) continue;
+
+      const before=Math.abs(
+        ctx.measureText(result[i]).width-
+        ctx.measureText(result[i+1]).width
+      );
+
+      const after=Math.abs(
+        ctx.measureText(newFirst).width-
+        ctx.measureText(newSecond).width
+      );
+
+      if(newFirst && after<before){
+        result[i]=newFirst;
+        result[i+1]=newSecond;
+        changed=true;
+      }
+    }
+
+    if(!changed) break;
+  }
+
+  return result;
+}
+
+function splitLongWord(word,maxWidth){
+  const pieces=[];
+  let current="";
+
+  for(const ch of word){
+    const test=current+ch;
+
+    if(ctx.measureText(test).width>maxWidth){
+      if(current) pieces.push(current);
+      current=ch;
+    }else{
+      current=test;
+    }
+  }
+
+  if(current) pieces.push(current);
+  return pieces;
+}
+
+function roundedRect(x,y,width,height,radius){
+  radius=Math.max(0,Math.min(radius,width/2,height/2));
+
+  ctx.beginPath();
+  ctx.moveTo(x+radius,y);
+  ctx.lineTo(x+width-radius,y);
+  ctx.quadraticCurveTo(x+width,y,x+width,y+radius);
+  ctx.lineTo(x+width,y+height-radius);
+  ctx.quadraticCurveTo(x+width,y+height,x+width-radius,y+height);
+  ctx.lineTo(x+radius,y+height);
+  ctx.quadraticCurveTo(x,y+height,x,y+height-radius);
+  ctx.lineTo(x,y+radius);
+  ctx.quadraticCurveTo(x,y,x+radius,y);
+  ctx.closePath();
+}
+
+/* =========================================================
+   EDITOR
+========================================================= */
+
+function showEditor(blocks){
+  editorList.innerHTML="";
+
+  blocks.forEach((block,index)=>{
+    const item=document.createElement("div");
+    item.className="editorItem";
+
+    const number=document.createElement("div");
+    number.className="editorNumber";
+    number.textContent=`المنطقة ${index+1}` +
+      (block.sourceLanguage ? ` — ${block.sourceLanguage}` : "");
+
+    const original=document.createElement("div");
+    original.className="editorOriginal";
+    original.textContent="الأصل: "+block.original;
+
+    const full=document.createElement("div");
+    full.className="editorFullTranslation";
+    full.textContent="الترجمة: "+block.translation;
+
+    const textarea=document.createElement("textarea");
+    textarea.dataset.index=index;
+    textarea.value=block.displayTranslation;
+
+    item.appendChild(number);
+    item.appendChild(original);
+    item.appendChild(full);
+    item.appendChild(textarea);
+
+    editorList.appendChild(item);
+  });
+}
+
+applyEditsButton.addEventListener("click", async ()=>{
+  if(!lastBlocks.length) return;
+
+  const fields=editorList.querySelectorAll("textarea[data-index]");
+
+  fields.forEach(field=>{
+    const index=Number(field.dataset.index);
+    if(!lastBlocks[index]) return;
+
+    const value=field.value.trim();
+    if(value) lastBlocks[index].displayTranslation=value;
+  });
+
+  await ensureSelectedFont();
+  drawTranslation(lastBlocks,currentCleanStrength);
+  translatedVisible=true;
+  compareButton.textContent="↩ عرض الصورة الأصلية";
+  showResults(lastBlocks);
+
+  setStatus("✅ تم تحديث النص داخل الصورة بدون طلب Gemini جديد.","success");
+});
+
+resetEditsButton.addEventListener("click", async ()=>{
+  if(!lastBlocks.length) return;
+
+  lastBlocks.forEach(block=>{
+    block.displayTranslation=block.originalDisplayTranslation;
+  });
+
+  showEditor(lastBlocks);
+  await ensureSelectedFont();
+  drawTranslation(lastBlocks,currentCleanStrength);
+  translatedVisible=true;
+  showResults(lastBlocks);
+
+  setStatus("↩ تمت إعادة اقتراح Gemini الأصلي.","success");
+});
+
+fontFamilySelect.addEventListener("change", redrawWithoutAPI);
+fontSizeMode.addEventListener("change", redrawWithoutAPI);
+
+async function redrawWithoutAPI(){
+  if(!lastBlocks.length) return;
+  await ensureSelectedFont();
+  drawTranslation(lastBlocks,currentCleanStrength);
+  translatedVisible=true;
+}
+
+/* ---------- strong clean ---------- */
+
+strongCleanButton.addEventListener("click", async ()=>{
+  if(!lastBlocks.length) return;
+
+  currentCleanStrength=1.5;
+  await ensureSelectedFont();
+  drawTranslation(lastBlocks,currentCleanStrength);
+  translatedVisible=true;
+  compareButton.textContent="↩ عرض الصورة الأصلية";
+
+  setStatus("🧽 تم تطبيق تنظيف أقوى بدون طلب Gemini جديد.","success");
+});
+
+/* ---------- results ---------- */
+
+function showResults(blocks){
+  textResults.innerHTML="";
+
+  blocks.forEach((block,index)=>{
+    const wrap=document.createElement("div");
+    wrap.className="result";
+
+    const original=document.createElement("div");
+    original.className="original";
+    original.textContent=`${index+1}. الأصل: ${block.original}`;
+
+    const trans=document.createElement("div");
+    trans.className="translation";
+    trans.textContent=block.translation;
+
+    wrap.appendChild(original);
+    wrap.appendChild(trans);
+
+    if(block.displayTranslation && block.displayTranslation!==block.translation){
+      const display=document.createElement("div");
+      display.className="displayTranslation";
+      display.textContent="داخل الفقاعة: "+block.displayTranslation;
+      wrap.appendChild(display);
+    }
+
+    textResults.appendChild(wrap);
+  });
+
+  results.style.display="block";
+}
+
+/* ---------- compare ---------- */
+
+compareButton.addEventListener("click", async ()=>{
+  if(!preparedImage) return;
+
+  if(translatedVisible){
+    drawOriginal();
+    translatedVisible=false;
+    compareButton.textContent="✨ عرض الصورة المترجمة";
+  }else{
+    await ensureSelectedFont();
+    drawTranslation(lastBlocks,currentCleanStrength);
+    translatedVisible=true;
+    compareButton.textContent="↩ عرض الصورة الأصلية";
+  }
+});
+
+/* ---------- download ---------- */
+
+downloadButton.addEventListener("click", async ()=>{
+  if(!translatedVisible && lastBlocks.length){
+    await ensureSelectedFont();
+    drawTranslation(lastBlocks,currentCleanStrength);
+    translatedVisible=true;
+  }
+
+  canvas.toBlob(blob=>{
+    if(!blob){
+      setStatus("❌ تعذر إنشاء الصورة.","error");
+      return;
+    }
+
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="manga-translated-v9.png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  },"image/png");
+});
+
+/* ---------- reset ---------- */
+
+newButton.addEventListener("click", ()=>{
+  if(requestRunning) return;
+
+  imageInput.value="";
+  preparedImage=null;
+  preparedBase64=null;
+  zoomTiles=[];
+  lastBlocks=[];
+  translatedVisible=false;
+  currentCleanStrength=1;
+
+  canvas.width=1;
+  canvas.height=1;
+  sourceCanvas.width=1;
+  sourceCanvas.height=1;
+
+  canvasCard.style.display="none";
+  editorCard.style.display="none";
+  results.style.display="none";
+  downloadButton.style.display="none";
+  strongCleanButton.style.display="none";
+  compareButton.style.display="none";
+  retryButton.style.display="none";
+
+  translateButton.disabled=true;
+  editorList.innerHTML="";
+  textResults.innerHTML="";
+  modelInfo.textContent="";
+  hideProgress();
+
+  setStatus("اختر صورة للبدء");
+});
 </script>
 </body>
-  </html>
+</html>
