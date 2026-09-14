@@ -1,363 +1,410 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
 
-    <title>MangaTranslate AI</title>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <!-- Puter.js -->
-    <script src="https://js.puter.com/v2/"></script>
+<title>MangaTranslate AI</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
 
-        body {
-            margin: 0;
-            font-family: Arial, Tahoma, sans-serif;
-            background: #0f1117;
-            color: #ffffff;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        .app {
-            width: 100%;
-            max-width: 850px;
-            margin: auto;
-            padding: 18px;
-        }
+body {
+    margin: 0;
+    background: #0e1117;
+    color: white;
+    font-family: Arial, Tahoma, sans-serif;
+}
 
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+.app {
+    max-width: 850px;
+    margin: auto;
+    padding: 18px;
+}
 
-        .header h1 {
-            margin-bottom: 5px;
-            font-size: 28px;
-        }
+header {
+    text-align: center;
+    padding: 15px 0;
+}
 
-        .header p {
-            margin-top: 0;
-            color: #aaa;
-        }
+header h1 {
+    margin: 0;
+    font-size: 28px;
+}
 
-        .card {
-            background: #191d27;
-            border-radius: 15px;
-            padding: 16px;
-            margin-bottom: 15px;
-            border: 1px solid #2c3242;
-        }
+header p {
+    color: #9ca3af;
+    margin-top: 8px;
+}
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
+.card {
+    background: #171c26;
+    border: 1px solid #293041;
+    padding: 16px;
+    border-radius: 15px;
+    margin-bottom: 16px;
+}
 
-        select,
-        button {
-            width: 100%;
-            min-height: 48px;
-            border-radius: 10px;
-            border: none;
-            font-size: 16px;
-        }
+label {
+    display: block;
+    margin: 10px 0 7px;
+    font-weight: bold;
+}
 
-        select {
-            background: #252b38;
-            color: white;
-            padding: 10px;
-            margin-bottom: 12px;
-            border: 1px solid #3a4255;
-        }
+input,
+select,
+button {
+    width: 100%;
+    border-radius: 10px;
+    min-height: 48px;
+    font-size: 16px;
+}
 
-        .upload {
-            display: block;
-            background: #252b38;
-            border: 2px dashed #4d5870;
-            border-radius: 14px;
-            padding: 25px 15px;
-            text-align: center;
-            cursor: pointer;
-            margin-bottom: 15px;
-        }
+input,
+select {
+    background: #222938;
+    color: white;
+    border: 1px solid #394258;
+    padding: 10px;
+}
 
-        .upload:hover {
-            background: #2b3241;
-        }
+#apiKey {
+    direction: ltr;
+}
 
-        #imageInput {
-            display: none;
-        }
+.languages {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
 
-        button {
-            cursor: pointer;
-            background: #6c5ce7;
-            color: white;
-            font-weight: bold;
-            padding: 12px;
-        }
+.upload {
+    border: 2px dashed #4b5874;
+    text-align: center;
+    padding: 25px 10px;
+    border-radius: 13px;
+    cursor: pointer;
+    background: #202634;
+}
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+#imageInput {
+    display: none;
+}
 
-        .download-btn {
-            background: #00a86b;
-            margin-top: 10px;
-            display: none;
-        }
+button {
+    border: 0;
+    padding: 12px;
+    margin-top: 12px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-        .clear-btn {
-            background: #343b4d;
-            margin-top: 10px;
-        }
+#translateButton {
+    background: #6757e8;
+}
 
-        #previewContainer {
-            display: none;
-            overflow: auto;
-            margin-top: 15px;
-        }
+#downloadButton {
+    background: #099268;
+    display: none;
+}
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-            background: white;
-        }
+#newButton {
+    background: #30384b;
+}
 
-        #status {
-            margin-top: 14px;
-            line-height: 1.7;
-            text-align: center;
-            color: #ccc;
-            white-space: pre-line;
-        }
+button:disabled {
+    opacity: .5;
+}
 
-        .loading {
-            color: #ffd166 !important;
-        }
+#status {
+    padding-top: 14px;
+    text-align: center;
+    line-height: 1.6;
+    white-space: pre-line;
+}
 
-        .success {
-            color: #4ade80 !important;
-        }
+.success {
+    color: #4ade80;
+}
 
-        .error {
-            color: #ff6b6b !important;
-        }
+.error {
+    color: #ff6b6b;
+}
 
-        #results {
-            display: none;
-        }
+.loading {
+    color: #ffd166;
+}
 
-        .textBlock {
-            background: #242a37;
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 10px;
-        }
+#canvasCard {
+    display: none;
+}
 
-        .original {
-            color: #aaa;
-            font-size: 14px;
-            margin-bottom: 7px;
-            direction: auto;
-        }
+canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: white;
+    border-radius: 10px;
+}
 
-        .translated {
-            font-size: 17px;
-            font-weight: bold;
-            direction: auto;
-        }
+#results {
+    display: none;
+}
 
-        .small {
-            color: #999;
-            font-size: 13px;
-            line-height: 1.7;
-        }
+.result {
+    background: #232a38;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 11px;
+}
 
-        .badge {
-            display: inline-block;
-            background: #272e3d;
-            padding: 5px 10px;
-            border-radius: 20px;
-            margin-bottom: 10px;
-            color: #b8c0d0;
-            font-size: 13px;
-        }
+.original {
+    color: #9ca3af;
+    margin-bottom: 6px;
+    direction: auto;
+}
 
-        .two {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+.translation {
+    font-weight: bold;
+    font-size: 17px;
+    direction: auto;
+}
 
-        @media (max-width: 600px) {
-            .two {
-                grid-template-columns: 1fr;
-            }
+.note {
+    font-size: 13px;
+    color: #9ca3af;
+    line-height: 1.6;
+}
 
-            .header h1 {
-                font-size: 24px;
-            }
-        }
-    </style>
+@media (max-width: 600px) {
+
+    .languages {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
 </head>
+
 
 <body>
 
 <div class="app">
 
-    <div class="header">
-        <h1>📖 MangaTranslate AI</h1>
-        <p>ترجمة نص المانغا والقصص المصورة داخل الصورة</p>
-    </div>
+<header>
 
-    <div class="card">
+<h1>📖 MangaTranslate AI</h1>
 
-        <span class="badge">
-            النسخة التجريبية V1
-        </span>
+<p>
+ترجمة المانغا والقصص المصورة داخل الصورة
+</p>
 
-        <label class="upload" for="imageInput">
-            📷 اضغط هنا واختر صورة المانغا
-            <br>
-            <span class="small">
-                JPG / PNG / WEBP
-            </span>
-        </label>
-
-        <input
-            id="imageInput"
-            type="file"
-            accept="image/*"
-        >
-
-        <div class="two">
-
-            <div>
-                <label>لغة النص الأصلية</label>
-
-                <select id="sourceLanguage">
-
-                    <option value="auto">
-                        اكتشاف تلقائي
-                    </option>
-
-                    <option value="Japanese">
-                        اليابانية
-                    </option>
-
-                    <option value="English">
-                        الإنجليزية
-                    </option>
-
-                    <option value="Korean">
-                        الكورية
-                    </option>
-
-                    <option value="Chinese">
-                        الصينية
-                    </option>
-
-                    <option value="French">
-                        الفرنسية
-                    </option>
-
-                    <option value="Spanish">
-                        الإسبانية
-                    </option>
-
-                    <option value="Indonesian">
-                        الإندونيسية
-                    </option>
-
-                </select>
-            </div>
-
-            <div>
-                <label>الترجمة إلى</label>
-
-                <select id="targetLanguage">
-
-                    <option value="Arabic">
-                        العربية
-                    </option>
-
-                    <option value="English">
-                        الإنجليزية
-                    </option>
-
-                    <option value="French">
-                        الفرنسية
-                    </option>
-
-                    <option value="Japanese">
-                        اليابانية
-                    </option>
-
-                </select>
-            </div>
-
-        </div>
-
-        <button id="translateButton" disabled>
-            ✨ ترجمة الصورة
-        </button>
-
-        <button id="downloadButton" class="download-btn">
-            ⬇ حفظ الصورة المترجمة
-        </button>
-
-        <button id="clearButton" class="clear-btn">
-            🗑 صورة جديدة
-        </button>
-
-        <div id="status">
-            اختر صورة للبدء
-        </div>
-
-    </div>
+</header>
 
 
-    <div id="previewContainer" class="card">
+<div class="card">
 
-        <canvas id="canvas"></canvas>
+<label>
+🔑 Gemini API Key
+</label>
 
-    </div>
+<input
+    id="apiKey"
+    type="password"
+    autocomplete="off"
+    placeholder="ألصق مفتاح Gemini هنا"
+/>
+
+<p class="note">
+المفتاح لا يتم حفظه داخل GitHub ولا داخل هذا الملف.
+تضعه فقط عند تشغيل الموقع.
+</p>
 
 
-    <div id="results" class="card">
+<label
+    class="upload"
+    for="imageInput"
+>
 
-        <h3>
-            📝 النصوص التي تم اكتشافها
-        </h3>
+📷 اضغط هنا واختر صورة المانغا
 
-        <div id="textResults"></div>
+<br>
 
-    </div>
+<small>
+JPG / PNG / WEBP
+</small>
+
+</label>
+
+<input
+    id="imageInput"
+    type="file"
+    accept="image/*"
+/>
+
+
+<div class="languages">
+
+<div>
+
+<label>
+لغة النص الأصلية
+</label>
+
+<select id="sourceLanguage">
+
+<option value="Automatic">
+اكتشاف تلقائي
+</option>
+
+<option value="Japanese">
+اليابانية
+</option>
+
+<option value="English">
+الإنجليزية
+</option>
+
+<option value="Korean">
+الكورية
+</option>
+
+<option value="Chinese">
+الصينية
+</option>
+
+<option value="French">
+الفرنسية
+</option>
+
+<option value="Spanish">
+الإسبانية
+</option>
+
+<option value="Indonesian">
+الإندونيسية
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+الترجمة إلى
+</label>
+
+<select id="targetLanguage">
+
+<option value="Arabic">
+العربية
+</option>
+
+<option value="English">
+الإنجليزية
+</option>
+
+<option value="French">
+الفرنسية
+</option>
+
+<option value="Spanish">
+الإسبانية
+</option>
+
+<option value="Japanese">
+اليابانية
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<button
+    id="translateButton"
+    disabled
+>
+
+✨ ترجمة الصورة
+
+</button>
+
+
+<button id="downloadButton">
+
+⬇ حفظ الصورة المترجمة
+
+</button>
+
+
+<button id="newButton">
+
+🗑 صورة جديدة
+
+</button>
+
+
+<div id="status">
+
+اختر صورة للبدء
+
+</div>
+
+</div>
+
+
+<div
+    id="canvasCard"
+    class="card"
+>
+
+<canvas id="canvas"></canvas>
+
+</div>
+
+
+<div
+    id="results"
+    class="card"
+>
+
+<h3>
+📝 النصوص المكتشفة
+</h3>
+
+<div id="textResults"></div>
+
+</div>
 
 </div>
 
 
 <script>
 
+/* =========================
+   ELEMENTS
+========================= */
+
+const apiKeyInput =
+    document.getElementById("apiKey");
+
 const imageInput =
     document.getElementById("imageInput");
-
-const translateButton =
-    document.getElementById("translateButton");
-
-const downloadButton =
-    document.getElementById("downloadButton");
-
-const clearButton =
-    document.getElementById("clearButton");
 
 const sourceLanguage =
     document.getElementById("sourceLanguage");
@@ -365,17 +412,20 @@ const sourceLanguage =
 const targetLanguage =
     document.getElementById("targetLanguage");
 
+const translateButton =
+    document.getElementById("translateButton");
+
+const downloadButton =
+    document.getElementById("downloadButton");
+
+const newButton =
+    document.getElementById("newButton");
+
 const statusBox =
     document.getElementById("status");
 
-const previewContainer =
-    document.getElementById("previewContainer");
-
-const canvas =
-    document.getElementById("canvas");
-
-const ctx =
-    canvas.getContext("2d");
+const canvasCard =
+    document.getElementById("canvasCard");
 
 const results =
     document.getElementById("results");
@@ -383,15 +433,20 @@ const results =
 const textResults =
     document.getElementById("textResults");
 
+const canvas =
+    document.getElementById("canvas");
 
-let workingFile = null;
-let workingImage = null;
-let detectedBlocks = [];
+const ctx =
+    canvas.getContext("2d");
 
 
-/* ===============================
+let preparedImage = null;
+let preparedBase64 = null;
+
+
+/* =========================
    STATUS
-================================ */
+========================= */
 
 function setStatus(text, type = "") {
 
@@ -402,29 +457,32 @@ function setStatus(text, type = "") {
 }
 
 
-/* ===============================
-   IMAGE SELECTION
-================================ */
+/* =========================
+   SELECT IMAGE
+========================= */
 
 imageInput.addEventListener(
     "change",
-    async function () {
+    async () => {
 
-        const file = this.files[0];
+        const file =
+            imageInput.files[0];
 
-        if (!file) {
-            return;
-        }
+        if (!file) return;
 
-        if (!file.type.startsWith("image/")) {
+
+        if (
+            !file.type.startsWith("image/")
+        ) {
 
             setStatus(
-                "الملف المختار ليس صورة.",
+                "❌ الملف المختار ليس صورة.",
                 "error"
             );
 
             return;
         }
+
 
         try {
 
@@ -433,12 +491,34 @@ imageInput.addEventListener(
                 "loading"
             );
 
-            workingFile =
+
+            const prepared =
                 await prepareImage(file);
 
-            await loadPreview(
-                workingFile
+
+            preparedImage =
+                prepared.image;
+
+            preparedBase64 =
+                prepared.base64;
+
+
+            canvas.width =
+                preparedImage.width;
+
+            canvas.height =
+                preparedImage.height;
+
+
+            ctx.drawImage(
+                preparedImage,
+                0,
+                0
             );
+
+
+            canvasCard.style.display =
+                "block";
 
             translateButton.disabled =
                 false;
@@ -449,19 +529,20 @@ imageInput.addEventListener(
             results.style.display =
                 "none";
 
-            detectedBlocks = [];
 
             setStatus(
                 "✅ الصورة جاهزة.\nاضغط ترجمة الصورة.",
                 "success"
             );
 
-        } catch (error) {
+        }
+
+        catch (error) {
 
             console.error(error);
 
             setStatus(
-                "حدث خطأ أثناء تحميل الصورة.",
+                "❌ تعذر تجهيز الصورة.",
                 "error"
             );
 
@@ -471,89 +552,118 @@ imageInput.addEventListener(
 );
 
 
-/* ===============================
-   RESIZE IMAGE
-================================ */
+/* =========================
+   PREPARE IMAGE
+========================= */
 
 async function prepareImage(file) {
 
-    const img =
+    const image =
         await fileToImage(file);
 
-    const maxDimension = 1800;
 
     let width =
-        img.naturalWidth;
+        image.naturalWidth;
 
     let height =
-        img.naturalHeight;
+        image.naturalHeight;
+
+
+    const maxSize = 1800;
+
 
     if (
-        width <= maxDimension &&
-        height <= maxDimension
+        width > maxSize ||
+        height > maxSize
     ) {
 
-        return file;
+        const ratio =
+            Math.min(
+                maxSize / width,
+                maxSize / height
+            );
+
+        width =
+            Math.round(
+                width * ratio
+            );
+
+        height =
+            Math.round(
+                height * ratio
+            );
 
     }
 
-    const ratio =
-        Math.min(
-            maxDimension / width,
-            maxDimension / height
+
+    const temp =
+        document.createElement(
+            "canvas"
         );
 
-    width =
-        Math.round(width * ratio);
 
-    height =
-        Math.round(height * ratio);
-
-    const tempCanvas =
-        document.createElement("canvas");
-
-    tempCanvas.width =
+    temp.width =
         width;
 
-    tempCanvas.height =
+    temp.height =
         height;
 
+
     const tempCtx =
-        tempCanvas.getContext("2d");
+        temp.getContext("2d");
+
 
     tempCtx.drawImage(
-        img,
+        image,
         0,
         0,
         width,
         height
     );
 
-    const blob =
-        await new Promise(resolve => {
 
-            tempCanvas.toBlob(
-                resolve,
-                "image/jpeg",
-                0.9
-            );
+    const dataURL =
+        temp.toDataURL(
+            "image/jpeg",
+            0.90
+        );
 
-        });
 
-    return new File(
-        [blob],
-        "manga-page.jpg",
-        {
-            type: "image/jpeg"
+    const resized =
+        new Image();
+
+
+    await new Promise(
+        (resolve, reject) => {
+
+            resized.onload =
+                resolve;
+
+            resized.onerror =
+                reject;
+
+            resized.src =
+                dataURL;
+
         }
     );
+
+
+    return {
+
+        image: resized,
+
+        base64:
+            dataURL.split(",")[1]
+
+    };
 
 }
 
 
-/* ===============================
+/* =========================
    FILE -> IMAGE
-================================ */
+========================= */
 
 function fileToImage(file) {
 
@@ -561,30 +671,33 @@ function fileToImage(file) {
         (resolve, reject) => {
 
             const url =
-                URL.createObjectURL(file);
+                URL.createObjectURL(
+                    file
+                );
+
 
             const img =
                 new Image();
 
-            img.onload = () => {
 
-                URL.revokeObjectURL(url);
+            img.onload =
+                () => {
 
-                resolve(img);
+                    URL.revokeObjectURL(
+                        url
+                    );
 
-            };
+                    resolve(img);
 
-            img.onerror = () => {
+                };
 
-                URL.revokeObjectURL(url);
 
-                reject(
-                    new Error("Image load error")
-                );
+            img.onerror =
+                reject;
 
-            };
 
-            img.src = url;
+            img.src =
+                url;
 
         }
     );
@@ -592,60 +705,39 @@ function fileToImage(file) {
 }
 
 
-/* ===============================
-   PREVIEW
-================================ */
-
-async function loadPreview(file) {
-
-    workingImage =
-        await fileToImage(file);
-
-    canvas.width =
-        workingImage.naturalWidth;
-
-    canvas.height =
-        workingImage.naturalHeight;
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    ctx.drawImage(
-        workingImage,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    previewContainer.style.display =
-        "block";
-
-}
-
-
-/* ===============================
-   TRANSLATION BUTTON
-================================ */
+/* =========================
+   TRANSLATE
+========================= */
 
 translateButton.addEventListener(
     "click",
-    async function () {
+    async () => {
 
-        if (!workingFile) {
+        const apiKey =
+            apiKeyInput.value.trim();
+
+
+        if (!apiKey) {
 
             setStatus(
-                "اختر صورة أولاً.",
+                "❌ ألصق Gemini API Key أولاً.",
                 "error"
             );
 
             return;
-
         }
+
+
+        if (!preparedBase64) {
+
+            setStatus(
+                "❌ اختر صورة أولاً.",
+                "error"
+            );
+
+            return;
+        }
+
 
         translateButton.disabled =
             true;
@@ -656,165 +748,87 @@ translateButton.addEventListener(
         results.style.display =
             "none";
 
-        textResults.innerHTML =
-            "";
 
         try {
 
-            /*
-             Puter login
-            */
-
-            if (
-                !puter.auth.isSignedIn()
-            ) {
-
-                setStatus(
-                    "جاري الاتصال بـ Puter...\nقد تظهر نافذة تسجيل الدخول.",
-                    "loading"
-                );
-
-                await puter.auth.signIn({
-                    attempt_temp_user_creation: true
-                });
-
-            }
-
-
             setStatus(
-                "🔍 الذكاء الاصطناعي يقرأ الصفحة...\nيرجى الانتظار.",
+                "🔍 Gemini يقرأ الصفحة ويبحث عن النصوص...\nقد يستغرق ذلك عدة ثوانٍ.",
                 "loading"
             );
 
 
             const prompt =
-                buildPrompt();
-
-
-            /*
-             Vision AI
-            */
-
-            let response;
-
-            try {
-
-                response =
-                    await puter.ai.chat(
-                        prompt,
-                        workingFile,
-                        {
-                            model:
-                                "gpt-5.6-luna"
-                        }
-                    );
-
-            } catch (firstError) {
-
-                console.warn(
-                    "First model failed:",
-                    firstError
-                );
-
-                setStatus(
-                    "إعادة المحاولة بنموذج آخر...",
-                    "loading"
-                );
-
-                response =
-                    await puter.ai.chat(
-                        prompt,
-                        workingFile
-                    );
-
-            }
+                createPrompt();
 
 
             const responseText =
-                extractResponseText(
-                    response
+                await callGemini(
+                    apiKey,
+                    prompt,
+                    preparedBase64
                 );
 
 
             console.log(
-                "RAW AI RESPONSE:",
+                "Gemini:",
                 responseText
             );
 
 
             const blocks =
-                parseAIResponse(
+                parseResponse(
                     responseText
                 );
 
 
-            if (
-                !blocks ||
-                blocks.length === 0
-            ) {
+            if (!blocks.length) {
 
                 throw new Error(
-                    "لم يتم العثور على نصوص في الصورة."
+                    "لم يتم العثور على نص قابل للترجمة."
                 );
 
             }
 
 
-            detectedBlocks =
+            drawTranslation(
                 blocks
-                    .map(normalizeBlock)
-                    .filter(Boolean);
-
-
-            if (
-                detectedBlocks.length === 0
-            ) {
-
-                throw new Error(
-                    "فشل تحليل أماكن النص."
-                );
-
-            }
-
-
-            drawTranslatedImage(
-                detectedBlocks
             );
 
 
-            showTextResults(
-                detectedBlocks
+            showResults(
+                blocks
             );
 
 
             downloadButton.style.display =
                 "block";
 
+
             setStatus(
-                "✅ تمت الترجمة.\nتم العثور على " +
-                detectedBlocks.length +
-                " منطقة نصية.",
+                "✅ تمت الترجمة بنجاح.\nعدد مناطق النص: " +
+                blocks.length,
                 "success"
             );
 
+        }
 
-        } catch (error) {
+        catch (error) {
 
             console.error(error);
-
-            let message =
-                error?.message ||
-                error?.msg ||
-                String(error);
 
 
             setStatus(
                 "❌ حدث خطأ:\n" +
-                message,
+                (
+                    error.message ||
+                    String(error)
+                ),
                 "error"
             );
 
-        } finally {
+        }
+
+        finally {
 
             translateButton.disabled =
                 false;
@@ -825,11 +839,226 @@ translateButton.addEventListener(
 );
 
 
-/* ===============================
-   AI PROMPT
-================================ */
+/* =========================
+   GEMINI
+========================= */
 
-function buildPrompt() {
+async function callGemini(
+    apiKey,
+    prompt,
+    base64
+) {
+
+    /*
+       نحاول أحدث نموذج أولاً
+       ثم ننتقل تلقائياً لبديل.
+    */
+
+    const models = [
+
+        "gemini-3.8-flash",
+
+        "gemini-3.6-flash",
+
+        "gemini-3.5-flash"
+
+    ];
+
+
+    let lastError =
+        "فشل الاتصال بـ Gemini";
+
+
+    for (
+        const model of models
+    ) {
+
+        try {
+
+            setStatus(
+                "🤖 جاري استخدام " +
+                model +
+                "...",
+                "loading"
+            );
+
+
+            const url =
+                "https://generativelanguage.googleapis.com/v1beta/models/" +
+                model +
+                ":generateContent";
+
+
+            const response =
+                await fetch(
+                    url,
+                    {
+
+                        method:
+                            "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "x-goog-api-key":
+                                apiKey
+
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                contents: [
+
+                                    {
+
+                                        role:
+                                            "user",
+
+                                        parts: [
+
+                                            {
+
+                                                text:
+                                                    prompt
+
+                                            },
+
+                                            {
+
+                                                inline_data: {
+
+                                                    mime_type:
+                                                        "image/jpeg",
+
+                                                    data:
+                                                        base64
+
+                                                }
+
+                                            }
+
+                                        ]
+
+                                    }
+
+                                ],
+
+                                generationConfig: {
+
+                                    responseMimeType:
+                                        "application/json"
+
+                                }
+
+                            })
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                const message =
+                    data?.error?.message ||
+                    "HTTP " +
+                    response.status;
+
+
+                /*
+                 Key/auth problems:
+                 no reason to try another model.
+                */
+
+                if (
+                    response.status === 401 ||
+                    response.status === 403
+                ) {
+
+                    throw new Error(
+                        "مشكلة في مفتاح Gemini: " +
+                        message
+                    );
+
+                }
+
+
+                lastError =
+                    message;
+
+                continue;
+
+            }
+
+
+            const text =
+                data
+                    ?.candidates
+                    ?.[0]
+                    ?.content
+                    ?.parts
+                    ?.map(
+                        p =>
+                            p.text || ""
+                    )
+                    .join("");
+
+
+            if (!text) {
+
+                lastError =
+                    "Gemini أعاد استجابة فارغة.";
+
+                continue;
+
+            }
+
+
+            return text;
+
+        }
+
+        catch (error) {
+
+            if (
+                error.message
+                    ?.includes(
+                        "مشكلة في مفتاح Gemini"
+                    )
+            ) {
+
+                throw error;
+
+            }
+
+
+            lastError =
+                error.message ||
+                String(error);
+
+        }
+
+    }
+
+
+    throw new Error(
+        lastError
+    );
+
+}
+
+
+/* =========================
+   PROMPT
+========================= */
+
+function createPrompt() {
 
     const source =
         sourceLanguage.value;
@@ -840,9 +1069,9 @@ function buildPrompt() {
 
     return `
 
-You are an expert manga and comic OCR translator.
+You are a professional manga/comic OCR and translation system.
 
-Analyze the ENTIRE image carefully.
+Analyze the entire manga/comic image.
 
 SOURCE LANGUAGE:
 ${source}
@@ -850,179 +1079,130 @@ ${source}
 TARGET LANGUAGE:
 ${target}
 
-TASK:
+Your job:
 
-1. Detect all meaningful text regions:
+1. Detect every meaningful text region:
    - speech bubbles
    - narration boxes
    - captions
    - dialogue
    - important sound effects
 
-2. Treat each complete speech bubble or text region as ONE block.
+2. Read the original text accurately.
 
-3. VERY IMPORTANT:
-   Do NOT split Japanese characters into individual blocks.
-   Do NOT create one block per letter.
-   Keep vertical Japanese text together when it belongs to the same bubble.
+3. Translate each region naturally into ${target}.
 
-4. Read the original text exactly.
+4. Detect the bounding box of the COMPLETE text region.
 
-5. Translate naturally into ${target}.
+VERY IMPORTANT:
 
-6. Find the approximate position of every text region.
+- Keep a complete speech bubble as one block.
+- Do NOT split Japanese characters into separate blocks.
+- Do NOT return one box per letter.
+- Keep vertical Japanese text together when it belongs to the same region.
+- Do not invent unreadable text.
+- Ignore page numbers and meaningless marks.
 
-Coordinates MUST use a 0 to 1000 coordinate system:
+Use bounding boxes normalized from 0 to 1000.
 
-x = left edge
-y = top edge
-width = region width
-height = region height
+box_2d format MUST be:
 
-All coordinates refer to the FULL IMAGE.
+[ymin, xmin, ymax, xmax]
 
-Return ONLY valid JSON.
+Return ONLY a JSON array.
 
-NO markdown.
-NO explanation.
-NO code fences.
-
-Required format:
+Example:
 
 [
   {
-    "x": 120,
-    "y": 80,
-    "width": 250,
-    "height": 160,
-    "original": "original text",
-    "translation": "translated text",
+    "box_2d": [100, 600, 300, 900],
+    "original": "ありがとう",
+    "translation": "شكراً",
     "type": "dialogue"
   }
 ]
 
-Allowed type values:
+Allowed types:
 
 dialogue
 narration
 caption
 sfx
 
-Rules:
-
-- Never invent text.
-- Ignore page numbers and meaningless tiny marks.
-- Preserve names when appropriate.
-- Make Arabic translation natural and readable.
-- Combine text belonging to the same bubble.
-- Return [] if there is no readable text.
+No markdown.
+No explanation.
+Only JSON.
 
 `;
 
 }
 
 
-/* ===============================
-   RESPONSE TEXT
-================================ */
+/* =========================
+   PARSE RESPONSE
+========================= */
 
-function extractResponseText(response) {
-
-    if (
-        typeof response === "string"
-    ) {
-        return response;
-    }
-
-
-    const content =
-        response?.message?.content ??
-        response?.content ??
-        response?.text;
-
-
-    if (
-        typeof content === "string"
-    ) {
-
-        return content;
-
-    }
-
-
-    if (
-        Array.isArray(content)
-    ) {
-
-        return content
-            .map(item => {
-
-                if (
-                    typeof item === "string"
-                ) {
-                    return item;
-                }
-
-                return (
-                    item?.text ||
-                    item?.content ||
-                    ""
-                );
-
-            })
-            .join("\n");
-
-    }
-
-
-    return JSON.stringify(
-        response
-    );
-
-}
-
-
-/* ===============================
-   JSON PARSER
-================================ */
-
-function parseAIResponse(text) {
-
-    if (!text) {
-        return [];
-    }
-
+function parseResponse(text) {
 
     let cleaned =
-        text
-            .trim()
-            .replace(
-                /```json/gi,
-                ""
-            )
-            .replace(
-                /```/g,
-                ""
-            )
-            .trim();
+        String(text)
+        .trim()
+        .replace(
+            /```json/gi,
+            ""
+        )
+        .replace(
+            /```/g,
+            ""
+        )
+        .trim();
 
 
-    /*
-     Try direct JSON
-    */
+    let parsed;
+
 
     try {
 
-        const parsed =
+        parsed =
             JSON.parse(cleaned);
 
+    }
+
+    catch {
+
+        const start =
+            cleaned.indexOf("[");
+
+        const end =
+            cleaned.lastIndexOf("]");
+
+
         if (
-            Array.isArray(parsed)
+            start === -1 ||
+            end === -1
         ) {
 
-            return parsed;
+            throw new Error(
+                "Gemini لم يُرجع JSON صالحاً."
+            );
 
         }
+
+
+        parsed =
+            JSON.parse(
+                cleaned.slice(
+                    start,
+                    end + 1
+                )
+            );
+
+    }
+
+
+    if (
+        !Array.isArray(parsed)
+    ) {
 
         if (
             Array.isArray(
@@ -1030,49 +1210,15 @@ function parseAIResponse(text) {
             )
         ) {
 
-            return parsed.blocks;
+            parsed =
+                parsed.blocks;
 
         }
 
-    } catch (e) {
+        else {
 
-    }
-
-
-    /*
-     Search JSON array inside response
-    */
-
-    const first =
-        cleaned.indexOf("[");
-
-    const last =
-        cleaned.lastIndexOf("]");
-
-
-    if (
-        first !== -1 &&
-        last !== -1 &&
-        last > first
-    ) {
-
-        const json =
-            cleaned.substring(
-                first,
-                last + 1
-            );
-
-        try {
-
-            return JSON.parse(
-                json
-            );
-
-        } catch (e) {
-
-            console.error(
-                "JSON parsing failed",
-                e
+            throw new Error(
+                "صيغة النتيجة غير صحيحة."
             );
 
         }
@@ -1080,91 +1226,24 @@ function parseAIResponse(text) {
     }
 
 
-    throw new Error(
-        "الذكاء الاصطناعي لم يرجع JSON صالحًا."
-    );
+    return parsed
+        .map(normalizeBlock)
+        .filter(Boolean);
 
 }
 
 
-/* ===============================
-   NORMALIZE BLOCKS
-================================ */
+/* =========================
+   NORMALIZE
+========================= */
 
 function normalizeBlock(block) {
 
-    if (!block) {
-        return null;
-    }
-
-
-    let x =
-        Number(block.x);
-
-    let y =
-        Number(block.y);
-
-    let width =
-        Number(block.width);
-
-    let height =
-        Number(block.height);
-
-
-    /*
-     Optional bounding-box formats
-    */
-
     if (
-        Array.isArray(block.bbox) &&
-        block.bbox.length >= 4
-    ) {
-
-        x =
-            Number(block.bbox[0]);
-
-        y =
-            Number(block.bbox[1]);
-
-        width =
-            Number(block.bbox[2]);
-
-        height =
-            Number(block.bbox[3]);
-
-    }
-
-
-    /*
-     Model sometimes returns 0-1 coordinates
-    */
-
-    const maxValue =
-        Math.max(
-            x,
-            y,
-            width,
-            height
-        );
-
-
-    if (
-        maxValue <= 1.5
-    ) {
-
-        x *= 1000;
-        y *= 1000;
-        width *= 1000;
-        height *= 1000;
-
-    }
-
-
-    if (
-        !Number.isFinite(x) ||
-        !Number.isFinite(y) ||
-        !Number.isFinite(width) ||
-        !Number.isFinite(height)
+        !Array.isArray(
+            block.box_2d
+        ) ||
+        block.box_2d.length < 4
     ) {
 
         return null;
@@ -1172,31 +1251,36 @@ function normalizeBlock(block) {
     }
 
 
-    x =
-        clamp(x, 0, 1000);
-
-    y =
-        clamp(y, 0, 1000);
-
-    width =
-        clamp(
-            width,
-            20,
-            1000 - x
-        );
-
-    height =
-        clamp(
-            height,
-            20,
-            1000 - y
-        );
+    let [
+        ymin,
+        xmin,
+        ymax,
+        xmax
+    ] =
+        block.box_2d.map(Number);
 
 
-    const translation =
-        String(
-            block.translation || ""
-        ).trim();
+    ymin =
+        clamp(ymin);
+
+    xmin =
+        clamp(xmin);
+
+    ymax =
+        clamp(ymax);
+
+    xmax =
+        clamp(xmax);
+
+
+    if (
+        ymax <= ymin ||
+        xmax <= xmin
+    ) {
+
+        return null;
+
+    }
 
 
     const original =
@@ -1205,9 +1289,15 @@ function normalizeBlock(block) {
         ).trim();
 
 
+    const translation =
+        String(
+            block.translation || ""
+        ).trim();
+
+
     if (
-        !translation &&
-        !original
+        !original &&
+        !translation
     ) {
 
         return null;
@@ -1217,50 +1307,46 @@ function normalizeBlock(block) {
 
     return {
 
-        x,
-        y,
-        width,
-        height,
+        box_2d: [
+            ymin,
+            xmin,
+            ymax,
+            xmax
+        ],
 
         original,
 
         translation:
-            translation || original,
+            translation ||
+            original,
 
         type:
-            block.type || "dialogue"
+            block.type ||
+            "dialogue"
 
     };
 
 }
 
 
-function clamp(
-    number,
-    min,
-    max
-) {
+function clamp(n) {
 
-    return Math.min(
-        Math.max(
-            number,
-            min
-        ),
-        max
+    return Math.max(
+        0,
+        Math.min(
+            1000,
+            Number(n)
+        )
     );
 
 }
 
 
-/* ===============================
-   DRAW TRANSLATION
-================================ */
+/* =========================
+   DRAW
+========================= */
 
-function drawTranslatedImage(blocks) {
-
-    /*
-     Original image
-    */
+function drawTranslation(blocks) {
 
     ctx.clearRect(
         0,
@@ -1271,35 +1357,50 @@ function drawTranslatedImage(blocks) {
 
 
     ctx.drawImage(
-        workingImage,
+        preparedImage,
         0,
-        0,
-        canvas.width,
-        canvas.height
+        0
     );
 
 
     blocks.forEach(
         block => {
 
+            const [
+                ymin,
+                xmin,
+                ymax,
+                xmax
+            ] =
+                block.box_2d;
+
+
             const x =
-                block.x / 1000 *
+                xmin / 1000 *
                 canvas.width;
 
             const y =
-                block.y / 1000 *
+                ymin / 1000 *
                 canvas.height;
 
             const width =
-                block.width / 1000 *
+                (
+                    xmax -
+                    xmin
+                ) /
+                1000 *
                 canvas.width;
 
             const height =
-                block.height / 1000 *
+                (
+                    ymax -
+                    ymin
+                ) /
+                1000 *
                 canvas.height;
 
 
-            drawTranslationBox(
+            drawTextBox(
                 block.translation,
                 x,
                 y,
@@ -1313,11 +1414,11 @@ function drawTranslatedImage(blocks) {
 }
 
 
-/* ===============================
-   TRANSLATION BOX
-================================ */
+/* =========================
+   DRAW TEXT BOX
+========================= */
 
-function drawTranslationBox(
+function drawTextBox(
     text,
     x,
     y,
@@ -1327,61 +1428,69 @@ function drawTranslationBox(
 
     const padding =
         Math.max(
-            4,
+            5,
             Math.min(
                 width,
                 height
-            ) * 0.06
+            ) * .07
         );
 
 
-    /*
-     Cover old text
-    */
-
     ctx.save();
 
-    ctx.fillStyle =
-        "rgba(255,255,255,0.94)";
 
-    roundedRect(
-        ctx,
+    /*
+       تغطية النص الأصلي
+    */
+
+    ctx.fillStyle =
+        "rgba(255,255,255,0.95)";
+
+
+    roundRect(
         x,
         y,
         width,
         height,
         Math.min(
-            width,
-            height
-        ) * 0.12
+            15,
+            width * .1,
+            height * .1
+        )
     );
+
 
     ctx.fill();
 
-    ctx.restore();
-
-
-    /*
-     Find font size
-    */
-
-    const maxWidth =
-        width -
-        padding * 2;
-
-    const maxHeight =
-        height -
-        padding * 2;
-
 
     let fontSize =
+        Math.min(
+            48,
+            height * .30,
+            width * .14
+        );
+
+
+    fontSize =
         Math.max(
-            11,
-            Math.min(
-                height * 0.35,
-                width * 0.16,
-                52
-            )
+            10,
+            fontSize
+        );
+
+
+    const maxWidth =
+        Math.max(
+            10,
+            width -
+            padding * 2
+        );
+
+
+    const maxHeight =
+        Math.max(
+            10,
+            height -
+            padding * 2
         );
 
 
@@ -1389,7 +1498,7 @@ function drawTranslationBox(
 
 
     while (
-        fontSize >= 10
+        fontSize >= 9
     ) {
 
         ctx.font =
@@ -1404,7 +1513,7 @@ function drawTranslationBox(
 
 
         const lineHeight =
-            fontSize * 1.25;
+            fontSize * 1.22;
 
 
         if (
@@ -1418,44 +1527,36 @@ function drawTranslationBox(
         }
 
 
-        fontSize -= 1;
+        fontSize--;
 
     }
 
 
     const lineHeight =
-        fontSize * 1.25;
+        fontSize * 1.22;
 
-
-    ctx.save();
-
-    ctx.fillStyle =
-        "#111111";
 
     ctx.font =
         `bold ${fontSize}px Arial, Tahoma, sans-serif`;
 
+
+    ctx.fillStyle =
+        "#111";
+
+
     ctx.textAlign =
         "center";
+
 
     ctx.textBaseline =
         "middle";
 
 
-    if (
+    ctx.direction =
         targetLanguage.value ===
         "Arabic"
-    ) {
-
-        ctx.direction =
-            "rtl";
-
-    } else {
-
-        ctx.direction =
-            "ltr";
-
-    }
+            ? "rtl"
+            : "ltr";
 
 
     const totalHeight =
@@ -1463,27 +1564,29 @@ function drawTranslationBox(
         lineHeight;
 
 
-    let currentY =
+    let lineY =
         y +
         height / 2 -
         totalHeight / 2 +
         lineHeight / 2;
 
 
-    lines.forEach(
-        line => {
+    for (
+        const line of lines
+    ) {
 
-            ctx.fillText(
-                line,
-                x + width / 2,
-                currentY
-            );
+        ctx.fillText(
+            line,
+            x + width / 2,
+            lineY,
+            maxWidth
+        );
 
-            currentY +=
-                lineHeight;
 
-        }
-    );
+        lineY +=
+            lineHeight;
+
+    }
 
 
     ctx.restore();
@@ -1491,9 +1594,9 @@ function drawTranslationBox(
 }
 
 
-/* ===============================
-   WORD WRAPPING
-================================ */
+/* =========================
+   WRAP TEXT
+========================= */
 
 function wrapText(
     text,
@@ -1502,17 +1605,23 @@ function wrapText(
 
     text =
         String(text)
-            .replace(/\s+/g, " ")
-            .trim();
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .trim();
 
 
     if (!text) {
+
         return [];
+
     }
 
 
     const words =
         text.split(" ");
+
 
     const lines = [];
 
@@ -1524,26 +1633,27 @@ function wrapText(
         const word of words
     ) {
 
-        const testLine =
+        const test =
             line
-                ? line + " " + word
+                ? line +
+                  " " +
+                  word
                 : word;
 
 
-        const width =
-            ctx.measureText(
-                testLine
-            ).width;
-
-
         if (
-            width <= maxWidth
+            ctx.measureText(
+                test
+            ).width <=
+            maxWidth
         ) {
 
             line =
-                testLine;
+                test;
 
-        } else {
+        }
+
+        else {
 
             if (line) {
 
@@ -1555,7 +1665,8 @@ function wrapText(
 
 
             /*
-             Very long word
+             Word too long:
+             divide by characters.
             */
 
             if (
@@ -1565,50 +1676,56 @@ function wrapText(
                 maxWidth
             ) {
 
-                let charLine =
+                let chars =
                     "";
+
 
                 for (
                     const char of word
                 ) {
 
-                    const test =
-                        charLine +
+                    const testChars =
+                        chars +
                         char;
+
 
                     if (
                         ctx.measureText(
-                            test
+                            testChars
                         ).width >
                         maxWidth
                     ) {
 
-                        if (
-                            charLine
-                        ) {
+                        if (chars) {
 
                             lines.push(
-                                charLine
+                                chars
                             );
 
                         }
 
-                        charLine =
+
+                        chars =
                             char;
 
-                    } else {
+                    }
 
-                        charLine =
-                            test;
+                    else {
+
+                        chars =
+                            testChars;
 
                     }
 
                 }
 
-                line =
-                    charLine;
 
-            } else {
+                line =
+                    chars;
+
+            }
+
+            else {
 
                 line =
                     word;
@@ -1634,12 +1751,11 @@ function wrapText(
 }
 
 
-/* ===============================
-   ROUNDED RECTANGLE
-================================ */
+/* =========================
+   ROUND RECT
+========================= */
 
-function roundedRect(
-    ctx,
+function roundRect(
     x,
     y,
     width,
@@ -1647,79 +1763,25 @@ function roundedRect(
     radius
 ) {
 
-    radius =
-        Math.min(
-            radius,
-            width / 2,
-            height / 2
-        );
-
-
     ctx.beginPath();
 
-    ctx.moveTo(
-        x + radius,
-        y
-    );
 
-    ctx.lineTo(
-        x + width - radius,
-        y
-    );
-
-    ctx.quadraticCurveTo(
-        x + width,
-        y,
-        x + width,
-        y + radius
-    );
-
-    ctx.lineTo(
-        x + width,
-        y + height - radius
-    );
-
-    ctx.quadraticCurveTo(
-        x + width,
-        y + height,
-        x + width - radius,
-        y + height
-    );
-
-    ctx.lineTo(
-        x + radius,
-        y + height
-    );
-
-    ctx.quadraticCurveTo(
-        x,
-        y + height,
-        x,
-        y + height - radius
-    );
-
-    ctx.lineTo(
-        x,
-        y + radius
-    );
-
-    ctx.quadraticCurveTo(
+    ctx.roundRect(
         x,
         y,
-        x + radius,
-        y
+        width,
+        height,
+        radius
     );
-
-    ctx.closePath();
 
 }
 
 
-/* ===============================
-   TEXT RESULTS
-================================ */
+/* =========================
+   RESULTS
+========================= */
 
-function showTextResults(blocks) {
+function showResults(blocks) {
 
     textResults.innerHTML =
         "";
@@ -1728,13 +1790,14 @@ function showTextResults(blocks) {
     blocks.forEach(
         (block, index) => {
 
-            const container =
+            const wrapper =
                 document.createElement(
                     "div"
                 );
 
-            container.className =
-                "textBlock";
+
+            wrapper.className =
+                "result";
 
 
             const original =
@@ -1742,8 +1805,10 @@ function showTextResults(blocks) {
                     "div"
                 );
 
+
             original.className =
                 "original";
+
 
             original.textContent =
                 (index + 1) +
@@ -1756,23 +1821,27 @@ function showTextResults(blocks) {
                     "div"
                 );
 
+
             translation.className =
-                "translated";
+                "translation";
+
 
             translation.textContent =
                 block.translation;
 
 
-            container.appendChild(
+            wrapper.appendChild(
                 original
             );
 
-            container.appendChild(
+
+            wrapper.appendChild(
                 translation
             );
 
+
             textResults.appendChild(
-                container
+                wrapper
             );
 
         }
@@ -1785,27 +1854,18 @@ function showTextResults(blocks) {
 }
 
 
-/* ===============================
+/* =========================
    DOWNLOAD
-================================ */
+========================= */
 
 downloadButton.addEventListener(
     "click",
-    function () {
+    () => {
 
         canvas.toBlob(
             blob => {
 
-                if (!blob) {
-
-                    setStatus(
-                        "تعذر إنشاء الصورة.",
-                        "error"
-                    );
-
-                    return;
-
-                }
+                if (!blob) return;
 
 
                 const url =
@@ -1819,8 +1879,10 @@ downloadButton.addEventListener(
                         "a"
                     );
 
+
                 a.href =
                     url;
+
 
                 a.download =
                     "manga-translated.png";
@@ -1830,70 +1892,78 @@ downloadButton.addEventListener(
                     a
                 );
 
+
                 a.click();
+
 
                 a.remove();
 
 
                 setTimeout(
-                    () => {
-
+                    () =>
                         URL.revokeObjectURL(
                             url
-                        );
-
-                    },
+                        ),
                     1000
                 );
 
             },
+
             "image/png"
+
         );
 
     }
 );
 
 
-/* ===============================
-   CLEAR
-================================ */
+/* =========================
+   NEW IMAGE
+========================= */
 
-clearButton.addEventListener(
+newButton.addEventListener(
     "click",
-    function () {
+    () => {
 
         imageInput.value =
             "";
 
-        workingFile =
+
+        preparedImage =
             null;
 
-        workingImage =
+
+        preparedBase64 =
             null;
 
-        detectedBlocks =
-            [];
 
         canvas.width =
             1;
 
+
         canvas.height =
             1;
 
-        previewContainer.style.display =
+
+        canvasCard.style.display =
             "none";
+
 
         results.style.display =
             "none";
 
+
         downloadButton.style.display =
             "none";
+
 
         translateButton.disabled =
             true;
 
+
         textResults.innerHTML =
             "";
+
 
         setStatus(
             "اختر صورة للبدء"
@@ -1905,4 +1975,4 @@ clearButton.addEventListener(
 </script>
 
 </body>
-      </html>
+</html>
