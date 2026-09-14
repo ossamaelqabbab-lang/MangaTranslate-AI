@@ -10,7 +10,7 @@
     content="width=device-width, initial-scale=1.0"
 >
 
-<title>MangaTranslate AI V2</title>
+<title>MangaTranslate AI V3</title>
 
 <style>
 
@@ -48,12 +48,12 @@ header p {
 
 .version {
     display: inline-block;
-    background: #252c3c;
-    color: #adb5c5;
-    font-size: 12px;
-    padding: 5px 10px;
+    padding: 5px 11px;
+    margin-top: 4px;
     border-radius: 20px;
-    margin-top: 7px;
+    background: #252c3c;
+    color: #b4bdce;
+    font-size: 12px;
 }
 
 .card {
@@ -81,10 +81,10 @@ button {
 
 input,
 select {
-    border: 1px solid #3a455e;
-    background: #222938;
-    color: white;
     padding: 10px;
+    color: white;
+    background: #222938;
+    border: 1px solid #3a455e;
 }
 
 #apiKey {
@@ -92,13 +92,14 @@ select {
 }
 
 .upload {
-    border: 2px dashed #4a5875;
-    background: #202735;
-    text-align: center;
-    padding: 25px 12px;
-    border-radius: 14px;
-    cursor: pointer;
+    display: block;
     margin-top: 16px;
+    padding: 25px 12px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 14px;
+    background: #202735;
+    border: 2px dashed #4a5875;
 }
 
 .upload small {
@@ -117,15 +118,15 @@ select {
 
 button {
     border: none;
-    color: white;
     padding: 12px;
     margin-top: 12px;
+    color: white;
     cursor: pointer;
     font-weight: bold;
 }
 
 button:disabled {
-    opacity: 0.5;
+    opacity: .5;
     cursor: not-allowed;
 }
 
@@ -134,13 +135,13 @@ button:disabled {
 }
 
 #downloadButton {
-    background: #07885f;
     display: none;
+    background: #07885f;
 }
 
 #restoreButton {
-    background: #3b465e;
     display: none;
+    background: #3b465e;
 }
 
 #newButton {
@@ -184,10 +185,10 @@ canvas {
 }
 
 .result {
-    background: #232a39;
-    margin-bottom: 10px;
     padding: 12px;
+    margin-bottom: 10px;
     border-radius: 10px;
+    background: #232a39;
 }
 
 .original {
@@ -198,8 +199,8 @@ canvas {
 }
 
 .translation {
-    font-weight: bold;
     font-size: 17px;
+    font-weight: bold;
     direction: auto;
 }
 
@@ -210,10 +211,10 @@ canvas {
 }
 
 .model-info {
-    font-size: 13px;
-    color: #9ca3af;
-    text-align: center;
     margin-top: 8px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 13px;
 }
 
 @media (max-width: 600px) {
@@ -232,6 +233,7 @@ canvas {
 
 </head>
 
+
 <body>
 
 <div class="app">
@@ -245,7 +247,7 @@ canvas {
 </p>
 
 <div class="version">
-V2 — تحسين الفقاعات والنص العربي
+V3 — Bubble Shape Engine
 </div>
 
 </header>
@@ -265,8 +267,8 @@ V2 — تحسين الفقاعات والنص العربي
 />
 
 <p class="note">
-المفتاح لا يتم وضعه داخل ملف GitHub.
-تضعه فقط عند استخدام الموقع.
+المفتاح لا يتم حفظه في كود GitHub.
+تضعه فقط عند تشغيل الموقع.
 </p>
 
 
@@ -439,9 +441,9 @@ JPG / PNG / WEBP
 
 <script>
 
-/* =========================================
-   العناصر
-========================================= */
+/* =====================================================
+   عناصر الصفحة
+===================================================== */
 
 const apiKeyInput =
     document.getElementById("apiKey");
@@ -489,28 +491,53 @@ const ctx =
     canvas.getContext("2d");
 
 
+/*
+   Canvas مخفي يحتوي دائماً
+   على الصورة الأصلية.
+*/
+
+const sourceCanvas =
+    document.createElement("canvas");
+
+const sourceCtx =
+    sourceCanvas.getContext(
+        "2d",
+        {
+            willReadFrequently: true
+        }
+    );
+
+
 let preparedImage = null;
 let preparedBase64 = null;
+
 let lastBlocks = [];
-let translatedVisible = false;
+
+let translatedVisible =
+    false;
 
 
-/* =========================================
+/* =====================================================
    الحالة
-========================================= */
+===================================================== */
 
-function setStatus(text, type = "") {
+function setStatus(
+    text,
+    type = ""
+) {
 
-    statusBox.textContent = text;
+    statusBox.textContent =
+        text;
 
-    statusBox.className = type;
+    statusBox.className =
+        type;
 
 }
 
 
-/* =========================================
+/* =====================================================
    اختيار الصورة
-========================================= */
+===================================================== */
 
 imageInput.addEventListener(
     "change",
@@ -526,7 +553,9 @@ imageInput.addEventListener(
 
 
         if (
-            !file.type.startsWith("image/")
+            !file.type.startsWith(
+                "image/"
+            )
         ) {
 
             setStatus(
@@ -548,7 +577,9 @@ imageInput.addEventListener(
 
 
             const prepared =
-                await prepareImage(file);
+                await prepareImage(
+                    file
+                );
 
 
             preparedImage =
@@ -565,6 +596,29 @@ imageInput.addEventListener(
 
             canvas.height =
                 preparedImage.height;
+
+
+            sourceCanvas.width =
+                preparedImage.width;
+
+
+            sourceCanvas.height =
+                preparedImage.height;
+
+
+            sourceCtx.clearRect(
+                0,
+                0,
+                sourceCanvas.width,
+                sourceCanvas.height
+            );
+
+
+            sourceCtx.drawImage(
+                preparedImage,
+                0,
+                0
+            );
 
 
             drawOriginalImage();
@@ -590,9 +644,16 @@ imageInput.addEventListener(
                 false;
 
 
-            lastBlocks = [];
+            lastBlocks =
+                [];
 
-            translatedVisible = false;
+
+            translatedVisible =
+                false;
+
+
+            modelInfo.textContent =
+                "";
 
 
             setStatus(
@@ -604,7 +665,9 @@ imageInput.addEventListener(
 
         catch (error) {
 
-            console.error(error);
+            console.error(
+                error
+            );
 
 
             setStatus(
@@ -618,23 +681,30 @@ imageInput.addEventListener(
 );
 
 
-/* =========================================
+/* =====================================================
    تجهيز الصورة
-========================================= */
+===================================================== */
 
 async function prepareImage(file) {
 
-    const originalImage =
-        await fileToImage(file);
+    const original =
+        await fileToImage(
+            file
+        );
 
 
     let width =
-        originalImage.naturalWidth;
+        original.naturalWidth;
 
 
     let height =
-        originalImage.naturalHeight;
+        original.naturalHeight;
 
+
+    /*
+       نترك دقة جيدة لأن قراءة
+       اليابانية تحتاج تفاصيل.
+    */
 
     const maxDimension =
         2000;
@@ -645,43 +715,52 @@ async function prepareImage(file) {
         height > maxDimension
     ) {
 
-        const scale =
+        const ratio =
             Math.min(
-                maxDimension / width,
-                maxDimension / height
+
+                maxDimension /
+                width,
+
+                maxDimension /
+                height
+
             );
 
 
         width =
             Math.round(
-                width * scale
+                width *
+                ratio
             );
 
 
         height =
             Math.round(
-                height * scale
+                height *
+                ratio
             );
 
     }
 
 
-    const tempCanvas =
+    const temp =
         document.createElement(
             "canvas"
         );
 
 
-    tempCanvas.width =
+    temp.width =
         width;
 
 
-    tempCanvas.height =
+    temp.height =
         height;
 
 
     const tempCtx =
-        tempCanvas.getContext("2d");
+        temp.getContext(
+            "2d"
+        );
 
 
     tempCtx.fillStyle =
@@ -697,7 +776,7 @@ async function prepareImage(file) {
 
 
     tempCtx.drawImage(
-        originalImage,
+        original,
         0,
         0,
         width,
@@ -706,28 +785,31 @@ async function prepareImage(file) {
 
 
     const dataURL =
-        tempCanvas.toDataURL(
+        temp.toDataURL(
             "image/jpeg",
             0.94
         );
 
 
-    const resizedImage =
+    const resized =
         new Image();
 
 
     await new Promise(
-        (resolve, reject) => {
+        (
+            resolve,
+            reject
+        ) => {
 
-            resizedImage.onload =
+            resized.onload =
                 resolve;
 
 
-            resizedImage.onerror =
+            resized.onerror =
                 reject;
 
 
-            resizedImage.src =
+            resized.src =
                 dataURL;
 
         }
@@ -737,24 +819,29 @@ async function prepareImage(file) {
     return {
 
         image:
-            resizedImage,
+            resized,
 
         base64:
-            dataURL.split(",")[1]
+            dataURL.split(
+                ","
+            )[1]
 
     };
 
 }
 
 
-/* =========================================
+/* =====================================================
    File -> Image
-========================================= */
+===================================================== */
 
 function fileToImage(file) {
 
     return new Promise(
-        (resolve, reject) => {
+        (
+            resolve,
+            reject
+        ) => {
 
             const url =
                 URL.createObjectURL(
@@ -774,7 +861,9 @@ function fileToImage(file) {
                     );
 
 
-                    resolve(image);
+                    resolve(
+                        image
+                    );
 
                 };
 
@@ -805,14 +894,18 @@ function fileToImage(file) {
 }
 
 
-/* =========================================
-   رسم الصورة الأصلية
-========================================= */
+/* =====================================================
+   الصورة الأصلية
+===================================================== */
 
 function drawOriginalImage() {
 
-    if (!preparedImage) {
+    if (
+        !preparedImage
+    ) {
+
         return;
+
     }
 
 
@@ -833,22 +926,24 @@ function drawOriginalImage() {
 }
 
 
-/* =========================================
+/* =====================================================
    زر الترجمة
-========================================= */
+===================================================== */
 
 translateButton.addEventListener(
     "click",
     async () => {
 
         const apiKey =
-            apiKeyInput.value.trim();
+            apiKeyInput
+                .value
+                .trim();
 
 
         if (!apiKey) {
 
             setStatus(
-                "❌ ألصق Gemini API Key أولاً.",
+                "❌ ضع Gemini API Key أولاً.",
                 "error"
             );
 
@@ -857,7 +952,9 @@ translateButton.addEventListener(
         }
 
 
-        if (!preparedBase64) {
+        if (
+            !preparedBase64
+        ) {
 
             setStatus(
                 "❌ اختر صورة أولاً.",
@@ -903,7 +1000,9 @@ translateButton.addEventListener(
                 );
 
 
-            if (!models.length) {
+            if (
+                !models.length
+            ) {
 
                 throw new Error(
                     "لم يتم العثور على نموذج Gemini مناسب."
@@ -918,10 +1017,15 @@ translateButton.addEventListener(
 
             const result =
                 await callGeminiWithFallback(
+
                     apiKey,
+
                     models,
+
                     prompt,
+
                     preparedBase64
+
                 );
 
 
@@ -936,7 +1040,9 @@ translateButton.addEventListener(
                 );
 
 
-            if (!blocks.length) {
+            if (
+                !blocks.length
+            ) {
 
                 throw new Error(
                     "لم يتم العثور على نص قابل للترجمة."
@@ -971,6 +1077,10 @@ translateButton.addEventListener(
                 "block";
 
 
+            restoreButton.textContent =
+                "↩ عرض الصورة الأصلية";
+
+
             setStatus(
                 "✅ تمت الترجمة بنجاح.\nتم اكتشاف " +
                 blocks.length +
@@ -982,7 +1092,9 @@ translateButton.addEventListener(
 
         catch (error) {
 
-            console.error(error);
+            console.error(
+                error
+            );
 
 
             setStatus(
@@ -1007,11 +1119,13 @@ translateButton.addEventListener(
 );
 
 
-/* =========================================
+/* =====================================================
    النماذج المتاحة
-========================================= */
+===================================================== */
 
-async function getAvailableModels(apiKey) {
+async function getAvailableModels(
+    apiKey
+) {
 
     const url =
         "https://generativelanguage.googleapis.com/v1beta/models?pageSize=100";
@@ -1045,13 +1159,15 @@ async function getAvailableModels(apiKey) {
         ) {
 
             throw new Error(
-                "مفتاح Gemini غير صالح أو لا يملك الصلاحية."
+                "مفتاح Gemini غير صالح أو لا يملك صلاحية استخدام Gemini."
             );
 
         }
 
 
-        if (!response.ok) {
+        if (
+            !response.ok
+        ) {
 
             return fallbackModels();
 
@@ -1059,7 +1175,9 @@ async function getAvailableModels(apiKey) {
 
 
         const models =
-            Array.isArray(data.models)
+            Array.isArray(
+                data.models
+            )
                 ? data.models
                 : [];
 
@@ -1071,7 +1189,8 @@ async function getAvailableModels(apiKey) {
 
                         const name =
                             String(
-                                model.name || ""
+                                model.name ||
+                                ""
                             ).toLowerCase();
 
 
@@ -1081,9 +1200,13 @@ async function getAvailableModels(apiKey) {
 
 
                         if (
-                            !name.includes("gemini")
+                            !name.includes(
+                                "gemini"
+                            )
                         ) {
+
                             return false;
+
                         }
 
 
@@ -1092,7 +1215,9 @@ async function getAvailableModels(apiKey) {
                                 "generateContent"
                             )
                         ) {
+
                             return false;
+
                         }
 
 
@@ -1110,9 +1235,9 @@ async function getAvailableModels(apiKey) {
 
 
                         return !forbidden.some(
-                            word =>
+                            item =>
                                 name.includes(
-                                    word
+                                    item
                                 )
                         );
 
@@ -1120,26 +1245,35 @@ async function getAvailableModels(apiKey) {
                 )
                 .map(
                     model =>
+
                         String(
                             model.name
                         ).replace(
                             /^models\//,
                             ""
                         )
+
                 );
 
 
         usable.sort(
-            (a, b) =>
+            (
+                a,
+                b
+            ) =>
+
                 scoreModel(b) -
                 scoreModel(a)
+
         );
 
 
         return [
+
             ...new Set(
                 usable
             )
+
         ].slice(
             0,
             8
@@ -1151,7 +1285,8 @@ async function getAvailableModels(apiKey) {
 
         if (
             String(
-                error?.message || ""
+                error?.message ||
+                ""
             ).includes(
                 "مفتاح Gemini"
             )
@@ -1169,14 +1304,16 @@ async function getAvailableModels(apiKey) {
 }
 
 
-/* =========================================
+/* =====================================================
    ترتيب النماذج
-========================================= */
+===================================================== */
 
 function scoreModel(name) {
 
     const model =
-        name.toLowerCase();
+        String(
+            name
+        ).toLowerCase();
 
 
     let score =
@@ -1189,7 +1326,8 @@ function scoreModel(name) {
         )
     ) {
 
-        score += 110;
+        score +=
+            120;
 
     }
 
@@ -1199,7 +1337,8 @@ function scoreModel(name) {
         )
     ) {
 
-        score += 100;
+        score +=
+            100;
 
     }
 
@@ -1209,7 +1348,8 @@ function scoreModel(name) {
         )
     ) {
 
-        score += 60;
+        score +=
+            60;
 
     }
 
@@ -1220,7 +1360,8 @@ function scoreModel(name) {
         )
     ) {
 
-        score += 20;
+        score +=
+            20;
 
     }
 
@@ -1231,7 +1372,8 @@ function scoreModel(name) {
         )
     ) {
 
-        score -= 10;
+        score -=
+            10;
 
     }
 
@@ -1242,7 +1384,8 @@ function scoreModel(name) {
         )
     ) {
 
-        score -= 20;
+        score -=
+            20;
 
     }
 
@@ -1252,9 +1395,9 @@ function scoreModel(name) {
 }
 
 
-/* =========================================
+/* =====================================================
    نماذج احتياطية
-========================================= */
+===================================================== */
 
 function fallbackModels() {
 
@@ -1273,9 +1416,9 @@ function fallbackModels() {
 }
 
 
-/* =========================================
-   Gemini + fallback
-========================================= */
+/* =====================================================
+   إرسال الصورة إلى Gemini
+===================================================== */
 
 async function callGeminiWithFallback(
     apiKey,
@@ -1285,12 +1428,12 @@ async function callGeminiWithFallback(
 ) {
 
     const sleep =
-        milliseconds =>
+        ms =>
             new Promise(
                 resolve =>
                     setTimeout(
                         resolve,
-                        milliseconds
+                        ms
                     )
             );
 
@@ -1400,7 +1543,8 @@ async function callGeminiWithFallback(
                     );
 
 
-                let data = {};
+                let data =
+                    {};
 
 
                 try {
@@ -1413,7 +1557,9 @@ async function callGeminiWithFallback(
                 catch {}
 
 
-                if (response.ok) {
+                if (
+                    response.ok
+                ) {
 
                     const text =
                         extractGeminiText(
@@ -1454,6 +1600,13 @@ async function callGeminiWithFallback(
                     message;
 
 
+                console.warn(
+                    model,
+                    response.status,
+                    message
+                );
+
+
                 if (
                     response.status === 401 ||
                     response.status === 403
@@ -1467,6 +1620,11 @@ async function callGeminiWithFallback(
                 }
 
 
+                /*
+                   إذا كان النموذج غير مناسب
+                   ننتقل للذي بعده.
+                */
+
                 if (
                     response.status === 400 ||
                     response.status === 404
@@ -1476,6 +1634,10 @@ async function callGeminiWithFallback(
 
                 }
 
+
+                /*
+                   ازدحام أو Rate Limit.
+                */
 
                 if (
                     response.status === 429 ||
@@ -1524,7 +1686,8 @@ async function callGeminiWithFallback(
 
                 if (
                     String(
-                        error?.message || ""
+                        error?.message ||
+                        ""
                     ).includes(
                         "Gemini API Key"
                     )
@@ -1549,6 +1712,7 @@ async function callGeminiWithFallback(
                         attempt
                     );
 
+
                     continue;
 
                 }
@@ -1568,18 +1732,22 @@ async function callGeminiWithFallback(
 }
 
 
-/* =========================================
-   استخراج النص
-========================================= */
+/* =====================================================
+   استخراج نص Gemini
+===================================================== */
 
-function extractGeminiText(data) {
+function extractGeminiText(
+    data
+) {
 
     const candidates =
         data?.candidates;
 
 
     if (
-        !Array.isArray(candidates) ||
+        !Array.isArray(
+            candidates
+        ) ||
         !candidates.length
     ) {
 
@@ -1595,7 +1763,9 @@ function extractGeminiText(data) {
 
 
     if (
-        !Array.isArray(parts)
+        !Array.isArray(
+            parts
+        )
     ) {
 
         return "";
@@ -1615,9 +1785,9 @@ function extractGeminiText(data) {
 }
 
 
-/* =========================================
-   Prompt V2
-========================================= */
+/* =====================================================
+   Prompt V3
+===================================================== */
 
 function createPrompt() {
 
@@ -1631,9 +1801,18 @@ function createPrompt() {
 
     return `
 
-You are an expert manga OCR, manga layout detection and professional translator.
+You are an expert professional manga localization system.
 
-Analyze the ENTIRE manga image carefully.
+You must perform:
+
+- manga OCR
+- text region detection
+- speech bubble detection
+- speech bubble shape detection
+- translation
+- layout analysis
+
+Analyze the ENTIRE image.
 
 SOURCE LANGUAGE:
 ${source}
@@ -1641,97 +1820,192 @@ ${source}
 TARGET LANGUAGE:
 ${target}
 
-For every meaningful text region detect:
 
-1. The original text.
-2. The natural translation.
-3. The bounding box of the original printed text.
-4. A SAFE rectangular area INSIDE the speech bubble or narration area where the translated text can be placed.
+FOR EACH meaningful text region return:
 
-IMPORTANT DIFFERENCE:
+1. original
+   Exact original text.
 
-"text_box_2d" =
-only the area occupied by the original printed letters.
+2. translation
+   Natural concise translation into ${target}.
 
-"safe_box_2d" =
-the largest useful rectangular white/empty area INSIDE the same speech bubble.
+3. text_box_2d
+   Bounding box around the original printed text.
 
-The safe box should:
+4. bubble_inner_polygon_2d
+   Polygon following the INNER WHITE AREA of the speech bubble.
 
-- stay inside the speech bubble
-- avoid crossing the black bubble border
-- avoid faces, bodies or artwork
-- include enough empty space for translated text
-- preferably be larger than the original text box
-- cover the original printed text
-- work as a clean replacement area
+5. text_safe_box_2d
+   A rectangular area completely inside that polygon where the translated text can safely be drawn.
 
-For a rectangular narration box, safe_box_2d may cover most of the inner narration area.
 
-VERY IMPORTANT:
+VERY IMPORTANT ABOUT THE POLYGON:
 
-- One speech bubble should normally be ONE block.
-- Do NOT split Japanese characters individually.
-- Do NOT split vertical Japanese dialogue into one block per column unless they are clearly separate sentences/bubbles.
-- Group all text belonging to the same bubble.
-- Do not invent text.
-- Ignore page numbers and meaningless tiny marks.
-- Preserve names.
-- Translate naturally into ${target}.
-- For Arabic, use fluent natural Arabic.
-- Keep translations concise enough to fit the original bubble.
+bubble_inner_polygon_2d must follow the real shape of the white/empty interior of the speech bubble.
+
+DO NOT return a large rectangle around the bubble.
+
+DO NOT include surrounding artwork.
+
+DO NOT include faces.
+
+DO NOT include character bodies.
+
+DO NOT include black bubble outlines.
+
+Keep polygon points slightly INSIDE the black outline.
+
+The polygon should describe only the clean interior area that can safely be painted white.
+
+Use approximately 6 to 20 points when possible.
+
+If the speech bubble is oval, follow the oval.
+
+If the speech bubble is irregular, follow its irregular shape.
+
+Do not include the bubble tail unless it contains original text or is necessary for the text area.
+
+
+TEXT SAFE BOX:
+
+text_safe_box_2d must:
+
+- be completely inside bubble_inner_polygon_2d
+- avoid edges
+- leave comfortable margins
+- be large enough for translated text
+- preferably be centered in the main body of the speech bubble
+
+
+TEXT GROUPING:
+
+One speech bubble = normally one block.
+
+Do NOT split Japanese characters one by one.
+
+Do NOT split vertical Japanese text into separate character blocks.
+
+Group all text belonging to the same speech bubble.
+
+
+TRANSLATION:
+
+Translate naturally.
+
+Do NOT translate word-for-word if that sounds unnatural.
+
+For Arabic:
+use fluent natural Arabic.
+
+Keep the translation concise enough to fit inside the original bubble.
+
+Preserve character names.
+
+Do not invent unreadable text.
+
+Ignore page numbers and meaningless marks.
+
 
 COORDINATES:
 
-All coordinates are normalized 0 to 1000.
+All coordinates are normalized from 0 to 1000.
 
-Format:
+Boxes use:
 
 [ymin, xmin, ymax, xmax]
 
-RETURN ONLY JSON.
+Polygon points use:
+
+[y, x]
+
+
+RETURN ONLY VALID JSON.
+
 
 Example:
 
 [
   {
-    "text_box_2d": [150, 650, 300, 820],
-    "safe_box_2d": [100, 590, 355, 890],
-    "original": "てめーの仕事だ！",
-    "translation": "إنها مهمتك!",
-    "type": "dialogue"
+    "text_box_2d": [
+      190,
+      700,
+      310,
+      845
+    ],
+
+    "bubble_inner_polygon_2d": [
+      [130, 660],
+      [115, 720],
+      [130, 815],
+      [180, 875],
+      [265, 885],
+      [345, 850],
+      [380, 770],
+      [350, 685],
+      [285, 645],
+      [200, 640]
+    ],
+
+    "text_safe_box_2d": [
+      155,
+      675,
+      345,
+      850
+    ],
+
+    "original":
+      "てめーの仕事だ！",
+
+    "translation":
+      "إنها مهمتك!",
+
+    "type":
+      "dialogue"
   }
 ]
 
-Allowed types:
+
+Allowed type values:
 
 dialogue
 narration
 caption
 sfx
 
+
+For rectangular narration boxes:
+return the inner area polygon.
+
+For sound effects placed directly on artwork:
+if there is NO white bubble or clean background,
+bubble_inner_polygon_2d may be null.
+
+Do NOT erase artwork simply to translate an SFX.
+
+If there is no readable text:
+
+[]
+
 No markdown.
 No explanation.
 No code fences.
-
-If there is no readable text return:
-
-[]
+Only JSON.
 
 `;
 
 }
 
 
-/* =========================================
-   Parse
-========================================= */
+/* =====================================================
+   تحليل JSON
+===================================================== */
 
 function parseResponse(text) {
 
     let cleaned =
         String(
-            text || ""
+            text ||
+            ""
         )
             .trim()
             .replace(
@@ -1784,19 +2058,33 @@ function parseResponse(text) {
         }
 
 
-        parsed =
-            JSON.parse(
-                cleaned.slice(
-                    start,
-                    end + 1
-                )
+        try {
+
+            parsed =
+                JSON.parse(
+                    cleaned.slice(
+                        start,
+                        end + 1
+                    )
+                );
+
+        }
+
+        catch {
+
+            throw new Error(
+                "تعذر قراءة نتيجة Gemini."
             );
+
+        }
 
     }
 
 
     if (
-        !Array.isArray(parsed)
+        !Array.isArray(
+            parsed
+        )
     ) {
 
         if (
@@ -1813,7 +2101,7 @@ function parseResponse(text) {
         else {
 
             throw new Error(
-                "صيغة نتيجة Gemini غير صحيحة."
+                "صيغة النتيجة غير صحيحة."
             );
 
         }
@@ -1832,11 +2120,13 @@ function parseResponse(text) {
 }
 
 
-/* =========================================
-   Normalize
-========================================= */
+/* =====================================================
+   تنظيف block
+===================================================== */
 
-function normalizeBlock(block) {
+function normalizeBlock(
+    block
+) {
 
     if (!block) {
 
@@ -1853,8 +2143,9 @@ function normalizeBlock(block) {
 
 
     if (
-        !Array.isArray(textBox) ||
-        textBox.length < 4
+        !Array.isArray(
+            textBox
+        )
     ) {
 
         return null;
@@ -1868,78 +2159,108 @@ function normalizeBlock(block) {
         );
 
 
-    if (!textBox) {
+    if (
+        !textBox
+    ) {
 
         return null;
 
     }
 
 
-    let safeBox =
-        block.safe_box_2d;
+    let polygon =
+        normalizePolygon(
+            block.bubble_inner_polygon_2d ||
+            block.bubble_polygon ||
+            block.polygon
+        );
 
+
+    let safeBox =
+        normalizeBox(
+            block.text_safe_box_2d ||
+            block.safe_box_2d
+        );
+
+
+    /*
+       إذا Gemini لم يرجع Polygon
+       نستعمل fallback.
+    */
 
     if (
-        Array.isArray(safeBox) &&
-        safeBox.length >= 4
+        !polygon
     ) {
 
-        safeBox =
-            normalizeBox(
+        if (
+            !safeBox
+        ) {
+
+            safeBox =
+                expandBox(
+                    textBox,
+                    55,
+                    65
+                );
+
+        }
+
+
+        polygon =
+            boxToPolygon(
                 safeBox
             );
 
     }
 
-    else {
+
+    const polygonBox =
+        polygonBoundingBox(
+            polygon
+        );
+
+
+    /*
+       إذا لم يعد safe box
+       نصنع واحداً داخل Polygon.
+    */
+
+    if (
+        !safeBox
+    ) {
 
         safeBox =
-            expandBox(
-                textBox,
-                45,
-                55
+            insetBox(
+                polygonBox,
+                60
             );
 
     }
 
 
-    if (!safeBox) {
-
-        safeBox =
-            textBox;
-
-    }
-
-
     /*
-     تأكد أن safeBox يغطي textBox
+       نبقي safe box داخل
+       Bounding Box للـ Polygon.
     */
 
-    safeBox = [
+    safeBox =
+        intersectBoxes(
+            safeBox,
+            polygonBox
+        );
 
-        Math.min(
-            safeBox[0],
-            textBox[0]
-        ),
 
-        Math.min(
-            safeBox[1],
-            textBox[1]
-        ),
+    if (
+        !safeBox
+    ) {
 
-        Math.max(
-            safeBox[2],
-            textBox[2]
-        ),
+        safeBox =
+            insetBox(
+                polygonBox,
+                40
+            );
 
-        Math.max(
-            safeBox[3],
-            textBox[3]
-        )
-
-    ].map(
-        clamp1000
-    );
+    }
 
 
     const original =
@@ -1973,6 +2294,8 @@ function normalizeBlock(block) {
         text_box_2d:
             textBox,
 
+        polygon,
+
         safe_box_2d:
             safeBox,
 
@@ -1991,11 +2314,23 @@ function normalizeBlock(block) {
 }
 
 
-/* =========================================
-   Normalize box
-========================================= */
+/* =====================================================
+   Normalize Box
+===================================================== */
 
 function normalizeBox(box) {
+
+    if (
+        !Array.isArray(
+            box
+        ) ||
+        box.length < 4
+    ) {
+
+        return null;
+
+    }
+
 
     let values =
         box
@@ -2031,7 +2366,7 @@ function normalizeBox(box) {
         values;
 
 
-    const maxValue =
+    const largest =
         Math.max(
             Math.abs(ymin),
             Math.abs(xmin),
@@ -2041,7 +2376,7 @@ function normalizeBox(box) {
 
 
     if (
-        maxValue <= 1.5
+        largest <= 1.5
     ) {
 
         ymin *= 1000;
@@ -2098,9 +2433,164 @@ function normalizeBox(box) {
 }
 
 
-/* =========================================
-   Expand fallback
-========================================= */
+/* =====================================================
+   Normalize Polygon
+===================================================== */
+
+function normalizePolygon(
+    polygon
+) {
+
+    if (
+        !Array.isArray(
+            polygon
+        )
+    ) {
+
+        return null;
+
+    }
+
+
+    const rawPoints =
+        polygon
+            .filter(
+                point =>
+                    Array.isArray(
+                        point
+                    ) &&
+                    point.length >= 2
+            )
+            .map(
+                point => [
+
+                    Number(
+                        point[0]
+                    ),
+
+                    Number(
+                        point[1]
+                    )
+
+                ]
+            )
+            .filter(
+                point =>
+
+                    Number.isFinite(
+                        point[0]
+                    ) &&
+
+                    Number.isFinite(
+                        point[1]
+                    )
+
+            );
+
+
+    if (
+        rawPoints.length < 3
+    ) {
+
+        return null;
+
+    }
+
+
+    let largest =
+        0;
+
+
+    rawPoints.forEach(
+        point => {
+
+            largest =
+                Math.max(
+
+                    largest,
+
+                    Math.abs(
+                        point[0]
+                    ),
+
+                    Math.abs(
+                        point[1]
+                    )
+
+                );
+
+        }
+    );
+
+
+    const normalized =
+        rawPoints.map(
+            point => {
+
+                let y =
+                    point[0];
+
+
+                let x =
+                    point[1];
+
+
+                if (
+                    largest <= 1.5
+                ) {
+
+                    y *=
+                        1000;
+
+                    x *=
+                        1000;
+
+                }
+
+
+                return [
+
+                    clamp1000(
+                        y
+                    ),
+
+                    clamp1000(
+                        x
+                    )
+
+                ];
+
+            }
+        );
+
+
+    return normalized;
+
+}
+
+
+/* =====================================================
+   Clamp
+===================================================== */
+
+function clamp1000(
+    value
+) {
+
+    return Math.max(
+        0,
+        Math.min(
+            1000,
+            Number(value)
+        )
+    );
+
+}
+
+
+/* =====================================================
+   Expand Box
+===================================================== */
 
 function expandBox(
     box,
@@ -2144,24 +2634,239 @@ function expandBox(
 }
 
 
-function clamp1000(value) {
+/* =====================================================
+   Box -> Polygon
+===================================================== */
 
-    return Math.max(
-        0,
-        Math.min(
-            1000,
-            Number(value)
-        )
-    );
+function boxToPolygon(
+    box
+) {
+
+    const [
+        ymin,
+        xmin,
+        ymax,
+        xmax
+    ] =
+        box;
+
+
+    return [
+
+        [
+            ymin,
+            xmin
+        ],
+
+        [
+            ymin,
+            xmax
+        ],
+
+        [
+            ymax,
+            xmax
+        ],
+
+        [
+            ymax,
+            xmin
+        ]
+
+    ];
 
 }
 
 
-/* =========================================
-   رسم الترجمة
-========================================= */
+/* =====================================================
+   Polygon Bounding Box
+===================================================== */
 
-function drawTranslation(blocks) {
+function polygonBoundingBox(
+    polygon
+) {
+
+    const ys =
+        polygon.map(
+            point =>
+                point[0]
+        );
+
+
+    const xs =
+        polygon.map(
+            point =>
+                point[1]
+        );
+
+
+    return [
+
+        Math.min(
+            ...ys
+        ),
+
+        Math.min(
+            ...xs
+        ),
+
+        Math.max(
+            ...ys
+        ),
+
+        Math.max(
+            ...xs
+        )
+
+    ];
+
+}
+
+
+/* =====================================================
+   Inset Box
+===================================================== */
+
+function insetBox(
+    box,
+    amount
+) {
+
+    const [
+        ymin,
+        xmin,
+        ymax,
+        xmax
+    ] =
+        box;
+
+
+    const height =
+        ymax -
+        ymin;
+
+
+    const width =
+        xmax -
+        xmin;
+
+
+    const insetY =
+        Math.min(
+            amount,
+            height *
+            0.15
+        );
+
+
+    const insetX =
+        Math.min(
+            amount,
+            width *
+            0.15
+        );
+
+
+    const result = [
+
+        ymin +
+        insetY,
+
+        xmin +
+        insetX,
+
+        ymax -
+        insetY,
+
+        xmax -
+        insetX
+
+    ];
+
+
+    if (
+        result[2] <=
+        result[0] ||
+        result[3] <=
+        result[1]
+    ) {
+
+        return box;
+
+    }
+
+
+    return result;
+
+}
+
+
+/* =====================================================
+   تقاطع صندوقين
+===================================================== */
+
+function intersectBoxes(
+    a,
+    b
+) {
+
+    const ymin =
+        Math.max(
+            a[0],
+            b[0]
+        );
+
+
+    const xmin =
+        Math.max(
+            a[1],
+            b[1]
+        );
+
+
+    const ymax =
+        Math.min(
+            a[2],
+            b[2]
+        );
+
+
+    const xmax =
+        Math.min(
+            a[3],
+            b[3]
+        );
+
+
+    if (
+        ymax <= ymin ||
+        xmax <= xmin
+    ) {
+
+        return null;
+
+    }
+
+
+    return [
+
+        ymin,
+        xmin,
+        ymax,
+        xmax
+
+    ];
+
+}
+
+
+/* =====================================================
+   الرسم النهائي
+===================================================== */
+
+function drawTranslation(
+    blocks
+) {
 
     drawOriginalImage();
 
@@ -2179,11 +2884,106 @@ function drawTranslation(blocks) {
 }
 
 
-/* =========================================
-   رسم الفقاعة
-========================================= */
+/* =====================================================
+   رسم Block
+===================================================== */
 
-function drawBlock(block) {
+function drawBlock(
+    block
+) {
+
+    /*
+       إذا SFX بدون فقاعة حقيقية
+       لا نمسح الرسم.
+    */
+
+    if (
+        !block.polygon ||
+        block.polygon.length < 3
+    ) {
+
+        return;
+
+    }
+
+
+    let points =
+        block.polygon.map(
+            point => {
+
+                const y =
+                    point[0] /
+                    1000 *
+                    canvas.height;
+
+
+                const x =
+                    point[1] /
+                    1000 *
+                    canvas.width;
+
+
+                return {
+
+                    x,
+                    y
+
+                };
+
+            }
+        );
+
+
+    /*
+       نقلل الشكل نحو الداخل قليلاً
+       حتى لا نلمس الخط الأسود.
+    */
+
+    points =
+        shrinkPolygon(
+            points,
+            0.975
+        );
+
+
+    /*
+       نحاول معرفة لون خلفية
+       الفقاعة من الصورة الأصلية.
+    */
+
+    const backgroundColor =
+        detectBubbleColor(
+            points
+        );
+
+
+    /*
+       نمسح النص القديم
+       داخل شكل الفقاعة فقط.
+    */
+
+    ctx.save();
+
+
+    buildSmoothPolygonPath(
+        ctx,
+        points
+    );
+
+
+    ctx.fillStyle =
+        backgroundColor;
+
+
+    ctx.fill();
+
+
+    ctx.restore();
+
+
+    /*
+       Safe Box للكتابة.
+    */
 
     const box =
         block.safe_box_2d;
@@ -2198,19 +2998,19 @@ function drawBlock(block) {
         box;
 
 
-    let x =
+    const x =
         xmin /
         1000 *
         canvas.width;
 
 
-    let y =
+    const y =
         ymin /
         1000 *
         canvas.height;
 
 
-    let width =
+    const width =
         (
             xmax -
             xmin
@@ -2219,7 +3019,7 @@ function drawBlock(block) {
         canvas.width;
 
 
-    let height =
+    const height =
         (
             ymax -
             ymin
@@ -2229,70 +3029,21 @@ function drawBlock(block) {
 
 
     /*
-     نترك حافة صغيرة
-     كي لا نمسح خط الفقاعة
-    */
-
-    const inset =
-        Math.max(
-            2,
-            Math.min(
-                width,
-                height
-            ) *
-            0.025
-        );
-
-
-    x += inset;
-
-    y += inset;
-
-    width -=
-        inset * 2;
-
-    height -=
-        inset * 2;
-
-
-    if (
-        width <= 10 ||
-        height <= 10
-    ) {
-
-        return;
-
-    }
-
-
-    /*
-     تنظيف المنطقة القديمة
+       Clip:
+       حتى لو اقترب النص من الطرف
+       لن يخرج خارج الفقاعة.
     */
 
     ctx.save();
 
 
-    ctx.fillStyle =
-        "rgba(255,255,255,0.985)";
-
-
-    drawRoundedRectangle(
-        x,
-        y,
-        width,
-        height,
-        Math.min(
-            22,
-            width * 0.13,
-            height * 0.13
-        )
+    buildSmoothPolygonPath(
+        ctx,
+        points
     );
 
 
-    ctx.fill();
-
-
-    ctx.restore();
+    ctx.clip();
 
 
     drawFittedText(
@@ -2303,12 +3054,580 @@ function drawBlock(block) {
         height
     );
 
+
+    ctx.restore();
+
 }
 
 
-/* =========================================
-   كتابة عربية ذكية
-========================================= */
+/* =====================================================
+   Shrink Polygon
+===================================================== */
+
+function shrinkPolygon(
+    points,
+    factor
+) {
+
+    if (
+        !points.length
+    ) {
+
+        return points;
+
+    }
+
+
+    const center =
+        points.reduce(
+            (
+                result,
+                point
+            ) => {
+
+                result.x +=
+                    point.x;
+
+
+                result.y +=
+                    point.y;
+
+
+                return result;
+
+            },
+            {
+                x: 0,
+                y: 0
+            }
+        );
+
+
+    center.x /=
+        points.length;
+
+
+    center.y /=
+        points.length;
+
+
+    return points.map(
+        point => ({
+
+            x:
+                center.x +
+                (
+                    point.x -
+                    center.x
+                ) *
+                factor,
+
+            y:
+                center.y +
+                (
+                    point.y -
+                    center.y
+                ) *
+                factor
+
+        })
+    );
+
+}
+
+
+/* =====================================================
+   Smooth Polygon Path
+===================================================== */
+
+function buildSmoothPolygonPath(
+    targetCtx,
+    points
+) {
+
+    if (
+        points.length < 3
+    ) {
+
+        return;
+
+    }
+
+
+    const last =
+        points[
+            points.length -
+            1
+        ];
+
+
+    const first =
+        points[0];
+
+
+    const startX =
+        (
+            last.x +
+            first.x
+        ) /
+        2;
+
+
+    const startY =
+        (
+            last.y +
+            first.y
+        ) /
+        2;
+
+
+    targetCtx.beginPath();
+
+
+    targetCtx.moveTo(
+        startX,
+        startY
+    );
+
+
+    for (
+        let i = 0;
+        i < points.length;
+        i++
+    ) {
+
+        const current =
+            points[i];
+
+
+        const next =
+            points[
+                (
+                    i +
+                    1
+                ) %
+                points.length
+            ];
+
+
+        const midX =
+            (
+                current.x +
+                next.x
+            ) /
+            2;
+
+
+        const midY =
+            (
+                current.y +
+                next.y
+            ) /
+            2;
+
+
+        targetCtx.quadraticCurveTo(
+
+            current.x,
+
+            current.y,
+
+            midX,
+
+            midY
+
+        );
+
+    }
+
+
+    targetCtx.closePath();
+
+}
+
+
+/* =====================================================
+   تحديد لون خلفية الفقاعة
+===================================================== */
+
+function detectBubbleColor(
+    points
+) {
+
+    try {
+
+        const xs =
+            points.map(
+                p =>
+                    p.x
+            );
+
+
+        const ys =
+            points.map(
+                p =>
+                    p.y
+            );
+
+
+        const minX =
+            Math.max(
+                0,
+                Math.floor(
+                    Math.min(
+                        ...xs
+                    )
+                )
+            );
+
+
+        const maxX =
+            Math.min(
+                sourceCanvas.width -
+                1,
+                Math.ceil(
+                    Math.max(
+                        ...xs
+                    )
+                )
+            );
+
+
+        const minY =
+            Math.max(
+                0,
+                Math.floor(
+                    Math.min(
+                        ...ys
+                    )
+                )
+            );
+
+
+        const maxY =
+            Math.min(
+                sourceCanvas.height -
+                1,
+                Math.ceil(
+                    Math.max(
+                        ...ys
+                    )
+                )
+            );
+
+
+        const width =
+            maxX -
+            minX;
+
+
+        const height =
+            maxY -
+            minY;
+
+
+        if (
+            width <= 0 ||
+            height <= 0
+        ) {
+
+            return "#ffffff";
+
+        }
+
+
+        /*
+           لا نأخذ كل Pixel حتى
+           يبقى الهاتف سريعاً.
+        */
+
+        const step =
+            Math.max(
+                5,
+                Math.floor(
+                    Math.sqrt(
+                        width *
+                        height
+                    ) /
+                    60
+                )
+            );
+
+
+        let r =
+            0;
+
+
+        let g =
+            0;
+
+
+        let b =
+            0;
+
+
+        let count =
+            0;
+
+
+        for (
+            let y = minY;
+            y <= maxY;
+            y += step
+        ) {
+
+            for (
+                let x = minX;
+                x <= maxX;
+                x += step
+            ) {
+
+                if (
+                    !pointInPolygon(
+                        x,
+                        y,
+                        points
+                    )
+                ) {
+
+                    continue;
+
+                }
+
+
+                const pixel =
+                    sourceCtx.getImageData(
+                        x,
+                        y,
+                        1,
+                        1
+                    ).data;
+
+
+                const luminance =
+                    (
+                        pixel[0] *
+                        0.299
+                    ) +
+                    (
+                        pixel[1] *
+                        0.587
+                    ) +
+                    (
+                        pixel[2] *
+                        0.114
+                    );
+
+
+                /*
+                   نتجاهل الحروف السوداء.
+                   نأخذ الخلفية الفاتحة.
+                */
+
+                if (
+                    luminance >= 180
+                ) {
+
+                    r +=
+                        pixel[0];
+
+
+                    g +=
+                        pixel[1];
+
+
+                    b +=
+                        pixel[2];
+
+
+                    count++;
+
+                }
+
+            }
+
+        }
+
+
+        if (
+            count < 5
+        ) {
+
+            return "#ffffff";
+
+        }
+
+
+        r =
+            Math.round(
+                r /
+                count
+            );
+
+
+        g =
+            Math.round(
+                g /
+                count
+            );
+
+
+        b =
+            Math.round(
+                b /
+                count
+            );
+
+
+        /*
+           نرفع اللون قليلاً
+           حتى تبقى الفقاعة نظيفة.
+        */
+
+        r =
+            Math.min(
+                255,
+                r + 5
+            );
+
+
+        g =
+            Math.min(
+                255,
+                g + 5
+            );
+
+
+        b =
+            Math.min(
+                255,
+                b + 5
+            );
+
+
+        return (
+            "rgb(" +
+            r +
+            "," +
+            g +
+            "," +
+            b +
+            ")"
+        );
+
+    }
+
+    catch (error) {
+
+        console.warn(
+            "Bubble color detection failed",
+            error
+        );
+
+
+        return "#ffffff";
+
+    }
+
+}
+
+
+/* =====================================================
+   Point in Polygon
+===================================================== */
+
+function pointInPolygon(
+    x,
+    y,
+    points
+) {
+
+    let inside =
+        false;
+
+
+    for (
+        let i = 0,
+            j =
+                points.length -
+                1;
+
+        i <
+        points.length;
+
+        j = i++
+    ) {
+
+        const xi =
+            points[i].x;
+
+
+        const yi =
+            points[i].y;
+
+
+        const xj =
+            points[j].x;
+
+
+        const yj =
+            points[j].y;
+
+
+        const intersect =
+            (
+                (
+                    yi >
+                    y
+                ) !==
+                (
+                    yj >
+                    y
+                )
+            ) &&
+            (
+                x <
+                (
+                    (
+                        xj -
+                        xi
+                    ) *
+                    (
+                        y -
+                        yi
+                    )
+                ) /
+                (
+                    (
+                        yj -
+                        yi
+                    ) ||
+                    0.00001
+                ) +
+                xi
+            );
+
+
+        if (
+            intersect
+        ) {
+
+            inside =
+                !inside;
+
+        }
+
+    }
+
+
+    return inside;
+
+}
+
+
+/* =====================================================
+   كتابة النص
+===================================================== */
 
 function drawFittedText(
     text,
@@ -2320,7 +3639,8 @@ function drawFittedText(
 
     text =
         String(
-            text || ""
+            text ||
+            ""
         )
             .replace(
                 /\s+/g,
@@ -2329,18 +3649,26 @@ function drawFittedText(
             .trim();
 
 
-    if (!text) {
+    if (
+        !text ||
+        width < 15 ||
+        height < 15
+    ) {
 
         return;
 
     }
 
 
+    /*
+       هامش أكبر من V2.
+    */
+
     const paddingX =
         Math.max(
             7,
             width *
-            0.08
+            0.11
         );
 
 
@@ -2348,7 +3676,7 @@ function drawFittedText(
         Math.max(
             7,
             height *
-            0.08
+            0.11
         );
 
 
@@ -2356,7 +3684,8 @@ function drawFittedText(
         Math.max(
             10,
             width -
-            paddingX * 2
+            paddingX *
+            2
         );
 
 
@@ -2364,27 +3693,33 @@ function drawFittedText(
         Math.max(
             10,
             height -
-            paddingY * 2
+            paddingY *
+            2
         );
 
 
     /*
-     حجم ابتدائي أكبر
+       نبدأ بحجم أكثر اعتدالاً
+       من V2.
     */
 
     let fontSize =
         Math.min(
-            64,
+
+            54,
+
             height *
-            0.42,
+            0.27,
+
             width *
-            0.20
+            0.14
+
         );
 
 
     fontSize =
         Math.max(
-            12,
+            11,
             fontSize
         );
 
@@ -2394,18 +3729,24 @@ function drawFittedText(
 
 
     while (
-        fontSize >= 10
+        fontSize >= 9
     ) {
 
-        ctx.font =
-            "700 " +
-            fontSize +
-            "px Arial, Tahoma, sans-serif";
+        setCanvasFont(
+            fontSize
+        );
 
 
-        const lines =
+        let lines =
             smartWrapText(
                 text,
+                maxWidth
+            );
+
+
+        lines =
+            balanceLines(
+                lines,
                 maxWidth
             );
 
@@ -2428,6 +3769,7 @@ function drawFittedText(
             bestLines =
                 lines;
 
+
             break;
 
         }
@@ -2443,8 +3785,13 @@ function drawFittedText(
         !bestLines.length
     ) {
 
-        ctx.font =
-            "700 10px Arial, Tahoma, sans-serif";
+        fontSize =
+            9;
+
+
+        setCanvasFont(
+            fontSize
+        );
 
 
         bestLines =
@@ -2453,25 +3800,25 @@ function drawFittedText(
                 maxWidth
             );
 
-
-        fontSize =
-            10;
-
     }
 
 
     const lineHeight =
         fontSize *
-        1.28;
+        1.30;
+
+
+    const totalHeight =
+        bestLines.length *
+        lineHeight;
 
 
     ctx.save();
 
 
-    ctx.font =
-        "700 " +
-        fontSize +
-        "px Arial, Tahoma, sans-serif";
+    setCanvasFont(
+        fontSize
+    );
 
 
     ctx.fillStyle =
@@ -2493,16 +3840,14 @@ function drawFittedText(
             : "ltr";
 
 
-    const totalHeight =
-        bestLines.length *
-        lineHeight;
-
-
     let currentY =
         y +
-        height / 2 -
-        totalHeight / 2 +
-        lineHeight / 2;
+        height /
+        2 -
+        totalHeight /
+        2 +
+        lineHeight /
+        2;
 
 
     for (
@@ -2510,11 +3855,17 @@ function drawFittedText(
     ) {
 
         ctx.fillText(
+
             line,
+
             x +
-            width / 2,
+            width /
+            2,
+
             currentY,
+
             maxWidth
+
         );
 
 
@@ -2529,9 +3880,25 @@ function drawFittedText(
 }
 
 
-/* =========================================
-   تقسيم ذكي للأسطر
-========================================= */
+/* =====================================================
+   Font
+===================================================== */
+
+function setCanvasFont(
+    size
+) {
+
+    ctx.font =
+        "700 " +
+        size +
+        "px Arial, Tahoma, sans-serif";
+
+}
+
+
+/* =====================================================
+   Wrap
+===================================================== */
 
 function smartWrapText(
     text,
@@ -2539,14 +3906,18 @@ function smartWrapText(
 ) {
 
     const words =
-        String(text)
+        String(
+            text
+        )
             .trim()
             .split(
                 /\s+/
             );
 
 
-    if (!words.length) {
+    if (
+        !words.length
+    ) {
 
         return [];
 
@@ -2587,7 +3958,9 @@ function smartWrapText(
 
         else {
 
-            if (current) {
+            if (
+                current
+            ) {
 
                 lines.push(
                     current
@@ -2653,26 +4026,12 @@ function smartWrapText(
     }
 
 
-    if (current) {
+    if (
+        current
+    ) {
 
         lines.push(
             current
-        );
-
-    }
-
-
-    /*
-     محاولة موازنة السطر الأخير
-    */
-
-    if (
-        lines.length >= 2
-    ) {
-
-        balanceLastLines(
-            lines,
-            maxWidth
         );
 
     }
@@ -2683,11 +4042,11 @@ function smartWrapText(
 }
 
 
-/* =========================================
-   موازنة آخر سطرين
-========================================= */
+/* =====================================================
+   موازنة الأسطر
+===================================================== */
 
-function balanceLastLines(
+function balanceLines(
     lines,
     maxWidth
 ) {
@@ -2696,114 +4055,189 @@ function balanceLastLines(
         lines.length < 2
     ) {
 
-        return;
+        return lines;
 
     }
 
 
-    const lastIndex =
-        lines.length -
-        1;
+    const result =
+        [...lines];
 
 
-    const previousIndex =
-        lastIndex -
-        1;
+    /*
+       نحاول نقل كلمة من السطر
+       الطويل إلى السطر القصير.
+    */
 
-
-    let previousWords =
-        lines[
-            previousIndex
-        ].split(" ");
-
-
-    let lastWords =
-        lines[
-            lastIndex
-        ].split(" ");
-
-
-    if (
-        previousWords.length <= 1
+    for (
+        let pass = 0;
+        pass < 4;
+        pass++
     ) {
 
-        return;
-
-    }
-
-
-    const wordToMove =
-        previousWords[
-            previousWords.length -
-            1
-        ];
+        let changed =
+            false;
 
 
-    const candidateLast =
-        wordToMove +
-        " " +
-        lastWords.join(" ");
+        for (
+            let i = 0;
+            i <
+            result.length -
+            1;
+            i++
+        ) {
+
+            const firstWords =
+                result[i]
+                    .split(
+                        " "
+                    );
 
 
-    if (
-        ctx.measureText(
-            candidateLast
-        ).width <=
-        maxWidth
-    ) {
+            if (
+                firstWords.length <= 1
+            ) {
 
-        previousWords.pop();
+                continue;
+
+            }
 
 
-        const newPrevious =
-            previousWords.join(" ");
+            const secondWords =
+                result[
+                    i + 1
+                ].split(
+                    " "
+                );
+
+
+            const movedWord =
+                firstWords[
+                    firstWords.length -
+                    1
+                ];
+
+
+            const newFirst =
+                firstWords
+                    .slice(
+                        0,
+                        -1
+                    )
+                    .join(
+                        " "
+                    );
+
+
+            const newSecond =
+                [
+                    movedWord,
+                    ...secondWords
+                ].join(
+                    " "
+                );
+
+
+            const firstWidth =
+                ctx.measureText(
+                    result[i]
+                ).width;
+
+
+            const secondWidth =
+                ctx.measureText(
+                    result[
+                        i + 1
+                    ]
+                ).width;
+
+
+            const newFirstWidth =
+                ctx.measureText(
+                    newFirst
+                ).width;
+
+
+            const newSecondWidth =
+                ctx.measureText(
+                    newSecond
+                ).width;
+
+
+            if (
+                newSecondWidth <=
+                maxWidth
+            ) {
+
+                const before =
+                    Math.abs(
+                        firstWidth -
+                        secondWidth
+                    );
+
+
+                const after =
+                    Math.abs(
+                        newFirstWidth -
+                        newSecondWidth
+                    );
+
+
+                if (
+                    after <
+                    before
+                ) {
+
+                    result[i] =
+                        newFirst;
+
+
+                    result[
+                        i + 1
+                    ] =
+                        newSecond;
+
+
+                    changed =
+                        true;
+
+                }
+
+            }
+
+        }
 
 
         if (
-            newPrevious &&
-            ctx.measureText(
-                candidateLast
-            ).width <
-            ctx.measureText(
-                lines[
-                    previousIndex
-                ]
-            ).width *
-            1.35
+            !changed
         ) {
 
-            lines[
-                previousIndex
-            ] =
-                newPrevious;
-
-
-            lines[
-                lastIndex
-            ] =
-                candidateLast;
+            break;
 
         }
 
     }
 
+
+    return result;
+
 }
 
 
-/* =========================================
+/* =====================================================
    الكلمات الطويلة
-========================================= */
+===================================================== */
 
 function splitLongWord(
     word,
     maxWidth
 ) {
 
-    const pieces =
+    const parts =
         [];
 
 
-    let piece =
+    let current =
         "";
 
 
@@ -2811,161 +4245,77 @@ function splitLongWord(
         const char of word
     ) {
 
-        const candidate =
-            piece +
+        const test =
+            current +
             char;
 
 
         if (
             ctx.measureText(
-                candidate
+                test
             ).width >
             maxWidth
         ) {
 
-            if (piece) {
+            if (
+                current
+            ) {
 
-                pieces.push(
-                    piece
+                parts.push(
+                    current
                 );
 
             }
 
 
-            piece =
+            current =
                 char;
 
         }
 
         else {
 
-            piece =
-                candidate;
+            current =
+                test;
 
         }
 
     }
 
 
-    if (piece) {
+    if (
+        current
+    ) {
 
-        pieces.push(
-            piece
+        parts.push(
+            current
         );
 
     }
 
 
-    return pieces;
+    return parts;
 
 }
 
 
-/* =========================================
-   Rounded rectangle
-========================================= */
+/* =====================================================
+   إظهار النتائج
+===================================================== */
 
-function drawRoundedRectangle(
-    x,
-    y,
-    width,
-    height,
-    radius
+function showResults(
+    blocks
 ) {
-
-    radius =
-        Math.max(
-            0,
-            Math.min(
-                radius,
-                width / 2,
-                height / 2
-            )
-        );
-
-
-    ctx.beginPath();
-
-
-    ctx.moveTo(
-        x + radius,
-        y
-    );
-
-
-    ctx.lineTo(
-        x + width - radius,
-        y
-    );
-
-
-    ctx.quadraticCurveTo(
-        x + width,
-        y,
-        x + width,
-        y + radius
-    );
-
-
-    ctx.lineTo(
-        x + width,
-        y + height - radius
-    );
-
-
-    ctx.quadraticCurveTo(
-        x + width,
-        y + height,
-        x + width - radius,
-        y + height
-    );
-
-
-    ctx.lineTo(
-        x + radius,
-        y + height
-    );
-
-
-    ctx.quadraticCurveTo(
-        x,
-        y + height,
-        x,
-        y + height - radius
-    );
-
-
-    ctx.lineTo(
-        x,
-        y + radius
-    );
-
-
-    ctx.quadraticCurveTo(
-        x,
-        y,
-        x + radius,
-        y
-    );
-
-
-    ctx.closePath();
-
-}
-
-
-/* =========================================
-   النتائج
-========================================= */
-
-function showResults(blocks) {
 
     textResults.innerHTML =
         "";
 
 
     blocks.forEach(
-        (block, index) => {
+        (
+            block,
+            index
+        ) => {
 
             const wrapper =
                 document.createElement(
@@ -3034,15 +4384,17 @@ function showResults(blocks) {
 }
 
 
-/* =========================================
-   عرض الأصل / الترجمة
-========================================= */
+/* =====================================================
+   الأصل / الترجمة
+===================================================== */
 
 restoreButton.addEventListener(
     "click",
     () => {
 
-        if (!preparedImage) {
+        if (
+            !preparedImage
+        ) {
 
             return;
 
@@ -3085,18 +4437,13 @@ restoreButton.addEventListener(
 );
 
 
-/* =========================================
-   تنزيل
-========================================= */
+/* =====================================================
+   حفظ الصورة
+===================================================== */
 
 downloadButton.addEventListener(
     "click",
     () => {
-
-        /*
-         إذا كان يعرض الأصل
-         نعيد الترجمة قبل الحفظ
-        */
 
         if (
             !translatedVisible &&
@@ -3121,7 +4468,9 @@ downloadButton.addEventListener(
         canvas.toBlob(
             blob => {
 
-                if (!blob) {
+                if (
+                    !blob
+                ) {
 
                     setStatus(
                         "❌ تعذر إنشاء الصورة.",
@@ -3151,7 +4500,7 @@ downloadButton.addEventListener(
 
 
                 link.download =
-                    "manga-translated-v2.png";
+                    "manga-translated-v3.png";
 
 
                 document.body.appendChild(
@@ -3166,10 +4515,13 @@ downloadButton.addEventListener(
 
 
                 setTimeout(
-                    () =>
+                    () => {
+
                         URL.revokeObjectURL(
                             url
-                        ),
+                        );
+
+                    },
                     1000
                 );
 
@@ -3183,9 +4535,9 @@ downloadButton.addEventListener(
 );
 
 
-/* =========================================
+/* =====================================================
    صورة جديدة
-========================================= */
+===================================================== */
 
 newButton.addEventListener(
     "click",
@@ -3219,6 +4571,14 @@ newButton.addEventListener(
             1;
 
 
+        sourceCanvas.width =
+            1;
+
+
+        sourceCanvas.height =
+            1;
+
+
         canvasCard.style.display =
             "none";
 
@@ -3232,1469 +4592,6 @@ newButton.addEventListener(
 
 
         restoreButton.style.display =
-            "none";
-
-
-        translateButton.disabled =
-            true;
-
-
-        textResults.innerHTML =
-            "";
-
-
-        modelInfo.textContent =
-            "";
-
-
-        setStatus(
-            "اختر صورة للبدء"
-        );
-
-    }
-);
-
-</script>
-
-</body>
-
-    </html>
-                                                    inline_data: {
-
-                                                        mime_type:
-                                                            "image/jpeg",
-
-                                                        data:
-                                                            base64
-
-                                                    }
-
-                                                }
-
-                                            ]
-
-                                        }
-
-                                    ]
-
-                                })
-
-                        }
-                    );
-
-
-                let data = {};
-
-
-                try {
-
-                    data =
-                        await response.json();
-
-                }
-
-                catch {
-
-                }
-
-
-                /*
-                 نجح الاتصال
-                */
-
-                if (response.ok) {
-
-                    const text =
-                        extractGeminiText(
-                            data
-                        );
-
-
-                    if (text) {
-
-                        return {
-
-                            model,
-                            text
-
-                        };
-
-                    }
-
-
-                    lastError =
-                        "النموذج أعاد استجابة فارغة.";
-
-
-                    break;
-
-                }
-
-
-                const message =
-                    data?.error?.message ||
-                    (
-                        "HTTP " +
-                        response.status
-                    );
-
-
-                lastError =
-                    message;
-
-
-                console.warn(
-                    "Gemini error:",
-                    model,
-                    response.status,
-                    message
-                );
-
-
-                /*
-                 خطأ في المفتاح
-                */
-
-                if (
-                    response.status === 401 ||
-                    response.status === 403
-                ) {
-
-                    throw new Error(
-                        "مشكلة في Gemini API Key:\n" +
-                        message
-                    );
-
-                }
-
-
-                /*
-                 النموذج غير موجود
-                 أو الطلب غير مدعوم
-                 -> النموذج التالي
-                */
-
-                if (
-                    response.status === 400 ||
-                    response.status === 404
-                ) {
-
-                    break;
-
-                }
-
-
-                /*
-                 ازدحام / ضغط / Rate Limit
-                */
-
-                if (
-                    response.status === 429 ||
-                    response.status === 500 ||
-                    response.status === 502 ||
-                    response.status === 503 ||
-                    response.status === 504
-                ) {
-
-                    if (
-                        attempt < 3
-                    ) {
-
-                        const delay =
-                            attempt === 1
-                                ? 2500
-                                : 6000;
-
-
-                        setStatus(
-                            "⏳ النموذج مزدحم أو الخدمة مشغولة.\nإعادة المحاولة بعد " +
-                            Math.round(
-                                delay / 1000
-                            ) +
-                            " ثوانٍ...",
-                            "loading"
-                        );
-
-
-                        await sleep(
-                            delay
-                        );
-
-
-                        continue;
-
-                    }
-
-
-                    /*
-                     بعد المحاولة الثالثة
-                     ننتقل للنموذج التالي
-                    */
-
-                    break;
-
-                }
-
-
-                break;
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    error
-                );
-
-
-                if (
-                    String(
-                        error?.message || ""
-                    ).includes(
-                        "Gemini API Key"
-                    )
-                ) {
-
-                    throw error;
-
-                }
-
-
-                lastError =
-                    error?.message ||
-                    String(error);
-
-
-                if (
-                    attempt < 3
-                ) {
-
-                    const delay =
-                        2000 *
-                        attempt;
-
-
-                    await sleep(
-                        delay
-                    );
-
-
-                    continue;
-
-                }
-
-            }
-
-        }
-
-    }
-
-
-    throw new Error(
-        "تعذر استخدام نماذج Gemini المتاحة حالياً.\n\nآخر رسالة:\n" +
-        lastError
-    );
-
-}
-
-
-/* =========================================
-   استخراج النص من رد Gemini
-========================================= */
-
-function extractGeminiText(data) {
-
-    const candidates =
-        data?.candidates;
-
-
-    if (
-        !Array.isArray(
-            candidates
-        ) ||
-        !candidates.length
-    ) {
-
-        return "";
-
-    }
-
-
-    const parts =
-        candidates[0]
-            ?.content
-            ?.parts;
-
-
-    if (
-        !Array.isArray(
-            parts
-        )
-    ) {
-
-        return "";
-
-    }
-
-
-    return parts
-        .map(
-            part =>
-                part?.text ||
-                ""
-        )
-        .join("")
-        .trim();
-
-}
-
-
-/* =========================================
-   Prompt
-========================================= */
-
-function createPrompt() {
-
-    const source =
-        sourceLanguage.value;
-
-
-    const target =
-        targetLanguage.value;
-
-
-    return `
-
-You are a professional manga and comic OCR, layout detection, and translation system.
-
-Analyze the ENTIRE manga/comic image carefully.
-
-SOURCE LANGUAGE:
-${source}
-
-TARGET LANGUAGE:
-${target}
-
-TASK:
-
-1. Detect every meaningful text region in the image:
-- speech bubbles
-- dialogue
-- narration boxes
-- captions
-- important sound effects
-
-2. Read the original text accurately.
-
-3. Translate every detected region naturally into ${target}.
-
-4. Detect the bounding box of the COMPLETE text region.
-
-VERY IMPORTANT:
-
-- Treat one complete speech bubble as one text block whenever possible.
-- Do NOT create one block for every Japanese character.
-- Do NOT split vertical Japanese text character-by-character.
-- Keep text from the same bubble together.
-- Do NOT invent unreadable text.
-- Ignore page numbers and meaningless marks.
-- Preserve character names correctly.
-- The translation must sound natural, not word-for-word.
-
-BOUNDING BOX:
-
-Coordinates must be normalized from 0 to 1000.
-
-Use exactly:
-
-[ymin, xmin, ymax, xmax]
-
-Example:
-
-[
-  {
-    "box_2d": [100, 620, 300, 900],
-    "original": "てめーの仕事だ！",
-    "translation": "إنها مهمتك!",
-    "type": "dialogue"
-  }
-]
-
-Allowed type values:
-
-dialogue
-narration
-caption
-sfx
-
-Return ONLY valid JSON.
-
-Do not use Markdown.
-Do not use code fences.
-Do not explain anything.
-
-If no readable text exists, return:
-
-[]
-
-`;
-
-}
-
-
-/* =========================================
-   تحليل JSON
-========================================= */
-
-function parseResponse(text) {
-
-    let cleaned =
-        String(text || "")
-            .trim()
-            .replace(
-                /```json/gi,
-                ""
-            )
-            .replace(
-                /```/g,
-                ""
-            )
-            .trim();
-
-
-    let parsed;
-
-
-    try {
-
-        parsed =
-            JSON.parse(
-                cleaned
-            );
-
-    }
-
-    catch {
-
-        const start =
-            cleaned.indexOf(
-                "["
-            );
-
-
-        const end =
-            cleaned.lastIndexOf(
-                "]"
-            );
-
-
-        if (
-            start === -1 ||
-            end === -1 ||
-            end <= start
-        ) {
-
-            throw new Error(
-                "Gemini قرأ الصورة لكن لم يرجع JSON صالحاً."
-            );
-
-        }
-
-
-        const jsonPart =
-            cleaned.slice(
-                start,
-                end + 1
-            );
-
-
-        try {
-
-            parsed =
-                JSON.parse(
-                    jsonPart
-                );
-
-        }
-
-        catch {
-
-            throw new Error(
-                "تعذر قراءة نتيجة Gemini."
-            );
-
-        }
-
-    }
-
-
-    if (
-        !Array.isArray(
-            parsed
-        )
-    ) {
-
-        if (
-            Array.isArray(
-                parsed?.blocks
-            )
-        ) {
-
-            parsed =
-                parsed.blocks;
-
-        }
-
-        else {
-
-            throw new Error(
-                "صيغة النتيجة غير صحيحة."
-            );
-
-        }
-
-    }
-
-
-    return parsed
-        .map(
-            normalizeBlock
-        )
-        .filter(
-            Boolean
-        );
-
-}
-
-
-/* =========================================
-   تنظيف المربعات
-========================================= */
-
-function normalizeBlock(block) {
-
-    if (!block) {
-
-        return null;
-
-    }
-
-
-    let box =
-        block.box_2d ||
-        block.box ||
-        block.bbox;
-
-
-    if (
-        !Array.isArray(
-            box
-        ) ||
-        box.length < 4
-    ) {
-
-        return null;
-
-    }
-
-
-    let [
-        ymin,
-        xmin,
-        ymax,
-        xmax
-    ] =
-        box.map(
-            Number
-        );
-
-
-    /*
-     بعض النماذج قد ترجع 0-1
-    */
-
-    const largest =
-        Math.max(
-            Math.abs(ymin),
-            Math.abs(xmin),
-            Math.abs(ymax),
-            Math.abs(xmax)
-        );
-
-
-    if (
-        largest <= 1.5
-    ) {
-
-        ymin *=
-            1000;
-
-        xmin *=
-            1000;
-
-        ymax *=
-            1000;
-
-        xmax *=
-            1000;
-
-    }
-
-
-    ymin =
-        clamp1000(
-            ymin
-        );
-
-
-    xmin =
-        clamp1000(
-            xmin
-        );
-
-
-    ymax =
-        clamp1000(
-            ymax
-        );
-
-
-    xmax =
-        clamp1000(
-            xmax
-        );
-
-
-    if (
-        ymax <= ymin ||
-        xmax <= xmin
-    ) {
-
-        return null;
-
-    }
-
-
-    const original =
-        String(
-            block.original ||
-            block.text ||
-            ""
-        ).trim();
-
-
-    const translation =
-        String(
-            block.translation ||
-            block.translated ||
-            ""
-        ).trim();
-
-
-    if (
-        !original &&
-        !translation
-    ) {
-
-        return null;
-
-    }
-
-
-    return {
-
-        box_2d: [
-
-            ymin,
-            xmin,
-            ymax,
-            xmax
-
-        ],
-
-        original,
-
-        translation:
-            translation ||
-            original,
-
-        type:
-            block.type ||
-            "dialogue"
-
-    };
-
-}
-
-
-function clamp1000(value) {
-
-    return Math.max(
-        0,
-        Math.min(
-            1000,
-            Number(value)
-        )
-    );
-
-}
-
-
-/* =========================================
-   رسم النتيجة
-========================================= */
-
-function drawTranslation(blocks) {
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-
-    ctx.drawImage(
-        preparedImage,
-        0,
-        0
-    );
-
-
-    for (
-        const block of blocks
-    ) {
-
-        const [
-
-            ymin,
-            xmin,
-            ymax,
-            xmax
-
-        ] =
-            block.box_2d;
-
-
-        const x =
-            xmin /
-            1000 *
-            canvas.width;
-
-
-        const y =
-            ymin /
-            1000 *
-            canvas.height;
-
-
-        const width =
-            (
-                xmax -
-                xmin
-            ) /
-            1000 *
-            canvas.width;
-
-
-        const height =
-            (
-                ymax -
-                ymin
-            ) /
-            1000 *
-            canvas.height;
-
-
-        drawTranslationBox(
-            block.translation,
-            x,
-            y,
-            width,
-            height
-        );
-
-    }
-
-}
-
-
-/* =========================================
-   رسم صندوق الترجمة
-========================================= */
-
-function drawTranslationBox(
-    text,
-    x,
-    y,
-    width,
-    height
-) {
-
-    if (
-        width <= 2 ||
-        height <= 2
-    ) {
-
-        return;
-
-    }
-
-
-    const padding =
-        Math.max(
-            4,
-            Math.min(
-                width,
-                height
-            ) *
-            0.06
-        );
-
-
-    /*
-     إخفاء النص الياباني
-    */
-
-    ctx.save();
-
-
-    ctx.fillStyle =
-        "rgba(255,255,255,0.96)";
-
-
-    drawRoundedRectangle(
-        x,
-        y,
-        width,
-        height,
-        Math.min(
-            18,
-            width * 0.12,
-            height * 0.12
-        )
-    );
-
-
-    ctx.fill();
-
-
-    ctx.restore();
-
-
-    const maxWidth =
-        Math.max(
-            10,
-            width -
-            padding * 2
-        );
-
-
-    const maxHeight =
-        Math.max(
-            10,
-            height -
-            padding * 2
-        );
-
-
-    let fontSize =
-        Math.min(
-            52,
-            height * 0.33,
-            width * 0.17
-        );
-
-
-    fontSize =
-        Math.max(
-            10,
-            fontSize
-        );
-
-
-    let lines =
-        [];
-
-
-    while (
-        fontSize >= 9
-    ) {
-
-        ctx.font =
-            "bold " +
-            fontSize +
-            "px Arial, Tahoma, sans-serif";
-
-
-        lines =
-            wrapText(
-                text,
-                maxWidth
-            );
-
-
-        const lineHeight =
-            fontSize *
-            1.22;
-
-
-        if (
-            lines.length *
-            lineHeight <=
-            maxHeight
-        ) {
-
-            break;
-
-        }
-
-
-        fontSize -=
-            1;
-
-    }
-
-
-    if (
-        !lines.length
-    ) {
-
-        return;
-
-    }
-
-
-    const lineHeight =
-        fontSize *
-        1.22;
-
-
-    ctx.save();
-
-
-    ctx.font =
-        "bold " +
-        fontSize +
-        "px Arial, Tahoma, sans-serif";
-
-
-    ctx.fillStyle =
-        "#111111";
-
-
-    ctx.textAlign =
-        "center";
-
-
-    ctx.textBaseline =
-        "middle";
-
-
-    if (
-        targetLanguage.value ===
-        "Arabic"
-    ) {
-
-        ctx.direction =
-            "rtl";
-
-    }
-
-    else {
-
-        ctx.direction =
-            "ltr";
-
-    }
-
-
-    const totalHeight =
-        lines.length *
-        lineHeight;
-
-
-    let currentY =
-        y +
-        height / 2 -
-        totalHeight / 2 +
-        lineHeight / 2;
-
-
-    for (
-        const line of lines
-    ) {
-
-        ctx.fillText(
-            line,
-            x + width / 2,
-            currentY,
-            maxWidth
-        );
-
-
-        currentY +=
-            lineHeight;
-
-    }
-
-
-    ctx.restore();
-
-}
-
-
-/* =========================================
-   تقسيم النص إلى أسطر
-========================================= */
-
-function wrapText(
-    text,
-    maxWidth
-) {
-
-    const cleanText =
-        String(text || "")
-            .replace(
-                /\s+/g,
-                " "
-            )
-            .trim();
-
-
-    if (!cleanText) {
-
-        return [];
-
-    }
-
-
-    const words =
-        cleanText.split(
-            " "
-        );
-
-
-    const lines =
-        [];
-
-
-    let currentLine =
-        "";
-
-
-    for (
-        const word of words
-    ) {
-
-        const testLine =
-            currentLine
-                ? currentLine +
-                  " " +
-                  word
-                : word;
-
-
-        if (
-            ctx.measureText(
-                testLine
-            ).width <=
-            maxWidth
-        ) {
-
-            currentLine =
-                testLine;
-
-
-            continue;
-
-        }
-
-
-        if (
-            currentLine
-        ) {
-
-            lines.push(
-                currentLine
-            );
-
-
-            currentLine =
-                "";
-
-        }
-
-
-        /*
-         إذا كانت الكلمة نفسها طويلة جداً
-        */
-
-        if (
-            ctx.measureText(
-                word
-            ).width >
-            maxWidth
-        ) {
-
-            let piece =
-                "";
-
-
-            for (
-                const character of word
-            ) {
-
-                const testPiece =
-                    piece +
-                    character;
-
-
-                if (
-                    ctx.measureText(
-                        testPiece
-                    ).width >
-                    maxWidth
-                ) {
-
-                    if (
-                        piece
-                    ) {
-
-                        lines.push(
-                            piece
-                        );
-
-                    }
-
-
-                    piece =
-                        character;
-
-                }
-
-                else {
-
-                    piece =
-                        testPiece;
-
-                }
-
-            }
-
-
-            currentLine =
-                piece;
-
-        }
-
-        else {
-
-            currentLine =
-                word;
-
-        }
-
-    }
-
-
-    if (
-        currentLine
-    ) {
-
-        lines.push(
-            currentLine
-        );
-
-    }
-
-
-    return lines;
-
-}
-
-
-/* =========================================
-   مستطيل بحواف مستديرة
-========================================= */
-
-function drawRoundedRectangle(
-    x,
-    y,
-    width,
-    height,
-    radius
-) {
-
-    radius =
-        Math.max(
-            0,
-            Math.min(
-                radius,
-                width / 2,
-                height / 2
-            )
-        );
-
-
-    ctx.beginPath();
-
-
-    ctx.moveTo(
-        x + radius,
-        y
-    );
-
-
-    ctx.lineTo(
-        x + width - radius,
-        y
-    );
-
-
-    ctx.quadraticCurveTo(
-        x + width,
-        y,
-        x + width,
-        y + radius
-    );
-
-
-    ctx.lineTo(
-        x + width,
-        y + height - radius
-    );
-
-
-    ctx.quadraticCurveTo(
-        x + width,
-        y + height,
-        x + width - radius,
-        y + height
-    );
-
-
-    ctx.lineTo(
-        x + radius,
-        y + height
-    );
-
-
-    ctx.quadraticCurveTo(
-        x,
-        y + height,
-        x,
-        y + height - radius
-    );
-
-
-    ctx.lineTo(
-        x,
-        y + radius
-    );
-
-
-    ctx.quadraticCurveTo(
-        x,
-        y,
-        x + radius,
-        y
-    );
-
-
-    ctx.closePath();
-
-}
-
-
-/* =========================================
-   عرض النصوص أسفل الصورة
-========================================= */
-
-function showResults(blocks) {
-
-    textResults.innerHTML =
-        "";
-
-
-    blocks.forEach(
-        (block, index) => {
-
-            const wrapper =
-                document.createElement(
-                    "div"
-                );
-
-
-            wrapper.className =
-                "result";
-
-
-            const original =
-                document.createElement(
-                    "div"
-                );
-
-
-            original.className =
-                "original";
-
-
-            original.textContent =
-                (
-                    index +
-                    1
-                ) +
-                ". الأصل: " +
-                block.original;
-
-
-            const translated =
-                document.createElement(
-                    "div"
-                );
-
-
-            translated.className =
-                "translation";
-
-
-            translated.textContent =
-                block.translation;
-
-
-            wrapper.appendChild(
-                original
-            );
-
-
-            wrapper.appendChild(
-                translated
-            );
-
-
-            textResults.appendChild(
-                wrapper
-            );
-
-        }
-    );
-
-
-    results.style.display =
-        "block";
-
-}
-
-
-/* =========================================
-   تنزيل الصورة
-========================================= */
-
-downloadButton.addEventListener(
-    "click",
-    () => {
-
-        canvas.toBlob(
-            blob => {
-
-                if (!blob) {
-
-                    setStatus(
-                        "❌ تعذر إنشاء الصورة.",
-                        "error"
-                    );
-
-
-                    return;
-
-                }
-
-
-                const url =
-                    URL.createObjectURL(
-                        blob
-                    );
-
-
-                const link =
-                    document.createElement(
-                        "a"
-                    );
-
-
-                link.href =
-                    url;
-
-
-                link.download =
-                    "manga-translated.png";
-
-
-                document.body.appendChild(
-                    link
-                );
-
-
-                link.click();
-
-
-                link.remove();
-
-
-                setTimeout(
-                    () =>
-                        URL.revokeObjectURL(
-                            url
-                        ),
-                    1000
-                );
-
-            },
-            "image/png"
-        );
-
-    }
-);
-
-
-/* =========================================
-   صورة جديدة
-========================================= */
-
-newButton.addEventListener(
-    "click",
-    () => {
-
-        imageInput.value =
-            "";
-
-
-        preparedImage =
-            null;
-
-
-        preparedBase64 =
-            null;
-
-
-        canvas.width =
-            1;
-
-
-        canvas.height =
-            1;
-
-
-        canvasCard.style.display =
-            "none";
-
-
-        results.style.display =
-            "none";
-
-
-        downloadButton.style.display =
             "none";
 
 
