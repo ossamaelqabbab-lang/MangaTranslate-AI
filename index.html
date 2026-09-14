@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
 <meta charset="UTF-8">
 
 <meta
@@ -9,7 +10,7 @@
     content="width=device-width, initial-scale=1.0"
 >
 
-<title>MangaTranslate AI V4</title>
+<title>MangaTranslate AI V5</title>
 
 <style>
 
@@ -20,7 +21,7 @@
 body {
     margin: 0;
     background: #0d1017;
-    color: white;
+    color: #ffffff;
     font-family: Arial, Tahoma, sans-serif;
 }
 
@@ -48,10 +49,10 @@ header p {
 
 .version {
     display: inline-block;
-    background: #252c3c;
-    color: #b8c0d0;
-    border-radius: 20px;
     padding: 6px 11px;
+    border-radius: 20px;
+    background: #252c3c;
+    color: #b9c1d0;
     font-size: 12px;
 }
 
@@ -80,10 +81,10 @@ button {
 
 input,
 select {
-    background: #222938;
-    color: white;
-    border: 1px solid #3a455e;
     padding: 10px;
+    color: white;
+    background: #222938;
+    border: 1px solid #3a455e;
 }
 
 #apiKey {
@@ -92,13 +93,13 @@ select {
 
 .upload {
     display: block;
-    border: 2px dashed #4a5875;
-    background: #202735;
-    text-align: center;
-    padding: 25px 12px;
-    border-radius: 14px;
-    cursor: pointer;
     margin-top: 16px;
+    padding: 25px 12px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 14px;
+    background: #202735;
+    border: 2px dashed #4a5875;
 }
 
 .upload small {
@@ -117,15 +118,15 @@ select {
 
 button {
     border: none;
-    color: white;
     padding: 12px;
     margin-top: 12px;
+    color: white;
     cursor: pointer;
     font-weight: bold;
 }
 
 button:disabled {
-    opacity: .5;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
@@ -134,13 +135,18 @@ button:disabled {
 }
 
 #downloadButton {
-    background: #07885f;
     display: none;
+    background: #07885f;
+}
+
+#strongCleanButton {
+    display: none;
+    background: #b06b16;
 }
 
 #compareButton {
-    background: #3b465e;
     display: none;
+    background: #3b465e;
 }
 
 #newButton {
@@ -150,8 +156,8 @@ button:disabled {
 #status {
     padding: 16px 5px 5px;
     text-align: center;
-    white-space: pre-line;
     line-height: 1.7;
+    white-space: pre-line;
     word-break: break-word;
 }
 
@@ -184,16 +190,16 @@ canvas {
 }
 
 .result {
-    background: #232a39;
-    border-radius: 10px;
     padding: 12px;
     margin-bottom: 10px;
+    border-radius: 10px;
+    background: #232a39;
 }
 
 .original {
+    margin-bottom: 7px;
     color: #a7adbb;
     font-size: 14px;
-    margin-bottom: 7px;
     direction: auto;
 }
 
@@ -204,15 +210,15 @@ canvas {
 }
 
 .displayTranslation {
-    color: #b7c1d6;
+    margin-top: 6px;
+    color: #b8c1d5;
     font-size: 13px;
-    margin-top: 5px;
 }
 
 .note {
     color: #9ca3af;
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.65;
 }
 
 .model-info {
@@ -235,6 +241,7 @@ canvas {
 }
 
 </style>
+
 </head>
 
 
@@ -251,7 +258,7 @@ canvas {
 </p>
 
 <div class="version">
-V4 — Hybrid Bubble Engine
+V5 — Multi-Erase + Ink Cleaner
 </div>
 
 </header>
@@ -271,7 +278,8 @@ V4 — Hybrid Bubble Engine
 />
 
 <p class="note">
-المفتاح لا يُحفظ داخل GitHub. لا ترسل المفتاح لأي شخص.
+المفتاح لا يتم حفظه داخل GitHub.
+لا ترسل مفتاحك لأي شخص.
 </p>
 
 
@@ -279,9 +287,15 @@ V4 — Hybrid Bubble Engine
     class="upload"
     for="imageInput"
 >
+
 📷 اضغط هنا واختر صورة المانغا
+
 <br>
-<small>JPG / PNG / WEBP</small>
+
+<small>
+JPG / PNG / WEBP
+</small>
+
 </label>
 
 
@@ -387,6 +401,11 @@ V4 — Hybrid Bubble Engine
 </button>
 
 
+<button id="strongCleanButton">
+🧽 تنظيف أقوى لبقايا النص
+</button>
+
+
 <button id="compareButton">
 ↩ عرض الصورة الأصلية
 </button>
@@ -439,7 +458,7 @@ V4 — Hybrid Bubble Engine
 <script>
 
 /* =====================================================
-   العناصر
+   ELEMENTS
 ===================================================== */
 
 const apiKeyInput =
@@ -459,6 +478,9 @@ const translateButton =
 
 const downloadButton =
     document.getElementById("downloadButton");
+
+const strongCleanButton =
+    document.getElementById("strongCleanButton");
 
 const compareButton =
     document.getElementById("compareButton");
@@ -494,7 +516,9 @@ const ctx =
 
 
 const sourceCanvas =
-    document.createElement("canvas");
+    document.createElement(
+        "canvas"
+    );
 
 const sourceCtx =
     sourceCanvas.getContext(
@@ -513,9 +537,11 @@ let lastBlocks = [];
 
 let translatedVisible = false;
 
+let currentCleanStrength = 1;
+
 
 /* =====================================================
-   Status
+   STATUS
 ===================================================== */
 
 function setStatus(
@@ -533,7 +559,7 @@ function setStatus(
 
 
 /* =====================================================
-   اختيار الصورة
+   IMAGE SELECT
 ===================================================== */
 
 imageInput.addEventListener(
@@ -635,6 +661,10 @@ imageInput.addEventListener(
                 "none";
 
 
+            strongCleanButton.style.display =
+                "none";
+
+
             compareButton.style.display =
                 "none";
 
@@ -649,6 +679,10 @@ imageInput.addEventListener(
 
             translatedVisible =
                 false;
+
+
+            currentCleanStrength =
+                1;
 
 
             modelInfo.textContent =
@@ -681,7 +715,7 @@ imageInput.addEventListener(
 
 
 /* =====================================================
-   تجهيز الصورة
+   PREPARE IMAGE
 ===================================================== */
 
 async function prepareImage(
@@ -703,7 +737,7 @@ async function prepareImage(
 
 
     const maxDimension =
-        2000;
+        2200;
 
 
     if (
@@ -754,7 +788,9 @@ async function prepareImage(
 
 
     const tempCtx =
-        temp.getContext("2d");
+        temp.getContext(
+            "2d"
+        );
 
 
     tempCtx.fillStyle =
@@ -781,7 +817,7 @@ async function prepareImage(
     const dataURL =
         temp.toDataURL(
             "image/jpeg",
-            0.95
+            0.96
         );
 
 
@@ -825,7 +861,7 @@ async function prepareImage(
 
 
 /* =====================================================
-   File -> Image
+   FILE -> IMAGE
 ===================================================== */
 
 function fileToImage(
@@ -890,7 +926,7 @@ function fileToImage(
 
 
 /* =====================================================
-   الأصل
+   ORIGINAL IMAGE
 ===================================================== */
 
 function drawOriginal() {
@@ -920,7 +956,7 @@ function drawOriginal() {
 
 
 /* =====================================================
-   زر الترجمة
+   TRANSLATE BUTTON
 ===================================================== */
 
 translateButton.addEventListener(
@@ -961,15 +997,19 @@ translateButton.addEventListener(
             true;
 
 
-        results.style.display =
-            "none";
-
-
         downloadButton.style.display =
             "none";
 
 
+        strongCleanButton.style.display =
+            "none";
+
+
         compareButton.style.display =
+            "none";
+
+
+        results.style.display =
             "none";
 
 
@@ -980,7 +1020,7 @@ translateButton.addEventListener(
         try {
 
             setStatus(
-                "🔎 البحث عن نموذج Gemini مناسب...",
+                "🔎 جاري البحث عن أفضل نموذج Gemini متاح...",
                 "loading"
             );
 
@@ -994,7 +1034,7 @@ translateButton.addEventListener(
             if (!models.length) {
 
                 throw new Error(
-                    "لم يتم العثور على نموذج مناسب."
+                    "لم يتم العثور على نموذج Gemini مناسب."
                 );
 
             }
@@ -1038,8 +1078,13 @@ translateButton.addEventListener(
                 blocks;
 
 
+            currentCleanStrength =
+                1;
+
+
             drawTranslation(
-                blocks
+                blocks,
+                currentCleanStrength
             );
 
 
@@ -1053,6 +1098,10 @@ translateButton.addEventListener(
 
 
             downloadButton.style.display =
+                "block";
+
+
+            strongCleanButton.style.display =
                 "block";
 
 
@@ -1103,7 +1152,7 @@ translateButton.addEventListener(
 
 
 /* =====================================================
-   Gemini models
+   AVAILABLE MODELS
 ===================================================== */
 
 async function getAvailableModels(
@@ -1114,7 +1163,9 @@ async function getAvailableModels(
 
         const response =
             await fetch(
+
                 "https://generativelanguage.googleapis.com/v1beta/models?pageSize=100",
+
                 {
 
                     headers: {
@@ -1125,6 +1176,7 @@ async function getAvailableModels(
                     }
 
                 }
+
             );
 
 
@@ -1138,7 +1190,7 @@ async function getAvailableModels(
         ) {
 
             throw new Error(
-                "مفتاح Gemini غير صالح أو لا يملك صلاحية."
+                "مفتاح Gemini غير صالح أو لا يملك صلاحية استخدام Gemini."
             );
 
         }
@@ -1212,9 +1264,9 @@ async function getAvailableModels(
 
 
                         return !excluded.some(
-                            value =>
+                            item =>
                                 name.includes(
-                                    value
+                                    item
                                 )
                         );
 
@@ -1280,7 +1332,11 @@ async function getAvailableModels(
 
 
 /* =====================================================
-   Model score
+   MODEL QUALITY SCORE
+
+   V5 يعطي Flash الكامل أولوية
+   على Flash-Lite لأننا نحتاج
+   دقة أفضل في تحديد النص.
 ===================================================== */
 
 function modelScore(
@@ -1299,34 +1355,39 @@ function modelScore(
 
     if (
         model.includes(
+            "flash"
+        ) &&
+        !model.includes(
             "flash-lite"
         )
     ) {
 
         score +=
-            120;
+            160;
 
     }
 
-    else if (
-        model.includes(
-            "flash"
-        )
-    ) {
 
-        score +=
-            100;
-
-    }
-
-    else if (
+    if (
         model.includes(
             "pro"
         )
     ) {
 
         score +=
-            60;
+            145;
+
+    }
+
+
+    if (
+        model.includes(
+            "flash-lite"
+        )
+    ) {
+
+        score +=
+            110;
 
     }
 
@@ -1338,7 +1399,7 @@ function modelScore(
     ) {
 
         score +=
-            20;
+            18;
 
     }
 
@@ -1355,26 +1416,38 @@ function modelScore(
     }
 
 
+    if (
+        model.includes(
+            "exp"
+        )
+    ) {
+
+        score -=
+            20;
+
+    }
+
+
     return score;
 
 }
 
 
 /* =====================================================
-   Fallback models
+   FALLBACK MODELS
 ===================================================== */
 
 function fallbackModels() {
 
     return [
 
-        "gemini-flash-lite-latest",
-
         "gemini-flash-latest",
 
-        "gemini-2.5-flash-lite",
+        "gemini-2.5-flash",
 
-        "gemini-2.5-flash"
+        "gemini-flash-lite-latest",
+
+        "gemini-2.5-flash-lite"
 
     ];
 
@@ -1382,7 +1455,7 @@ function fallbackModels() {
 
 
 /* =====================================================
-   Call Gemini
+   CALL GEMINI
 ===================================================== */
 
 async function callGemini(
@@ -1426,7 +1499,7 @@ async function callGemini(
         ) {
 
             setStatus(
-                "🤖 " +
+                "🤖 النموذج: " +
                 model +
                 "\nالمحاولة " +
                 attempt +
@@ -1665,6 +1738,7 @@ async function callGemini(
                         attempt
                     );
 
+
                     continue;
 
                 }
@@ -1685,7 +1759,7 @@ async function callGemini(
 
 
 /* =====================================================
-   Extract Gemini text
+   EXTRACT GEMINI RESPONSE
 ===================================================== */
 
 function extractGeminiText(
@@ -1724,7 +1798,7 @@ function extractGeminiText(
 
 
 /* =====================================================
-   Prompt V4
+   V5 PROMPT
 ===================================================== */
 
 function createPrompt() {
@@ -1739,9 +1813,10 @@ function createPrompt() {
 
     return `
 
-You are a professional manga localization engine.
+You are a professional manga localization,
+OCR and layout-analysis engine.
 
-Analyze the complete manga/comic image.
+Analyze the ENTIRE image carefully.
 
 SOURCE LANGUAGE:
 ${source}
@@ -1750,70 +1825,111 @@ TARGET LANGUAGE:
 ${target}
 
 
-For every meaningful speech bubble, narration box or caption return:
+For EACH meaningful speech bubble,
+narration box or caption return:
 
 1. original
-The exact original text.
+
+Read ALL original text belonging to the region.
+
+Include:
+- all Japanese characters
+- punctuation
+- vertical text
+- small furigana if visible
+
 
 2. translation
-A natural accurate translation into ${target}.
+
+Provide an accurate natural translation into ${target}.
+
 
 3. display_translation
-A concise version of the same translation optimized to fit naturally inside the original speech bubble.
+
+Provide a concise natural version of the same translation
+optimized to fit inside the original speech bubble.
 
 Do NOT change the meaning.
 
-For Arabic, use fluent natural Arabic and avoid unnecessary long wording.
+For Arabic:
+use natural fluent Arabic and avoid unnecessary words.
 
 
 4. text_box_2d
 
-This box MUST contain ALL original printed characters belonging to that speech bubble.
-
-Include punctuation.
-
-For vertical Japanese, include the full vertical text.
-
-Do not make this box too tight.
+Bounding box containing ALL source-language printed text
+belonging to this bubble.
 
 
-5. bubble_box_2d
+5. erase_boxes_2d
 
-This is extremely important.
+THIS IS EXTREMELY IMPORTANT.
 
-Return a rectangular box representing the LARGE SAFE INNER AREA of the speech bubble where translated text can be placed.
+Return MULTIPLE boxes when necessary.
 
-bubble_box_2d should:
+erase_boxes_2d must contain EVERY visible group of
+source-language characters that must be removed before
+placing the translation.
 
-- stay inside the black bubble border
-- include most of the usable white interior
-- be considerably larger than text_box_2d when possible
-- avoid the bubble outline
-- avoid faces and artwork
-- avoid the speech-bubble tail when possible
-- be centered in the main body of the bubble
+For vertical Japanese:
+return a box for every vertical text column if needed.
 
-DO NOT return only the area occupied by the original Japanese text.
+Include:
+- main characters
+- small furigana
+- punctuation
+- exclamation marks
+- any separated Japanese letters belonging to the same bubble
 
-The translated Arabic needs enough room.
+Boxes should include a small margin around the printed ink.
+
+DO NOT include:
+- bubble black border
+- character artwork
+- faces
+- clothing
+- speed lines outside the bubble
+
+If all source text fits safely inside one box,
+one erase box is acceptable.
+
+But if characters are separated,
+USE MULTIPLE ERASE BOXES.
+
+
+6. bubble_box_2d
+
+Return the LARGE SAFE INNER RECTANGULAR AREA
+inside the speech bubble where translated text can be drawn.
+
+bubble_box_2d must:
+
+- stay inside the black bubble outline
+- cover most of the usable white interior
+- avoid the speech-bubble border
+- avoid artwork
+- avoid faces
+- preferably exclude the bubble tail
+- be much larger than text_box_2d when the bubble has room
 
 
 TEXT GROUPING:
 
-One speech bubble normally equals ONE result.
+One speech bubble normally equals ONE JSON object.
 
-Never split Japanese character-by-character.
+Do NOT create one result per Japanese character.
 
-Never split vertical Japanese into separate letters.
+Do NOT split one speech bubble into many translation objects.
 
-Group all text belonging to the same bubble.
+erase_boxes_2d may contain many boxes,
+but the translation object should still represent the whole bubble.
 
 
 COORDINATES:
 
-Coordinates use normalized values 0 to 1000.
+All coordinates are normalized from 0 to 1000.
 
-Format:
+Box format:
 
 [ymin, xmin, ymax, xmax]
 
@@ -1823,15 +1939,30 @@ EXAMPLE:
 [
   {
     "text_box_2d": [
-      180,
+      160,
       690,
-      320,
-      820
+      335,
+      835
+    ],
+
+    "erase_boxes_2d": [
+      [
+        160,
+        700,
+        315,
+        755
+      ],
+      [
+        165,
+        765,
+        330,
+        830
+      ]
     ],
 
     "bubble_box_2d": [
-      100,
-      610,
+      105,
+      620,
       370,
       890
     ],
@@ -1859,21 +1990,22 @@ caption
 sfx
 
 
-For an SFX written directly over artwork and NOT inside a bubble:
+If an SFX is directly on artwork and not inside
+a clean speech bubble:
 
 bubble_box_2d may be null.
 
-Do not invent text.
+Do not invent unreadable text.
 
-Ignore page numbers and meaningless marks.
+Ignore page numbers.
 
-Return ONLY JSON.
+Return ONLY VALID JSON.
 
 No Markdown.
 No explanation.
 No code fences.
 
-If there is no readable text:
+If no readable text exists return:
 
 []
 
@@ -1883,7 +2015,7 @@ If there is no readable text:
 
 
 /* =====================================================
-   Parse response
+   PARSE RESPONSE
 ===================================================== */
 
 function parseResponse(
@@ -1946,13 +2078,25 @@ function parseResponse(
         }
 
 
-        parsed =
-            JSON.parse(
-                cleaned.slice(
-                    start,
-                    end + 1
-                )
+        try {
+
+            parsed =
+                JSON.parse(
+                    cleaned.slice(
+                        start,
+                        end + 1
+                    )
+                );
+
+        }
+
+        catch {
+
+            throw new Error(
+                "تعذر قراءة JSON الذي أعاده Gemini."
             );
+
+        }
 
     }
 
@@ -1977,7 +2121,7 @@ function parseResponse(
         else {
 
             throw new Error(
-                "صيغة النتيجة غير صحيحة."
+                "صيغة نتيجة Gemini غير صحيحة."
             );
 
         }
@@ -1997,7 +2141,7 @@ function parseResponse(
 
 
 /* =====================================================
-   Normalize block
+   NORMALIZE BLOCK
 ===================================================== */
 
 function normalizeBlock(
@@ -2041,15 +2185,48 @@ function normalizeBlock(
         bubbleBox =
             expandBox(
                 textBox,
-                85,
-                100
+                90,
+                110
             );
 
     }
 
 
+    let eraseBoxes =
+        [];
+
+
+    if (
+        Array.isArray(
+            block.erase_boxes_2d
+        )
+    ) {
+
+        eraseBoxes =
+            block.erase_boxes_2d
+                .map(
+                    normalizeBox
+                )
+                .filter(
+                    Boolean
+                );
+
+    }
+
+
+    if (!eraseBoxes.length) {
+
+        eraseBoxes =
+            [
+                textBox
+            ];
+
+    }
+
+
     /*
-       bubble box يجب أن يحتوي text box.
+       تأكد أن Bubble Box يحتوي
+       منطقة النص.
     */
 
     bubbleBox = [
@@ -2079,6 +2256,17 @@ function normalizeBlock(
     );
 
 
+    /*
+       ندمج صناديق المسح
+       القريبة والمتداخلة.
+    */
+
+    eraseBoxes =
+        mergeNearbyBoxes(
+            eraseBoxes
+        );
+
+
     const original =
         String(
             block.original ||
@@ -2099,7 +2287,8 @@ function normalizeBlock(
         String(
             block.display_translation ||
             block.short_translation ||
-            translation
+            translation ||
+            ""
         ).trim();
 
 
@@ -2116,6 +2305,8 @@ function normalizeBlock(
     return {
 
         textBox,
+
+        eraseBoxes,
 
         bubbleBox,
 
@@ -2140,7 +2331,7 @@ function normalizeBlock(
 
 
 /* =====================================================
-   Normalize box
+   NORMALIZE BOX
 ===================================================== */
 
 function normalizeBox(
@@ -2193,17 +2384,25 @@ function normalizeBox(
         values;
 
 
-    const maxValue =
+    const largest =
         Math.max(
-            Math.abs(ymin),
-            Math.abs(xmin),
-            Math.abs(ymax),
-            Math.abs(xmax)
+            Math.abs(
+                ymin
+            ),
+            Math.abs(
+                xmin
+            ),
+            Math.abs(
+                ymax
+            ),
+            Math.abs(
+                xmax
+            )
         );
 
 
     if (
-        maxValue <= 1.5
+        largest <= 1.5
     ) {
 
         ymin *= 1000;
@@ -2264,7 +2463,7 @@ function normalizeBox(
 
 
 /* =====================================================
-   Clamp
+   CLAMP
 ===================================================== */
 
 function clamp1000(
@@ -2283,7 +2482,7 @@ function clamp1000(
 
 
 /* =====================================================
-   Expand box
+   EXPAND
 ===================================================== */
 
 function expandBox(
@@ -2320,26 +2519,163 @@ function expandBox(
 
 
 /* =====================================================
-   Draw translation
+   MERGE NEARBY ERASE BOXES
+===================================================== */
+
+function mergeNearbyBoxes(
+    boxes
+) {
+
+    let result =
+        boxes.map(
+            box => [
+                ...box
+            ]
+        );
+
+
+    let changed =
+        true;
+
+
+    while (changed) {
+
+        changed =
+            false;
+
+
+        outer:
+
+        for (
+            let i = 0;
+            i < result.length;
+            i++
+        ) {
+
+            for (
+                let j = i + 1;
+                j < result.length;
+                j++
+            ) {
+
+                if (
+                    boxesAreNear(
+                        result[i],
+                        result[j]
+                    )
+                ) {
+
+                    const merged = [
+
+                        Math.min(
+                            result[i][0],
+                            result[j][0]
+                        ),
+
+                        Math.min(
+                            result[i][1],
+                            result[j][1]
+                        ),
+
+                        Math.max(
+                            result[i][2],
+                            result[j][2]
+                        ),
+
+                        Math.max(
+                            result[i][3],
+                            result[j][3]
+                        )
+
+                    ];
+
+
+                    result.splice(
+                        j,
+                        1
+                    );
+
+
+                    result[i] =
+                        merged;
+
+
+                    changed =
+                        true;
+
+
+                    break outer;
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    return result;
+
+}
+
+
+/* =====================================================
+   BOXES NEAR?
+===================================================== */
+
+function boxesAreNear(
+    a,
+    b
+) {
+
+    const margin =
+        12;
+
+
+    return !(
+        a[2] + margin < b[0] ||
+        b[2] + margin < a[0] ||
+        a[3] + margin < b[1] ||
+        b[3] + margin < a[1]
+    );
+
+}
+
+
+/* =====================================================
+   DRAW TRANSLATION
 ===================================================== */
 
 function drawTranslation(
-    blocks
+    blocks,
+    strength = 1
 ) {
 
     drawOriginal();
 
 
+    /*
+       المرحلة الأولى:
+       تنظيف النصوص الأصلية.
+    */
+
     for (
         const block of blocks
     ) {
 
-        cleanOriginalText(
-            block
+        cleanBlock(
+            block,
+            strength
         );
 
     }
 
+
+    /*
+       المرحلة الثانية:
+       كتابة الترجمة.
+    */
 
     for (
         const block of blocks
@@ -2355,116 +2691,21 @@ function drawTranslation(
 
 
 /* =====================================================
-   Clean original Japanese
+   CLEAN BLOCK
 ===================================================== */
 
-function cleanOriginalText(
-    block
+function cleanBlock(
+    block,
+    strength
 ) {
 
-    const box =
-        block.textBox;
-
-
-    const boxHeight =
-        box[2] -
-        box[0];
-
-
-    const boxWidth =
-        box[3] -
-        box[1];
-
-
-    /*
-       نوسّع منطقة النص نفسه
-       وليس الفقاعة كلها.
-    */
-
-    const extraY =
-        Math.max(
-            18,
-            boxHeight *
-            0.28
-        );
-
-
-    const extraX =
-        Math.max(
-            18,
-            boxWidth *
-            0.28
-        );
-
-
-    let cleaningBox = [
-
-        box[0] -
-        extraY,
-
-        box[1] -
-        extraX,
-
-        box[2] +
-        extraY,
-
-        box[3] +
-        extraX
-
-    ];
-
-
-    /*
-       لا نسمح لمنطقة التنظيف
-       بالخروج بعيداً عن الفقاعة.
-    */
-
-    cleaningBox = [
-
-        Math.max(
-            cleaningBox[0],
-            block.bubbleBox[0] +
-            5
-        ),
-
-        Math.max(
-            cleaningBox[1],
-            block.bubbleBox[1] +
-            5
-        ),
-
-        Math.min(
-            cleaningBox[2],
-            block.bubbleBox[2] -
-            5
-        ),
-
-        Math.min(
-            cleaningBox[3],
-            block.bubbleBox[3] -
-            5
-        )
-
-    ];
-
-
     if (
-        cleaningBox[2] <=
-        cleaningBox[0] ||
-        cleaningBox[3] <=
-        cleaningBox[1]
+        !block.bubbleBox
     ) {
 
-        cleaningBox =
-            box;
+        return;
 
     }
-
-
-    const pixelBox =
-        normalizedBoxToPixels(
-            cleaningBox
-        );
 
 
     const bubblePixelBox =
@@ -2473,21 +2714,162 @@ function cleanOriginalText(
         );
 
 
-    /*
-       لون الخلفية مأخوذ من الفقاعة نفسها.
-    */
-
     const background =
-        detectLightBackground(
+        detectBubbleBackground(
             bubblePixelBox
         );
 
+
+    for (
+        const eraseBox of block.eraseBoxes
+    ) {
+
+        cleanEraseBox(
+
+            eraseBox,
+
+            block.bubbleBox,
+
+            background,
+
+            strength
+
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   CLEAN ONE ERASE BOX
+===================================================== */
+
+function cleanEraseBox(
+    eraseBox,
+    bubbleBox,
+    background,
+    strength
+) {
+
+    const height =
+        eraseBox[2] -
+        eraseBox[0];
+
+
+    const width =
+        eraseBox[3] -
+        eraseBox[1];
+
+
+    /*
+       توسعة محسوبة حول النص.
+    */
+
+    const extraY =
+        Math.max(
+            10,
+            height *
+            0.17 *
+            strength
+        );
+
+
+    const extraX =
+        Math.max(
+            10,
+            width *
+            0.17 *
+            strength
+        );
+
+
+    let cleaning = [
+
+        eraseBox[0] -
+        extraY,
+
+        eraseBox[1] -
+        extraX,
+
+        eraseBox[2] +
+        extraY,
+
+        eraseBox[3] +
+        extraX
+
+    ];
+
+
+    /*
+       لا نخرج من المنطقة الآمنة
+       للفقاعة.
+    */
+
+    const safeMargin =
+        strength > 1
+            ? 6
+            : 10;
+
+
+    cleaning = [
+
+        Math.max(
+            cleaning[0],
+            bubbleBox[0] +
+            safeMargin
+        ),
+
+        Math.max(
+            cleaning[1],
+            bubbleBox[1] +
+            safeMargin
+        ),
+
+        Math.min(
+            cleaning[2],
+            bubbleBox[2] -
+            safeMargin
+        ),
+
+        Math.min(
+            cleaning[3],
+            bubbleBox[3] -
+            safeMargin
+        )
+
+    ];
+
+
+    if (
+        cleaning[2] <=
+        cleaning[0] ||
+        cleaning[3] <=
+        cleaning[1]
+    ) {
+
+        cleaning =
+            eraseBox;
+
+    }
+
+
+    const pixelBox =
+        normalizedBoxToPixels(
+            cleaning
+        );
+
+
+    /*
+       المرحلة 1:
+       تغطية المنطقة الرئيسية.
+    */
 
     ctx.save();
 
 
     ctx.fillStyle =
-        background;
+        background.css;
 
 
     roundedRect(
@@ -2501,11 +2883,11 @@ function cleanOriginalText(
         pixelBox.height,
 
         Math.min(
-            13,
+            12,
             pixelBox.width *
-            0.10,
+            0.08,
             pixelBox.height *
-            0.10
+            0.08
         )
 
     );
@@ -2516,14 +2898,249 @@ function cleanOriginalText(
 
     ctx.restore();
 
+
+    /*
+       المرحلة 2:
+       Ink Cleaner.
+
+       نفحص منطقة أكبر قليلاً
+       ونزيل البكسلات الداكنة
+       المتبقية حول النص.
+    */
+
+    inkCleaner(
+
+        cleaning,
+
+        bubbleBox,
+
+        background,
+
+        strength
+
+    );
+
 }
 
 
 /* =====================================================
-   Bubble background
+   INK CLEANER
 ===================================================== */
 
-function detectLightBackground(
+function inkCleaner(
+    cleaningBox,
+    bubbleBox,
+    background,
+    strength
+) {
+
+    const extra =
+        strength > 1
+            ? 25
+            : 14;
+
+
+    const scanBox = [
+
+        Math.max(
+            bubbleBox[0] + 8,
+            cleaningBox[0] - extra
+        ),
+
+        Math.max(
+            bubbleBox[1] + 8,
+            cleaningBox[1] - extra
+        ),
+
+        Math.min(
+            bubbleBox[2] - 8,
+            cleaningBox[2] + extra
+        ),
+
+        Math.min(
+            bubbleBox[3] - 8,
+            cleaningBox[3] + extra
+        )
+
+    ];
+
+
+    const pixel =
+        normalizedBoxToPixels(
+            scanBox
+        );
+
+
+    const x =
+        Math.max(
+            0,
+            Math.floor(
+                pixel.x
+            )
+        );
+
+
+    const y =
+        Math.max(
+            0,
+            Math.floor(
+                pixel.y
+            )
+        );
+
+
+    const width =
+        Math.min(
+            sourceCanvas.width - x,
+            Math.max(
+                1,
+                Math.ceil(
+                    pixel.width
+                )
+            )
+        );
+
+
+    const height =
+        Math.min(
+            sourceCanvas.height - y,
+            Math.max(
+                1,
+                Math.ceil(
+                    pixel.height
+                )
+            )
+        );
+
+
+    if (
+        width <= 0 ||
+        height <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const sourceData =
+            sourceCtx.getImageData(
+                x,
+                y,
+                width,
+                height
+            );
+
+
+        const output =
+            ctx.getImageData(
+                x,
+                y,
+                width,
+                height
+            );
+
+
+        /*
+           Normal:
+           نزيل الأسود والرمادي الداكن.
+
+           Strong:
+           نزيل أيضاً الحواف الرمادية
+           الناتجة عن Anti-aliasing.
+        */
+
+        const darknessThreshold =
+            strength > 1
+                ? 225
+                : 195;
+
+
+        for (
+            let i = 0;
+            i < sourceData.data.length;
+            i += 4
+        ) {
+
+            const r =
+                sourceData.data[i];
+
+
+            const g =
+                sourceData.data[i + 1];
+
+
+            const b =
+                sourceData.data[i + 2];
+
+
+            const brightness =
+                (
+                    r *
+                    0.299
+                ) +
+                (
+                    g *
+                    0.587
+                ) +
+                (
+                    b *
+                    0.114
+                );
+
+
+            if (
+                brightness <
+                darknessThreshold
+            ) {
+
+                output.data[i] =
+                    background.r;
+
+
+                output.data[i + 1] =
+                    background.g;
+
+
+                output.data[i + 2] =
+                    background.b;
+
+
+                output.data[i + 3] =
+                    255;
+
+            }
+
+        }
+
+
+        ctx.putImageData(
+            output,
+            x,
+            y
+        );
+
+    }
+
+    catch (error) {
+
+        console.warn(
+            "Ink Cleaner failed",
+            error
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   DETECT BUBBLE BACKGROUND
+===================================================== */
+
+function detectBubbleBackground(
     box
 ) {
 
@@ -2575,19 +3192,22 @@ function detectLightBackground(
                         box.width,
                         box.height
                     ) /
-                    35
+                    40
                 )
             );
 
 
-        let r =
+        let totalR =
             0;
 
-        let g =
+
+        let totalG =
             0;
 
-        let b =
+
+        let totalB =
             0;
+
 
         let count =
             0;
@@ -2630,21 +3250,24 @@ function detectLightBackground(
 
 
                 /*
-                   نتجاهل اليابانية السوداء.
+                   نأخذ فقط الخلفية الفاتحة.
                 */
 
                 if (
-                    brightness > 205
+                    brightness >= 205
                 ) {
 
-                    r +=
+                    totalR +=
                         pixel[0];
 
-                    g +=
+
+                    totalG +=
                         pixel[1];
 
-                    b +=
+
+                    totalB +=
                         pixel[2];
+
 
                     count++;
 
@@ -2656,62 +3279,91 @@ function detectLightBackground(
 
 
         if (
-            count < 5
+            count < 4
         ) {
 
-            return "#ffffff";
+            return {
+
+                r: 255,
+
+                g: 255,
+
+                b: 255,
+
+                css: "#ffffff"
+
+            };
 
         }
 
 
-        r =
+        const r =
             Math.min(
                 255,
                 Math.round(
-                    r /
+                    totalR /
                     count
                 ) +
-                3
+                2
             );
 
 
-        g =
+        const g =
             Math.min(
                 255,
                 Math.round(
-                    g /
+                    totalG /
                     count
                 ) +
-                3
+                2
             );
 
 
-        b =
+        const b =
             Math.min(
                 255,
                 Math.round(
-                    b /
+                    totalB /
                     count
                 ) +
-                3
+                2
             );
 
 
-        return (
-            "rgb(" +
-            r +
-            "," +
-            g +
-            "," +
-            b +
-            ")"
-        );
+        return {
+
+            r,
+
+            g,
+
+            b,
+
+            css:
+                "rgb(" +
+                r +
+                "," +
+                g +
+                "," +
+                b +
+                ")"
+
+        };
 
     }
 
     catch {
 
-        return "#ffffff";
+        return {
+
+            r: 255,
+
+            g: 255,
+
+            b: 255,
+
+            css: "#ffffff"
+
+        };
 
     }
 
@@ -2719,20 +3371,14 @@ function detectLightBackground(
 
 
 /* =====================================================
-   كتابة الترجمة
+   DRAW TRANSLATED TEXT
 ===================================================== */
 
 function drawTranslatedText(
     block
 ) {
 
-    /*
-       SFX فوق الرسم بدون Bubble
-       يمكن تجاوزه في النسخة الحالية.
-    */
-
     if (
-        block.type === "sfx" &&
         !block.bubbleBox
     ) {
 
@@ -2748,22 +3394,22 @@ function drawTranslatedText(
 
 
     /*
-       هامش داخلي كبير قليلاً.
+       هامش داخل الفقاعة.
     */
 
     const padX =
         Math.max(
-            8,
+            7,
             box.width *
-            0.12
+            0.10
         );
 
 
     const padY =
         Math.max(
-            8,
+            7,
             box.height *
-            0.12
+            0.10
         );
 
 
@@ -2817,46 +3463,37 @@ function drawTranslatedText(
 
 
 /* =====================================================
-   Box normalized -> pixels
+   NORMALIZED BOX -> PIXELS
 ===================================================== */
 
 function normalizedBoxToPixels(
     box
 ) {
 
-    const [
-        ymin,
-        xmin,
-        ymax,
-        xmax
-    ] =
-        box;
-
-
     return {
 
         x:
-            xmin /
+            box[1] /
             1000 *
             canvas.width,
 
         y:
-            ymin /
+            box[0] /
             1000 *
             canvas.height,
 
         width:
             (
-                xmax -
-                xmin
+                box[3] -
+                box[1]
             ) /
             1000 *
             canvas.width,
 
         height:
             (
-                ymax -
-                ymin
+                box[2] -
+                box[0]
             ) /
             1000 *
             canvas.height
@@ -2867,7 +3504,7 @@ function normalizedBoxToPixels(
 
 
 /* =====================================================
-   Fit text
+   FIT AND DRAW TEXT
 ===================================================== */
 
 function fitAndDrawText(
@@ -2897,15 +3534,10 @@ function fitAndDrawText(
     }
 
 
-    /*
-       حجم بداية أكبر من V3
-       لأن BubbleBox الآن أكبر.
-    */
-
     let fontSize =
         Math.min(
 
-            62,
+            64,
 
             height *
             0.34,
@@ -2936,16 +3568,22 @@ function fitAndDrawText(
         );
 
 
-        let lines =
-            wrapTextBalanced(
-                text,
+        const lines =
+            balanceLines(
+
+                wrapWords(
+                    text,
+                    width
+                ),
+
                 width
+
             );
 
 
         const lineHeight =
             fontSize *
-            1.28;
+            1.27;
 
 
         const totalHeight =
@@ -2960,6 +3598,7 @@ function fitAndDrawText(
 
             selectedLines =
                 lines;
+
 
             break;
 
@@ -2986,7 +3625,7 @@ function fitAndDrawText(
 
 
         selectedLines =
-            wrapTextBalanced(
+            wrapWords(
                 text,
                 width
             );
@@ -3072,7 +3711,7 @@ function fitAndDrawText(
 
 
 /* =====================================================
-   Font
+   FONT
 ===================================================== */
 
 function setFont(
@@ -3088,10 +3727,10 @@ function setFont(
 
 
 /* =====================================================
-   Wrap text
+   WRAP WORDS
 ===================================================== */
 
-function wrapTextBalanced(
+function wrapWords(
     text,
     maxWidth
 ) {
@@ -3105,46 +3744,6 @@ function wrapTextBalanced(
                 /\s+/
             );
 
-
-    if (!words.length) {
-
-        return [];
-
-    }
-
-
-    /*
-       الطريقة الأولى:
-       تقسيم عادي.
-    */
-
-    const normal =
-        wrapWords(
-            words,
-            maxWidth
-        );
-
-
-    /*
-       نحاول تحسين توازن الأسطر.
-    */
-
-    return balanceLines(
-        normal,
-        maxWidth
-    );
-
-}
-
-
-/* =====================================================
-   Wrap words
-===================================================== */
-
-function wrapWords(
-    words,
-    maxWidth
-) {
 
     const lines =
         [];
@@ -3180,7 +3779,9 @@ function wrapWords(
 
         else {
 
-            if (current) {
+            if (
+                current
+            ) {
 
                 lines.push(
                     current
@@ -3211,8 +3812,7 @@ function wrapWords(
 
 
                 if (
-                    pieces.length >
-                    1
+                    pieces.length > 1
                 ) {
 
                     lines.push(
@@ -3261,7 +3861,7 @@ function wrapWords(
 
 
 /* =====================================================
-   Balance lines
+   BALANCE LINES
 ===================================================== */
 
 function balanceLines(
@@ -3270,7 +3870,9 @@ function balanceLines(
 ) {
 
     const result =
-        [...lines];
+        [
+            ...lines
+        ];
 
 
     if (
@@ -3294,13 +3896,11 @@ function balanceLines(
 
         for (
             let i = 0;
-            i <
-            result.length -
-            1;
+            i < result.length - 1;
             i++
         ) {
 
-            const first =
+            const firstWords =
                 result[i]
                     .split(
                         " "
@@ -3308,7 +3908,7 @@ function balanceLines(
 
 
             if (
-                first.length <= 1
+                firstWords.length <= 1
             ) {
 
                 continue;
@@ -3316,7 +3916,7 @@ function balanceLines(
             }
 
 
-            const second =
+            const nextWords =
                 result[
                     i + 1
                 ].split(
@@ -3325,14 +3925,13 @@ function balanceLines(
 
 
             const moved =
-                first[
-                    first.length -
-                    1
+                firstWords[
+                    firstWords.length - 1
                 ];
 
 
             const newFirst =
-                first
+                firstWords
                     .slice(
                         0,
                         -1
@@ -3345,7 +3944,7 @@ function balanceLines(
             const newSecond =
                 [
                     moved,
-                    ...second
+                    ...nextWords
                 ].join(
                     " "
                 );
@@ -3395,8 +3994,7 @@ function balanceLines(
 
             if (
                 newFirst &&
-                after <
-                before
+                after < before
             ) {
 
                 result[i] =
@@ -3432,7 +4030,7 @@ function balanceLines(
 
 
 /* =====================================================
-   Long word
+   LONG WORD
 ===================================================== */
 
 function splitLongWord(
@@ -3440,7 +4038,7 @@ function splitLongWord(
     maxWidth
 ) {
 
-    const parts =
+    const pieces =
         [];
 
 
@@ -3466,7 +4064,7 @@ function splitLongWord(
 
             if (current) {
 
-                parts.push(
+                pieces.push(
                     current
                 );
 
@@ -3490,20 +4088,20 @@ function splitLongWord(
 
     if (current) {
 
-        parts.push(
+        pieces.push(
             current
         );
 
     }
 
 
-    return parts;
+    return pieces;
 
 }
 
 
 /* =====================================================
-   Rounded rect
+   ROUNDED RECTANGLE
 ===================================================== */
 
 function roundedRect(
@@ -3535,68 +4133,52 @@ function roundedRect(
 
 
     ctx.moveTo(
-        x +
-        radius,
+        x + radius,
         y
     );
 
 
     ctx.lineTo(
-        x +
-        width -
-        radius,
+        x + width - radius,
         y
     );
 
 
     ctx.quadraticCurveTo(
 
-        x +
-        width,
+        x + width,
 
         y,
 
-        x +
-        width,
+        x + width,
 
-        y +
-        radius
+        y + radius
 
     );
 
 
     ctx.lineTo(
-        x +
-        width,
-        y +
-        height -
-        radius
+        x + width,
+        y + height - radius
     );
 
 
     ctx.quadraticCurveTo(
 
-        x +
-        width,
+        x + width,
 
-        y +
-        height,
+        y + height,
 
-        x +
-        width -
-        radius,
+        x + width - radius,
 
-        y +
-        height
+        y + height
 
     );
 
 
     ctx.lineTo(
-        x +
-        radius,
-        y +
-        height
+        x + radius,
+        y + height
     );
 
 
@@ -3604,22 +4186,18 @@ function roundedRect(
 
         x,
 
-        y +
-        height,
+        y + height,
 
         x,
 
-        y +
-        height -
-        radius
+        y + height - radius
 
     );
 
 
     ctx.lineTo(
         x,
-        y +
-        radius
+        y + radius
     );
 
 
@@ -3629,8 +4207,7 @@ function roundedRect(
 
         y,
 
-        x +
-        radius,
+        x + radius,
 
         y
 
@@ -3643,7 +4220,51 @@ function roundedRect(
 
 
 /* =====================================================
-   Results
+   STRONG CLEAN BUTTON
+===================================================== */
+
+strongCleanButton.addEventListener(
+    "click",
+    () => {
+
+        if (
+            !lastBlocks.length
+        ) {
+
+            return;
+
+        }
+
+
+        currentCleanStrength =
+            1.55;
+
+
+        drawTranslation(
+            lastBlocks,
+            currentCleanStrength
+        );
+
+
+        translatedVisible =
+            true;
+
+
+        compareButton.textContent =
+            "↩ عرض الصورة الأصلية";
+
+
+        setStatus(
+            "🧽 تم تطبيق تنظيف أقوى.\nإذا اختفت بقايا اليابانية يمكنك حفظ الصورة.",
+            "success"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   RESULTS
 ===================================================== */
 
 function showResults(
@@ -3713,11 +4334,6 @@ function showResults(
             );
 
 
-            /*
-               إذا كانت النسخة المختصرة
-               مختلفة عن الترجمة الكاملة.
-            */
-
             if (
                 block.displayTranslation &&
                 block.displayTranslation !==
@@ -3761,7 +4377,7 @@ function showResults(
 
 
 /* =====================================================
-   Compare
+   COMPARE ORIGINAL / TRANSLATED
 ===================================================== */
 
 compareButton.addEventListener(
@@ -3794,7 +4410,8 @@ compareButton.addEventListener(
         else {
 
             drawTranslation(
-                lastBlocks
+                lastBlocks,
+                currentCleanStrength
             );
 
 
@@ -3812,7 +4429,7 @@ compareButton.addEventListener(
 
 
 /* =====================================================
-   Download
+   DOWNLOAD
 ===================================================== */
 
 downloadButton.addEventListener(
@@ -3825,7 +4442,8 @@ downloadButton.addEventListener(
         ) {
 
             drawTranslation(
-                lastBlocks
+                lastBlocks,
+                currentCleanStrength
             );
 
 
@@ -3871,7 +4489,7 @@ downloadButton.addEventListener(
 
 
                 link.download =
-                    "manga-translated-v4.png";
+                    "manga-translated-v5.png";
 
 
                 document.body.appendChild(
@@ -3886,10 +4504,13 @@ downloadButton.addEventListener(
 
 
                 setTimeout(
-                    () =>
+                    () => {
+
                         URL.revokeObjectURL(
                             url
-                        ),
+                        );
+
+                    },
                     1000
                 );
 
@@ -3904,7 +4525,7 @@ downloadButton.addEventListener(
 
 
 /* =====================================================
-   New image
+   NEW IMAGE
 ===================================================== */
 
 newButton.addEventListener(
@@ -3929,6 +4550,10 @@ newButton.addEventListener(
 
         translatedVisible =
             false;
+
+
+        currentCleanStrength =
+            1;
 
 
         canvas.width =
@@ -3956,6 +4581,10 @@ newButton.addEventListener(
 
 
         downloadButton.style.display =
+            "none";
+
+
+        strongCleanButton.style.display =
             "none";
 
 
